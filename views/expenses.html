@@ -1,0 +1,319 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Expenses | Joshi Choice Center</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- CSS -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../public/css/style.css">
+    <link rel="stylesheet" href="../public/assets/sidebar-pages/expenses/expenses.css">
+    <link rel="stylesheet" href="../public/assets/features/sidebar/sidebar.css">
+    <link rel="stylesheet" href="../public/css/assistant-speaker.css">
+    <link rel="stylesheet" href="../public/css/theme-toggle.css">
+    <link rel="stylesheet" href="../public/css/loader.css">
+    <link rel="stylesheet" href="../public/assets/features/notification/notification.css">
+    <link rel="stylesheet" href="../public/assets/sidebar-pages/global/global-background-animation.css">
+    <link rel="stylesheet" href="../public/assets/features/scroll-toggle.css">
+    <script src="../public/js/loader.js"></script>
+    <script src="../public/js/auth.js"></script>
+    <script>Auth.protectPage();</script>
+</head>
+
+<body>
+    <!-- GLOBAL BACKGROUND -->
+    <div class="animated-bg"></div>
+
+    <!-- Sidebar -->
+    <div id="proSidebar">
+        <div class="sidebar-header">
+            <div class="logo" style="width: 30px; height: 30px; font-size: 0.8rem; margin: 0;">JC</div>
+            <span data-i18n="app-title">Joshi Choice Center</span>
+        </div>
+
+        <div class="sidebar-menu">
+            <a href="dashboard.html">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="sidebar-icon">
+                    <rect width="7" height="9" x="3" y="3" rx="1" />
+                    <rect width="7" height="5" x="14" y="3" rx="1" />
+                    <rect width="7" height="9" x="14" y="12" rx="1" />
+                    <rect width="7" height="5" x="3" y="16" rx="1" />
+                </svg>
+                <span data-i18n="sidebar-dashboard">Dashboard</span>
+            </a>
+            <a href="new-customer.html">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="sidebar-icon">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <line x1="19" y1="8" x2="19" y2="14" />
+                    <line x1="16" y1="11" x2="22" y2="11" />
+                </svg>
+                <span data-i18n="sidebar-new-customer">New Customer</span>
+            </a>
+            <a href="customer-directory.html">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                </svg>
+                <span data-i18n="sidebar-customer-directory">Customer Directory</span>
+            </a>
+            <a href="#">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="sidebar-icon">
+                    <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+                    <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+                </svg>
+                <span data-i18n="sidebar-notification">Notification</span>
+            </a>
+            <a href="print-receipt.html">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="sidebar-icon">
+                    <polyline points="6 9 6 2 18 2 18 9" />
+                    <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+                    <rect width="12" height="8" x="6" y="14" />
+                </svg>
+                <span data-i18n="sidebar-print-receipt">Print Receipt</span>
+            </a>
+            <a href="pending-payments.html">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="sidebar-icon">
+                    <circle cx="12" cy="12" r="10" />
+                    <polyline points="12 6 12 12 16 14" />
+                </svg>
+                <span data-i18n="sidebar-pending-payments">Pending Payments</span>
+            </a>
+            <a href="reports.html">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="sidebar-icon">
+                    <line x1="18" y1="20" x2="18" y2="10" />
+                    <line x1="12" y1="20" x2="12" y2="4" />
+                    <line x1="6" y1="20" x2="6" y2="14" />
+                </svg>
+                <span data-i18n="sidebar-reports">Reports</span>
+            </a>
+            <a href="expenses.html" class="active">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="sidebar-icon">
+                    <path d="M21 12V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-1" />
+                    <path d="M16 12h5" />
+                </svg>
+                <span data-i18n="sidebar-expenses">Expenses</span>
+            </a>
+            <a href="rate-list.html">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="sidebar-icon">
+                    <path d="M6 3h12" />
+                    <path d="M6 8h12" />
+                    <path d="m6 13 8.5 8" />
+                    <path d="M6 13h3" />
+                    <path d="M9 13c6.667 0 6.667-10 0-10" />
+                </svg>
+                <span data-i18n="sidebar-service-rates">Service Rates</span>
+            </a>
+            <a href="settings.html">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="sidebar-icon">
+                    <path
+                        d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
+                    <circle cx="12" cy="12" r="3" />
+                </svg>
+                <span data-i18n="sidebar-settings">Settings</span>
+            </a>
+            <a href="#" onclick="Auth.logout()"
+                style="color: #f87171; border-top: 1px solid rgba(248, 113, 113, 0.1); margin-top: 10px; padding-top: 15px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="sidebar-icon">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                    <polyline points="16 17 21 12 16 7" />
+                    <line x1="21" y1="12" x2="9" y2="12" />
+                </svg>
+                <span>Logout</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Toggle Button -->
+    <button id="sidebarToggle">☰</button>
+
+    <!-- VOICE + THEME CONTROLS -->
+    <div class="assistant-speaker" id="assistantSpeaker">
+        <svg class="icon" viewBox="0 0 24 24">
+            <path d="M3 10v4h4l5 5V5L7 10H3z" />
+        </svg>
+        <span>Speak</span>
+    </div>
+
+    <div class="slider light" id="themeToggle">
+        <div class="slider-toggle light"></div>
+        <div class="slider-accent light"></div>
+    </div>
+
+    <!-- Background glow -->
+    <div class="orb one"></div>
+    <div class="orb two"></div>
+
+    <!-- Main content -->
+    <main class="main">
+        <header class="brand">
+            <div class="brand-box">
+                <div class="logo">JC</div>
+                <h1 class="app-title">Expense Management</h1>
+            </div>
+        </header>
+
+        <section class="expense-section">
+            <!-- Premium Stats Row (Top) -->
+            <div class="expense-stats-row">
+                <div class="stat-box income">
+                    <div class="premium-glow"></div>
+                    <div class="stat-icon">📈</div>
+                    <div class="stat-info">
+                        <h4 data-i18n="today-income">Today's Income</h4>
+                        <h2 id="todayIncome">₹0</h2>
+                    </div>
+                </div>
+                <div class="stat-box expense">
+                    <div class="premium-glow"></div>
+                    <div class="stat-icon">📉</div>
+                    <div class="stat-info">
+                        <h4 data-i18n="today-expense">Today's Expenses</h4>
+                        <h2 id="todayTotal">₹0</h2>
+                    </div>
+                </div>
+                <div class="stat-box profit" id="profitStatBox">
+                    <div class="premium-glow"></div>
+                    <div class="stat-icon">💰</div>
+                    <div class="stat-info">
+                        <h4 data-i18n="net-profit">Net Profit</h4>
+                        <h2 id="netProfit">₹0</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="expense-main-grid">
+                <!-- Premium Expense Form (Left) -->
+                <div class="expense-card glass premium">
+                    <div class="card-header-minimal">
+                        <div class="header-icon-box">
+                            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor"
+                                stroke-width="2.5">
+                                <path d="M12 5v14M5 12h14" />
+                            </svg>
+                        </div>
+                        <h3>Log Expense</h3>
+                    </div>
+                    <form id="expenseForm">
+                        <div class="form-group">
+                            <label>Date</label>
+                            <input type="date" id="expDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Category</label>
+                            <select id="expCategory" required>
+                                <option value="">Select Category</option>
+                                <option value="Stationery">Stationery (Paper, Ink, etc.)</option>
+                                <option value="Electricity">Electricity Bill</option>
+                                <option value="Rent">Shop Rent</option>
+                                <option value="Salary">Staff Salary</option>
+                                <option value="Refreshment">Tea/Snacks</option>
+                                <option value="Maintenance">Maintenance/Repair</option>
+                                <option value="Internet">Internet/Broadband</option>
+                                <option value="Others">Others</option>
+                            </select>
+                        </div>
+                        <div id="conditionalFields"
+                            style="display: none; transition: all 0.5s ease-in-out; width: 100%;">
+                            <div style="display: flex; flex-direction: column; gap: 20px; width: 100%;">
+                                <div class="form-group full-width">
+                                    <label>Description</label>
+                                    <input type="text" id="expDescription" placeholder="e.g. Bought 5 packets paper">
+                                </div>
+                                <div class="form-grid"
+                                    style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; width: 100%;">
+                                    <div class="form-group">
+                                        <label>Amount (₹)</label>
+                                        <input type="number" id="expAmount" placeholder="0.00">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Payment Mode</label>
+                                        <select id="expPaymentMode">
+                                            <option value="Cash">Cash</option>
+                                            <option value="UPI">UPI/Online</option>
+                                            <option value="Bank Transfer">Bank Transfer</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn-save">Save Expense</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Expense List Table (Right) -->
+                <div class="expense-list-card glass">
+                    <div class="list-header">
+                        <div class="title-with-icon">
+                            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <h3>Expense History</h3>
+                        </div>
+                        <div class="filter-box">
+                            <input type="text" id="expenseSearch" placeholder="Search expenses...">
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table id="expenseTable">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Category</th>
+                                    <th>Description</th>
+                                    <th>Amount</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="expenseTableBody">
+                                <!-- Rows will be injected by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- JS -->
+    <script src="../public/js/translations.js"></script>
+    <script src="../public/js/language-manager.js"></script>
+    <script src="../public/assets/features/sidebar/sidebar.js"></script>
+    <script src="../public/assets/sidebar-pages/expenses/expenses.js"></script>
+    <script src="../public/js/assistant-speaker.js"></script>
+    <script src="../public/js/theme-toggle.js"></script>
+    <script src="../public/assets/features/notification/notification.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="../public/assets/sidebar-pages/global/global-background-animation.js"></script>
+    <div id="scrollArrow">▲</div>
+    <script src="../public/assets/features/scroll-toggle.js"></script>
+	<script src="../public/js/shortcuts.js"></script>
+</body>
+
+</html>

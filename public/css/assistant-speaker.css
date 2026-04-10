@@ -1,0 +1,67 @@
+/* ================================
+   VOICE ASSISTANT SPEAKER BUTTON
+   ================================ */
+
+.assistant-speaker {
+  position: fixed;
+  top: 12px;
+  left: 22px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: #ffffff;
+  border-radius: 20px;
+  border: 1px solid #e0e0e0;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  z-index: 9999;
+}
+
+/* Hover */
+.assistant-speaker:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+/* Icon */
+.assistant-speaker .icon {
+  width: 18px;
+  height: 18px;
+  fill: #2563eb;
+  transition: transform 0.3s ease;
+}
+
+/* Text */
+.assistant-speaker span {
+  font-size: 13px;
+  font-weight: 500;
+  color: #333;
+  user-select: none;
+}
+
+/* Speaking animation */
+.assistant-speaker.speaking .icon {
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+
+
+/* Menu + Speak smooth move */
+#sidebarToggle,
+#assistantSpeaker {
+  transition: transform 0.35s ease;
+}
+
+/* jab sidebar open ho */
+body.sidebar-open #sidebarToggle,
+body.sidebar-open #assistantSpeaker {
+  transform: translateX(260px); /* sidebar width */
+}

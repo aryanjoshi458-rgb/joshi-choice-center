@@ -1,0 +1,40 @@
+/* ===== SHARED TOAST STYLES ===== */
+#toastBox {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 9999;
+}
+
+.toast {
+  position: relative;
+  background: linear-gradient(135deg, #2563eb, #3b82f6); /* Professional Blue */
+  color: #fff;
+  padding: 14px 20px;
+  margin-top: 12px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  overflow: hidden;
+  transform: translateX(120%);
+  opacity: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Success State Override (Optional) */
+.toast.success {
+  background: linear-gradient(135deg, #16a34a, #22c55e);
+}
+
+.toast .progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  width: 100%;
+  background: rgba(255,255,255,0.6);
+  transform-origin: left;
+}
