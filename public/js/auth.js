@@ -65,9 +65,13 @@ const Auth = {
      * Logs out the user.
      */
     logout() {
+        if (window.AppLoader) window.AppLoader.show("Logging out...");
         sessionStorage.removeItem('jc_isLoggedIn');
         sessionStorage.removeItem('jc_lastLogin');
-        window.location.href = 'login.html';
+        
+        setTimeout(() => {
+            window.location.href = 'login.html';
+        }, 600);
     },
 
     /**

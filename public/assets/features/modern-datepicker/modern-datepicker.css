@@ -1,82 +1,219 @@
-.modern-date-input{
-  padding:10px 14px;
-  border:1px solid #d0d0d0;
-  border-radius:8px;
-  font-size:14px;
-  cursor:pointer;
-  background:#fff;
-  width:none;
+/* 
+  ===========================================
+  PREMIUM MODERN DATE PICKER – GSAP ENHANCED
+  ===========================================
+*/
+
+.modern-date-input {
+  padding: 12px 16px;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  font-size: 14px;
+  cursor: pointer;
+  background: var(--card-bg);
+  color: var(--text-main);
+  width: 100%;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
-.mdp-box{
-  position:absolute;
-  width:280px;
-  background:#fff;
-  border-radius:14px;
-  box-shadow:0 18px 45px rgba(0,0,0,.18);
-  padding:14px;
-  animation:mdpFade .25s ease;
-  z-index:99999;
+.modern-date-input:hover {
+  border-color: var(--primary-color);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-@keyframes mdpFade{
-  from{opacity:0; transform:scale(.95) translateY(10px);}
-  to{opacity:1; transform:scale(1) translateY(0);}
+.mdp-box {
+  position: absolute;
+  width: 320px;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  z-index: 10000;
+  backdrop-filter: blur(10px);
+  user-select: none;
+  font-family: inherit;
+  /* GSAP Handles initial visibility */
 }
 
-.mdp-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:10px;
-  font-weight:600;
+/* Header Sections */
+.mdp-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
 }
 
-.mdp-nav{
-  cursor:pointer;
-  font-size:20px;
-  padding:4px 10px;
-  border-radius:6px;
-  user-select:none;
+.mdp-title {
+  display: flex;
+  gap: 8px;
+  align-items: center;
 }
 
-.mdp-nav:hover{
-  background:#f0f0f0;
+.mdp-select-wrap {
+  display: flex;
+  gap: 5px;
 }
 
-.mdp-week{
-  display:grid;
-  grid-template-columns:repeat(7,1fr);
-  font-size:12px;
-  text-align:center;
-  margin-bottom:6px;
-  color:#666;
+.mdp-header select {
+  background: var(--hover-bg);
+  border: none;
+  border-radius: 10px;
+  padding: 6px 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-main);
+  cursor: pointer;
+  width: auto;
+  margin-top: 0;
 }
 
-.mdp-grid{
-  display:grid;
-  grid-template-columns:repeat(7,1fr);
-  gap:6px;
+.mdp-header select:focus {
+  outline: none;
+  background: var(--primary-color);
+  color: #fff;
 }
 
-.mdp-day{
-  padding:8px 0;
-  text-align:center;
-  border-radius:6px;
-  cursor:pointer;
-  transition:.2s;
-  font-size:13px;
+/* Navigation Arrows */
+.mdp-nav-btns {
+  display: flex;
+  gap: 8px;
 }
 
-.mdp-day:hover{
-  background:#eef4ff;
+.mdp-nav {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: var(--hover-bg);
+  color: var(--text-main);
+  cursor: pointer;
+  transition: all 0.2s;
 }
 
-.mdp-today{
-  border:1px solid #2563eb;
+.mdp-nav:hover {
+  background: var(--primary-color);
+  color: #fff;
 }
 
-.mdp-selected{
-  background:#2563eb;
-  color:#fff;
+.mdp-nav svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Week Days */
+.mdp-week {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 12px;
+}
+
+.mdp-week span {
+  text-align: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Date Grid */
+.mdp-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+}
+
+.mdp-day {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-main);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.mdp-day:hover {
+  background: var(--hover-bg);
+  color: var(--primary-color);
+  transform: scale(1.1);
+}
+
+.mdp-day.empty {
+  cursor: default;
+}
+
+.mdp-day.mdp-today {
+  color: var(--primary-color);
+  font-weight: 800;
+}
+
+.mdp-day.mdp-today::after {
+  content: '';
+  position: absolute;
+  bottom: 6px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--primary-color);
+}
+
+.mdp-day.mdp-selected {
+  background: var(--primary-color) !important;
+  color: #fff !important;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+/* Footer / Utilities */
+.mdp-footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid var(--border-color);
+}
+
+.mdp-btn {
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+}
+
+.mdp-btn-today {
+  background: var(--hover-bg);
+  color: var(--primary-color);
+}
+
+.mdp-btn-today:hover {
+  background: var(--primary-color);
+  color: #fff;
+}
+
+.mdp-btn-clear {
+  background: transparent;
+  color: #ef4444;
+}
+
+.mdp-btn-clear:hover {
+  background: #fef2f2;
+}
+
+/* Dark/Theme support adjustments */
+body.dark-mode .mdp-box,
+body.midnight-slate-mode .mdp-box,
+body.royal-amethyst-mode .mdp-box,
+body.cyberpunk-mode .mdp-box {
+  background: rgba(30, 41, 59, 0.85); /* Glass effect */
 }

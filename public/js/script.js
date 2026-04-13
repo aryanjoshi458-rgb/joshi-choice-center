@@ -467,11 +467,22 @@ window.openEditModal = function (id) {
 
   // Date conversion for <input type="date">
   let dateVal = t.date;
+  const editDateInput = document.getElementById("editDate");
+  
   if (dateVal.includes("-") && dateVal.split("-")[0].length === 2) {
-    const parts = dateVal.split("-");
-    dateVal = `${parts[2]}-${parts[1]}-${parts[0]}`;
+    // Already in DD-MM-YYYY
+    if (editDateInput.type === "date") {
+      const parts = dateVal.split("-");
+      dateVal = `${parts[2]}-${parts[1]}-${parts[0]}`; // to YYYY-MM-DD
+    }
+  } else if (dateVal.includes("-") && dateVal.split("-")[0].length === 4) {
+    // In YYYY-MM-DD
+    if (editDateInput.type === "text") {
+      const parts = dateVal.split("-");
+      dateVal = `${parts[2]}-${parts[1]}-${parts[0]}`; // to DD-MM-YYYY
+    }
   }
-  document.getElementById("editDate").value = dateVal;
+  editDateInput.value = dateVal;
 
   document.getElementById("editName").value = t.customerName || "";
   document.getElementById("editMobile").value = t.mobileNumber || "";

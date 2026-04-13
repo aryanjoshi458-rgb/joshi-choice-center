@@ -100,18 +100,51 @@ body.login-page {
 }
 
 .form-group {
-    margin-bottom: 20px;
-    text-align: left;
+    position: relative;
+    margin-bottom: 30px;
 }
 
-.form-group label {
-    display: block;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text-muted);
-    margin-bottom: 8px;
-    margin-left: 4px;
+.input-wrapper {
+    position: relative;
+    width: 100%;
 }
+
+.input-wrapper label {
+    position: absolute;
+    top: 14px;
+    left: 16px;
+    pointer-events: none;
+    display: flex;
+}
+
+.input-wrapper label span {
+    display: inline-block;
+    font-size: 15px;
+    min-width: 5px;
+    color: var(--text-muted);
+    transition: 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.input-wrapper input:focus + label span,
+.input-wrapper input:valid + label span {
+    color: var(--primary-glow);
+    transform: translateY(-40px);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+/* Staggered delay for wave effect - will be controlled by JS for arbitrary lengths, 
+   but we can pre-define some for performance */
+.input-wrapper label span:nth-child(1) { transition-delay: 0ms; }
+.input-wrapper label span:nth-child(2) { transition-delay: 50ms; }
+.input-wrapper label span:nth-child(3) { transition-delay: 100ms; }
+.input-wrapper label span:nth-child(4) { transition-delay: 150ms; }
+.input-wrapper label span:nth-child(5) { transition-delay: 200ms; }
+.input-wrapper label span:nth-child(6) { transition-delay: 250ms; }
+.input-wrapper label span:nth-child(7) { transition-delay: 300ms; }
+.input-wrapper label span:nth-child(8) { transition-delay: 350ms; }
+.input-wrapper label span:nth-child(9) { transition-delay: 400ms; }
+.input-wrapper label span:nth-child(10) { transition-delay: 450ms; }
 
 .input-wrapper {
     position: relative;
@@ -133,7 +166,8 @@ body.login-page {
 
 .input-wrapper input:focus {
     border-color: var(--primary-glow);
-    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+    background: var(--card-bg);
 }
 
 .login-btn {

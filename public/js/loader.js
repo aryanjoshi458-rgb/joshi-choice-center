@@ -62,6 +62,11 @@
 
     // Initial load logic
     function init() {
+        // Check if we should skip the auto-loader (e.g., on Login page)
+        if (document.body && document.body.hasAttribute('data-no-auto-loader')) {
+            return;
+        }
+
         // Show immediately for page load
         window.AppLoader.show("Loading Application...");
 

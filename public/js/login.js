@@ -133,6 +133,19 @@ document.addEventListener('DOMContentLoaded', () => {
             window.dispatchEvent(new Event('themeChanged'));
         });
     }
+
+    // Floating Label Wave Effect - Split text into spans
+    const labels = document.querySelectorAll('.input-wrapper label');
+    labels.forEach(label => {
+        label.innerHTML = label.innerText
+            .split('')
+            .map((letter, idx) => {
+                // If it's a space, use a non-breaking space to maintain layout
+                const char = letter === ' ' ? '&nbsp;' : letter;
+                return `<span style="transition-delay:${idx * 30}ms">${char}</span>`;
+            })
+            .join('');
+    });
 });
 
 // Add shake animation dynamically if not in CSS
