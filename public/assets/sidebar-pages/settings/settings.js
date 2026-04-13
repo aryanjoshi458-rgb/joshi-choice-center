@@ -569,9 +569,9 @@ document.addEventListener("DOMContentLoaded", () => {
         updateStepText.style.color = "#16a34a";
         
         setTimeout(() => {
-            updateStepText.innerText = "System ready. Restarting software...";
+            updateStepText.innerText = "System ready. Starting installer...";
             setTimeout(() => {
-                ipcRenderer.send('restart-app');
+                ipcRenderer.send('restart-app', path);
             }, 1500);
         }, 1000);
     });

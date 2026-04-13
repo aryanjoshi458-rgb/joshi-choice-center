@@ -102,9 +102,15 @@ ipcMain.on('download-update', (event, url) => {
   });
 });
 
-ipcMain.on('restart-app', () => {
-  app.relaunch();
-  app.exit();
+ipcMain.on('restart-app', (event, downloadPath) => {
+  if (downloadPath) {
+    shell.openPath(downloadPath).then(() => {
+      app.quit();
+    });
+  } else {
+    app.relaunch();
+    app.exit();
+  }
 });
 
 ipcMain.handle('get-app-version', () => {
