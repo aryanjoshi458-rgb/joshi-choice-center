@@ -1,0 +1,236 @@
+/* CONTENT */
+.content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+}
+
+.card {
+    background: #fff;
+    padding: 22px;
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
+
+.card.full {
+    grid-column: 1 / -1;
+}
+
+.card h2 {
+    margin-bottom: 18px;
+    font-size: 20px;
+}
+
+/* FORMS */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.form-grid.single {
+    grid-template-columns: 1fr;
+}
+
+label {
+    font-size: 13px;
+    color: #555;
+}
+
+input, select {
+    width: 100%;
+    padding: 10px 12px;
+    margin-top: 6px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+/* =========================
+   TODAY'S REPORT CARD
+   ========================= */
+
+.report-card {
+  width: 100%;
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 14px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+  box-sizing: border-box;
+  overflow-x: auto;   /* allow horizontal scroll */
+}
+
+/* Title */
+.report-card h3 {
+  margin-bottom: 12px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* Search box */
+.report-card input[type="text"] {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  margin-bottom: 16px;
+  box-sizing: border-box;
+}
+
+/* =========================
+   TABLE (NO SCROLL VERSION)
+   ========================= */
+
+#reportTable {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;   /* 🔥 MOST IMPORTANT */
+}
+
+/* Header */
+#reportTable thead {
+  background: #f3f6f9;
+}
+
+#reportTable th {
+  padding: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+/* Body */
+#reportTable td {
+  padding: 10px;
+  font-size: 13px;
+  text-align: center;
+  border-bottom: 1px solid #e5e7eb;
+
+  /* text control */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Row hover */
+#reportTable tbody tr:hover {
+  background: #f9fafb;
+}
+
+/* =========================
+   STATUS
+   ========================= */
+
+#reportTable .success {
+  color: #16a34a;
+  font-weight: 600;
+}
+
+
+/* =========================
+   TABLE COLUMN FIX
+   ========================= */
+
+/* Action column */
+#reportTable th:last-child,
+#reportTable td:last-child {
+  width: 150px;
+  min-width: 150px;
+  white-space: nowrap;
+}
+
+/* Transaction ID */
+#reportTable th:nth-last-child(2),
+#reportTable td:nth-last-child(2) {
+  width: 130px;
+  min-width: 130px;
+}
+
+/* Status */
+#reportTable th:nth-last-child(3),
+#reportTable td:nth-last-child(3) {
+  width: 90px;
+}
+
+.report-card table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+
+.report-card th,
+.report-card td {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+  vertical-align: middle;
+  font-size: 13px;
+}
+
+/* column widths */
+.report-card th:nth-child(1),
+.report-card td:nth-child(1) { width: 50px; }
+
+.report-card th:nth-child(2),
+.report-card td:nth-child(2) { width: 90px; }
+
+.report-card th:nth-child(3),
+.report-card td:nth-child(3) { width: 140px; }
+
+.report-card th:nth-child(4),
+.report-card td:nth-child(4) { width: 120px; }
+
+.report-card th:nth-child(5),
+.report-card td:nth-child(5) { width: 140px; }
+
+.report-card th:nth-child(6),
+.report-card td:nth-child(6) { width: 130px; }
+
+.report-card th:nth-child(7),
+.report-card td:nth-child(7) { width: 130px; }
+
+.report-card th:nth-child(8),
+.report-card td:nth-child(8) { width: 80px; }
+
+.report-card th:nth-child(9),
+.report-card td:nth-child(9) { width: 80px; }
+
+.report-card th:nth-child(10),
+.report-card td:nth-child(10) { width: 110px; }
+
+.report-card th:nth-child(11),
+.report-card td:nth-child(11) { width: 100px; }
+
+.report-card th:nth-child(12),
+.report-card td:nth-child(12) { width: 130px; }
+
+/* action buttons */
+.report-card td:last-child {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+}
+
+/* =========================
+   REPORT CARD – LIGHT MODE
+========================= */
+.report-card {
+  background: #ffffff;
+  color: #111;
+  border-radius: 14px;
+}
+
+/* table header */
+.report-card thead th {
+  background: #f1f5f9;
+  color: #111;
+}
+
+/* =========================
+   REPORT CARD – DARK MODE
+========================= */
+
+
+

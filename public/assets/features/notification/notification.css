@@ -1,0 +1,38 @@
+/* ===============================
+   Notification Alert Button
+   =============================== */
+
+.notification-alert {
+  margin-top: -15px; /* 🔼 is value ko adjust kar sakte ho */
+  position: fixed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+
+  padding: 6px 14px;
+  border-radius: 999px;
+
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+
+  background: #ffffff;
+  color: #111827;
+  border: 1px solid rgba(0,0,0,0.12);
+
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  transition: all 0.25s ease;
+}
+
+.notification-alert:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+}
+
+/* 🔔 icon spacing */
+.notification-alert span {
+  font-size: 14px;
+}
+
+

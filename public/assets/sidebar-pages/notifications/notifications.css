@@ -1,0 +1,169 @@
+/* PREMIUM NOTIFICATIONS CSS - JOSHI CHOICE CENTER */
+:root {
+    --glass-bg: rgba(255, 255, 255, 0.4);
+    --glass-border: rgba(255, 255, 255, 0.2);
+    --bell-primary: #2563eb;
+    --bell-secondary: #1d4ed8;
+    --pulse-color: rgba(37, 99, 235, 0.2);
+}
+
+body.dark-mode {
+    --glass-bg: rgba(15, 23, 42, 0.4);
+    --glass-border: rgba(255, 255, 255, 0.05);
+    --bell-primary: #3b82f6;
+    --bell-secondary: #60a5fa;
+    --pulse-color: rgba(59, 130, 246, 0.2);
+}
+
+.notifications-premium-wrapper {
+    position: relative;
+    height: calc(100vh - 120px);
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+/* Interactive Background */
+.interactive-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+}
+
+.particle {
+    position: absolute;
+    background: var(--primary-color);
+    border-radius: 50%;
+    pointer-events: none;
+    opacity: 0.1;
+    filter: blur(1px);
+}
+
+/* Glass Card */
+.glass-card {
+    position: relative;
+    z-index: 10;
+    width: 90%;
+    max-width: 600px;
+    padding: 60px 40px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: 40px;
+    box-shadow: 0 40px 100px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.animation-viewport {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    margin-bottom: 40px;
+}
+
+/* Bell Styles */
+.premium-bell {
+    width: 100%;
+    height: 100%;
+    transform-origin: 50% 15%;
+}
+
+.bell-body {
+    fill: var(--bell-primary);
+    filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));
+}
+
+.bell-clapper {
+    fill: var(--bell-secondary);
+}
+
+.bell-hook {
+    color: var(--text-main);
+    opacity: 0.5;
+}
+
+/* Sound Waves */
+.sound-waves {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.wave-ring {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: 2px solid var(--bell-primary);
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    opacity: 0;
+}
+
+/* Typography and Content */
+.coming-soon-content .stagger-text {
+    font-size: 2.8rem;
+    font-weight: 800;
+    margin-bottom: 10px;
+    background: linear-gradient(135deg, var(--text-main) 0%, var(--primary-color) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.text-underline {
+    width: 80px;
+    height: 4px;
+    background: var(--primary-color);
+    margin: 0 auto 25px;
+    border-radius: 10px;
+}
+
+.coming-soon-content p {
+    font-size: 1.15rem;
+    line-height: 1.7;
+    color: #4b5563;
+    max-width: 500px;
+    margin: 0 auto 30px;
+}
+
+body.dark-mode .coming-soon-content p {
+    color: #94a3b8;
+}
+
+/* Feature Tags */
+.feature-tags {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.tag {
+    padding: 6px 16px;
+    background: rgba(var(--primary-rgb), 0.1);
+    color: var(--primary-color);
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border: 1px solid rgba(var(--primary-rgb), 0.1);
+    transition: 0.3s;
+}
+
+.tag:hover {
+    background: var(--primary-color);
+    color: white;
+    transform: translateY(-2px);
+}

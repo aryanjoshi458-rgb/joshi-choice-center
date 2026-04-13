@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Settings | Joshi Choice Center</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- CSS -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+  <script src="../public/js/translations.js"></script>
+  <script src="../public/js/language-manager.js"></script>
+  <link rel="stylesheet" href="../public/css/style.css">
+  <link rel="stylesheet" href="../public/css/loader.css">
+  <link rel="stylesheet" href="../public/assets/features/sidebar/sidebar.css">
+  <script src="../public/js/loader.js"></script>
+  <link rel="stylesheet" href="../public/css/assistant-speaker.css">
+  <link rel="stylesheet" href="../public/css/theme-toggle.css">
+  <link rel="stylesheet" href="../public/assets/features/notification/notification.css">
+  <link rel="stylesheet" href="../public/assets/sidebar-pages/settings/settings.css">
+  <link rel="stylesheet" href="../public/assets/sidebar-pages/global/global-background-animation.css">
+  <link rel="stylesheet" href="../public/assets/features/scroll-toggle.css">
+  <link rel="stylesheet" href="../public/assets/features/notification/toast.css">
+  <script src="../public/js/auth.js"></script>
+  <script>Auth.protectPage();</script>
+
+</head>
+
+<body>
+  <!-- GLOBAL BACKGROUND KA CODE HAI -->
+  <div class="animated-bg"></div>
+
+  <!-- Sidebar -->
+  <div id="proSidebar">
+    <div class="sidebar-header">
+      <div class="logo" style="width: 30px; height: 30px; font-size: 0.8rem; margin: 0;">JC</div>
+      <span data-i18n="app-title">Joshi Choice Center</span>
+    </div>
+
+    <div class="sidebar-menu">
+      <a href="dashboard.html">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon">
+          <rect width="7" height="9" x="3" y="3" rx="1" />
+          <rect width="7" height="5" x="14" y="3" rx="1" />
+          <rect width="7" height="9" x="14" y="12" rx="1" />
+          <rect width="7" height="5" x="3" y="16" rx="1" />
+        </svg>
+        <span data-i18n="sidebar-dashboard">Dashboard</span>
+      </a>
+      <a href="new-customer.html">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+          <circle cx="9" cy="7" r="4" />
+          <line x1="19" y1="8" x2="19" y2="14" />
+          <line x1="16" y1="11" x2="22" y2="11" />
+        </svg>
+        <span data-i18n="sidebar-new-customer">New Customer</span>
+      </a>
+      <a href="customer-directory.html">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+          <circle cx="9" cy="7" r="4" />
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+          <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+        </svg>
+        <span data-i18n="sidebar-customer-directory">Customer Directory</span>
+      </a>
+      <a href="notifications.html">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon">
+          <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+          <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+        </svg>
+        <span data-i18n="sidebar-notification">Notification</span>
+      </a>
+      <a href="print-receipt.html">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon">
+          <polyline points="6 9 6 2 18 2 18 9" />
+          <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+          <rect width="12" height="8" x="6" y="14" />
+        </svg>
+        <span data-i18n="sidebar-print-receipt">Print Receipt</span>
+      </a>
+      <a href="pending-payments.html">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon">
+          <circle cx="12" cy="12" r="10" />
+          <polyline points="12 6 12 12 16 14" />
+        </svg>
+        <span data-i18n="sidebar-pending-payments">Pending Payments</span>
+      </a>
+      <a href="reports.html">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon">
+          <line x1="18" y1="20" x2="18" y2="10" />
+          <line x1="12" y1="20" x2="12" y2="4" />
+          <line x1="6" y1="20" x2="6" y2="14" />
+        </svg>
+        <span data-i18n="sidebar-reports">Reports</span>
+      </a>
+      <a href="expenses.html">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon">
+          <path d="M21 12V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-1" />
+          <path d="M16 12h5" />
+        </svg>
+        <span data-i18n="sidebar-expenses">Expenses</span>
+      </a>
+      <a href="rate-list.html">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon">
+          <path d="M6 3h12" />
+          <path d="M6 8h12" />
+          <path d="m6 13 8.5 8" />
+          <path d="M6 13h3" />
+          <path d="M9 13c6.667 0 6.667-10 0-10" />
+        </svg>
+        <span data-i18n="sidebar-service-rates">Service Rates</span>
+      </a>
+      <a href="settings.html" class="active">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon">
+          <path
+            d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
+          <circle cx="12" cy="12" r="3" />
+        </svg>
+        <span data-i18n="sidebar-settings">Settings</span>
+      </a>
+      <a href="#" onclick="Auth.logout()"
+        style="color: #f87171; border-top: 1px solid rgba(248, 113, 113, 0.1); margin-top: 10px; padding-top: 15px;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+          <polyline points="16 17 21 12 16 7" />
+          <line x1="21" y1="12" x2="9" y2="12" />
+        </svg>
+        <span>Logout</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Toggle Button (Speak ke niche) -->
+  <button id="sidebarToggle">☰</button>
+
+  <!-- VOICE + THEME CONTROLS -->
+  <div class="assistant-speaker" id="assistantSpeaker">
+    <svg class="icon" viewBox="0 0 24 24">
+      <path d="M3 10v4h4l5 5V5L7 10H3z" />
+    </svg>
+    <span>Speak</span>
+  </div>
+
+  <div class="slider light" id="themeToggle">
+    <div class="slider-toggle light"></div>
+    <div class="slider-accent light"></div>
+  </div>
+
+  <!-- Main content -->
+  <main class="main">
+
+    <!-- CENTER HEADER -->
+    <header class="brand">
+      <div class="brand-box">
+        <div class="logo">JC</div>
+        <h1 class="app-title" data-i18n="app-title">Joshi Choice Center</h1>
+      </div>
+    </header>
+
+    <div id="settingsContainer">
+      <div class="settings-card">
+        <div class="settings-tabs">
+          <button class="tab-btn active" data-tab="shop" data-i18n="tab-shop-profile">Shop Profile</button>
+          <button class="tab-btn" data-tab="theme" data-i18n="sidebar-themes">Themes</button>
+          <button class="tab-btn" data-tab="animation" data-i18n="sidebar-animation">BG Animations</button>
+          <button class="tab-btn" data-tab="print" data-i18n="settings-print">Print Settings</button>
+          <button class="tab-btn" data-tab="reset" data-i18n="sidebar-reset">Reset</button>
+          <button class="tab-btn" data-tab="about" data-i18n="sidebar-about">About</button>
+          <button class="tab-btn" data-tab="language" data-i18n="sidebar-language">Language</button>
+          <button class="tab-btn" data-tab="shortcuts">Shortcuts</button>
+        </div>
+
+        <div class="tab-content active" id="shop">
+          <div class="shop-grid">
+            <div class="logo-section">
+              <div class="logo-preview" id="logoPreview">JC</div>
+              <input type="file" id="shopLogo" accept="image/*" style="display:none">
+              <button class="btn-primary" onclick="document.getElementById('shopLogo').click()">Upload Logo</button>
+            </div>
+            <div class="info-section">
+              <div class="form-group">
+                <label>Shop Name</label>
+                <input type="text" id="shopName" placeholder="Enter Shop Name">
+              </div>
+              <div class="form-group">
+                <label>Owner Name</label>
+                <input type="text" id="ownerName" placeholder="Enter Owner Name">
+              </div>
+              <div class="form-group">
+                <label>Phone Number</label>
+                <input type="text" id="phoneNumber" placeholder="Enter Phone Number">
+              </div>
+              <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" id="shopEmail" placeholder="Enter Shop Email">
+              </div>
+              <div class="form-group">
+                <label>Address</label>
+                <input type="text" id="shopAddress" placeholder="Enter Shop Address">
+              </div>
+              <div class="form-group">
+                <label>State</label>
+                <input type="text" id="shopState" placeholder="Enter State">
+              </div>
+              <button class="btn-save" id="saveShopProfile">Save Profile</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-content" id="theme">
+          <div class="theme-grid">
+            <div class="theme-card active" data-theme="light">
+              <div class="theme-preview light system-default-style">
+                <div class="p-header"></div>
+                <div class="p-body"></div>
+              </div>
+              <span>Standard Light</span>
+            </div>
+            <div class="theme-card" data-theme="dark">
+              <div class="theme-preview dark system-default-style">
+                <div class="p-header"></div>
+                <div class="p-body"></div>
+              </div>
+              <span>Standard Dark</span>
+            </div>
+            <div class="theme-card" data-theme="eye-protector">
+              <div class="theme-preview eye-protector"></div>
+              <span>Eye Protector</span>
+            </div>
+            <div class="theme-card" data-theme="ocean">
+              <div class="theme-preview ocean"></div>
+              <span>Ocean Blue</span>
+            </div>
+            <div class="theme-card" data-theme="business">
+              <div class="theme-preview business"></div>
+              <span>Premium Business</span>
+            </div>
+            <!-- NEW PROFESSIONAL THEMES -->
+            <div class="theme-card" data-theme="midnight-slate">
+              <div class="theme-preview midnight-slate"></div>
+              <span>Midnight Slate</span>
+            </div>
+            <div class="theme-card" data-theme="royal-amethyst">
+              <div class="theme-preview royal-amethyst"></div>
+              <span>Royal Amethyst</span>
+            </div>
+            <div class="theme-card" data-theme="emerald-haven">
+              <div class="theme-preview emerald-haven"></div>
+              <span>Emerald Haven</span>
+            </div>
+            <!-- NEW CREATIVE THEMES -->
+            <div class="theme-card" data-theme="sunset-horizon">
+              <div class="theme-preview sunset-horizon"></div>
+              <span>Sunset Horizon</span>
+            </div>
+            <div class="theme-card" data-theme="cyberpunk">
+              <div class="theme-preview cyberpunk"></div>
+              <span>Cyberpunk Neon</span>
+            </div>
+            <div class="theme-card" data-theme="sakura">
+              <div class="theme-preview sakura"></div>
+              <span>Soft Sakura</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-content" id="animation">
+          <div class="animation-grid">
+            <div class="animation-card" data-anim="none">
+              <div class="animation-preview none-preview">
+                <div class="p-none">/</div>
+              </div>
+              <span>Disabled</span>
+            </div>
+            <div class="animation-card" data-anim="squares">
+              <div class="anim-preview squares"></div>
+              <span>Floating Squares</span>
+            </div>
+            <div class="animation-card" data-anim="nexus">
+              <div class="anim-preview nexus"></div>
+              <span>Geometric Nexus</span>
+            </div>
+            <div class="animation-card" data-anim="circles">
+              <div class="anim-preview circles"></div>
+              <span>Animated Circles</span>
+            </div>
+            <div class="animation-card" data-anim="waves">
+              <div class="anim-preview waves"></div>
+              <span>Soft Waves</span>
+            </div>
+            <div class="animation-card" data-anim="bubbles">
+              <div class="anim-preview bubbles"></div>
+              <span>Floating Bubbles</span>
+            </div>
+            <div class="animation-card" data-anim="auto">
+              <div class="anim-preview auto"></div>
+              <span style="color: #2563eb; font-weight: 800;">Dynamic Fusion (Auto)</span>
+            </div>
+            <div class="animation-card" data-anim="grid">
+              <div class="anim-preview grid"></div>
+              <span>Interactive Square Grid</span>
+            </div>
+            <div class="animation-card" data-anim="particles">
+              <div class="anim-preview particles"></div>
+              <span>Quantum Particle Flow</span>
+            </div>
+            <div class="animation-card" data-anim="liquid">
+              <div class="anim-preview liquid"></div>
+              <span>Liquid Quantum Flow</span>
+            </div>
+            <div class="animation-card" data-anim="cyber">
+              <div class="anim-preview cyber"></div>
+              <span>Cyber Intelligence</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-content" id="print">
+          <div class="print-settings-layout">
+            <div class="print-fields">
+              <div class="form-group">
+                <label>Receipt Title</label>
+                <input type="text" id="printTitle" placeholder="e.g. TAX INVOICE">
+              </div>
+              <div class="form-group">
+                <label>Header Message</label>
+                <input type="text" id="printHeader" placeholder="e.g. Official Receipt">
+              </div>
+              <div class="form-group">
+                <label>Footer Message 1</label>
+                <input type="text" id="printFooter1" placeholder="e.g. Thank You">
+              </div>
+              <div class="form-group">
+                <label>Footer Message 2</label>
+                <input type="text" id="printFooter2" placeholder="e.g. Please Visit Again">
+              </div>
+              <div class="form-group">
+                <label>Preview Format</label>
+                <select id="previewFormat">
+                  <option value="1">Classic</option>
+                  <option value="2">Premium Design</option>
+                  <option value="3">Modern Receipt</option>
+                  <option value="4">Compact Bill</option>
+                  <option value="5">Detailed Service</option>
+                </select>
+              </div>
+
+              <!-- RECEIPT DETAILING (NEW) -->
+              <div class="print-detailing-section">
+                <div class="detailing-header">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                    <line x1="16" y1="13" x2="8" y2="13" />
+                    <line x1="16" y1="17" x2="8" y2="17" />
+                    <polyline points="10 9 9 9 8 9" />
+                  </svg>
+                  <span>Receipt Detailing (Advanced)</span>
+                </div>
+
+                <div class="form-group detailing-full">
+                  <label>GST / Tax Number</label>
+                  <input type="text" id="taxId" placeholder="e.g. 22AAAAA0000A1Z5">
+                </div>
+
+                <div class="form-group detailing-full">
+                  <label>Terms & Conditions (Max 3 lines)</label>
+                  <textarea id="receiptTerms"
+                    placeholder="1. No Refund&#10;2. Goods once sold won't be taken back"></textarea>
+                </div>
+
+                <div class="detailing-controls">
+                  <label class="switch-label">
+                    <input type="checkbox" id="showTax">
+                    <span>Show Tax (Calculated)</span>
+                  </label>
+
+                  <div class="range-group">
+                    <div class="range-header">
+                      <label>Logo Scale</label>
+                      <span id="logoScaleVal">100%</span>
+                    </div>
+                    <input type="range" id="logoScale" min="50" max="150" value="100">
+                  </div>
+                </div>
+              </div>
+
+              <div class="toggle-group">
+                <label class="switch-label">
+                  <input type="checkbox" id="showContact" checked>
+                  <span>Show Contact</span>
+                </label>
+                <label class="switch-label">
+                  <input type="checkbox" id="showAddress" checked>
+                  <span>Show Address</span>
+                </label>
+              </div>
+              <button class="btn-save" id="savePrintSettings">Save Settings</button>
+            </div>
+
+            <div class="print-preview-column">
+              <label class="preview-label">Live Receipt Preview</label>
+              <div class="receipt-paper" id="liveReceiptPreview">
+                <!-- Preview injected via JS -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="tab-content" id="reset">
+          <div class="reset-section">
+            <h3>Danger Zone</h3>
+            <p>Resetting the software will delete all customer data, transaction history, and settings. This action
+              cannot be undone.</p>
+            <button class="btn-danger" id="resetSoftware">Full Software Reset</button>
+          </div>
+
+          <div class="separator-line"></div>
+
+          <div class="data-management-section">
+            <h3>Data Backups</h3>
+            <p>Download a copy of your data for safety or import a previous backup to restore your system.</p>
+            <div class="backup-actions">
+              <button class="btn-backup export" id="exportBackup">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
+                </svg>
+                Export Data
+              </button>
+              <button class="btn-backup import" id="importBackup">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" />
+                </svg>
+                Restore Backup
+              </button>
+              <input type="file" id="importFile" accept=".json" style="display: none;">
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-content" id="about">
+          <div class="about-section">
+            <div class="about-logo">JC</div>
+            <h2>Joshi Choice Center</h2>
+            <p id="currentAppVersion">Version 1.0.0</p>
+            <p>© 2026 Joshi Choice Center. All rights reserved.</p>
+            <button class="btn-secondary" id="checkUpdates">Check for Updates</button>
+            <div id="updateStatus"></div>
+          </div>
+        </div>
+
+        <div class="tab-content" id="language">
+          <div class="language-card">
+            <h3 data-i18n="language-settings">Language Settings</h3>
+            <p data-i18n="select-language">Select Software Language</p>
+
+            <div class="language-options">
+              <label class="lang-option">
+                <input type="radio" name="appLang" value="en">
+                <span data-i18n="english">English</span>
+              </label>
+              <label class="lang-option">
+                <input type="radio" name="appLang" value="hi">
+                <span data-i18n="hindi">Hindi (हिंदी)</span>
+              </label>
+            </div>
+
+            <button class="btn-save-lang" id="saveLanguage">Save Language Preference</button>
+          </div>
+        </div>
+
+        <!-- NEW SHORTCUTS TAB -->
+        <div class="tab-content" id="shortcuts">
+          <div class="shortcuts-header-container">
+            <h3>⌨️ Custom Keyboard Shortcuts</h3>
+            <p>Record your own shortcuts for faster navigation. Press <b>Escape</b> to clear.</p>
+          </div>
+
+          <div class="shortcuts-card-grid">
+            <div class="shortcut-item-card">
+              <label>Dashboard</label>
+              <div class="shortcut-input-group">
+                <input type="text" readonly data-action="dashboard" class="shortcut-recording-input"
+                  placeholder="Record...">
+                <div class="current-key-display">Alt + D</div>
+              </div>
+            </div>
+            <div class="shortcut-item-card">
+              <label>New Customer</label>
+              <div class="shortcut-input-group">
+                <input type="text" readonly data-action="new-customer" class="shortcut-recording-input"
+                  placeholder="Record...">
+                <div class="current-key-display">Alt + N</div>
+              </div>
+            </div>
+            <div class="shortcut-item-card">
+              <label>Directory</label>
+              <div class="shortcut-input-group">
+                <input type="text" readonly data-action="customer-directory" class="shortcut-recording-input"
+                  placeholder="Record...">
+                <div class="current-key-display">Alt + C</div>
+              </div>
+            </div>
+            <div class="shortcut-item-card">
+              <label>Reports</label>
+              <div class="shortcut-input-group">
+                <input type="text" readonly data-action="reports" class="shortcut-recording-input"
+                  placeholder="Record...">
+                <div class="current-key-display">Alt + R</div>
+              </div>
+            </div>
+            <div class="shortcut-item-card">
+              <label>Expenses</label>
+              <div class="shortcut-input-group">
+                <input type="text" readonly data-action="expenses" class="shortcut-recording-input"
+                  placeholder="Record...">
+                <div class="current-key-display">Alt + E</div>
+              </div>
+            </div>
+            <div class="shortcut-item-card">
+              <label>Settings</label>
+              <div class="shortcut-input-group">
+                <input type="text" readonly data-action="settings" class="shortcut-recording-input"
+                  placeholder="Record...">
+                <div class="current-key-display">Alt + S</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="shortcuts-actions-footer">
+            <button class="btn-save" id="saveShortcuts">Save Shortcuts</button>
+            <button class="btn-primary" id="resetShortcuts">Reset Defaults</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESET MODAL -->
+    <div id="resetModal" class="reset-overlay">
+      <div class="reset-modal-card">
+        <div class="reset-icon">⚠️</div>
+        <h3>Are you absolutely sure?</h3>
+        <p>This action will permanently delete all customer records, transaction history, and custom settings. <b>This
+            cannot be undone.</b></p>
+
+        <div class="reset-confirm-box">
+          <label for="resetComment">Type "CONFIRM" to proceed</label>
+          <textarea id="resetComment" placeholder="Type CONFIRM here..."></textarea>
+        </div>
+
+        <div class="reset-modal-actions">
+          <button class="btn-cancel" id="cancelReset">No, Keep Data</button>
+          <button class="btn-confirm-reset" id="confirmReset" disabled>Yes, Wipe Everything</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROFESSIONAL UPDATE MODAL -->
+    <div id="updateModal" class="update-overlay">
+      <div class="update-card">
+        <div class="update-header">
+          <div class="update-icon-box">
+            <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" />
+            </svg>
+            <div class="pulse-ring"></div>
+          </div>
+          <div class="update-title-group">
+            <h3>Software Update Available</h3>
+            <p class="version-badge" id="newVersionBadge">Version 1.1.0 Ready</p>
+          </div>
+        </div>
+
+        <div class="update-body">
+          <div class="changelog-box">
+            <h4>What's New in this Version:</h4>
+            <ul>
+              <li>🚀 <b>Performance Boost:</b> 2x faster report generation and data loading.</li>
+              <li>📊 <b>Integrated Charts:</b> New visual business analytics on Dashboard.</li>
+              <li>🛡️ <b>Better Security:</b> Enhanced data encryption for customer records.</li>
+              <li>✨ <b>UI Polish:</b> Smoother animations and refined dark mode support.</li>
+            </ul>
+          </div>
+
+          <div id="updateProgressContainer" class="update-progress-wrap" style="display: none;">
+            <div class="update-status-row">
+              <span id="updateStepText">Initializing Download...</span>
+              <span id="updatePercentText">0%</span>
+            </div>
+            <div class="pro-progress-bar">
+              <div id="updateProgressBar" class="pro-progress-fill"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="update-footer" id="updateActionButtons">
+          <button class="btn-later" id="btnUpdateLater">Maybe Later</button>
+          <button class="btn-update-now" id="btnUpdateNow">Update Now</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- WIPING OVERLAY -->
+    <div id="wipingOverlay" class="wiping-screen">
+      <div class="wiping-content">
+        <div class="wiping-loader">
+          <div class="loader">
+            <div>
+              <ul>
+                <li>
+                  <svg fill="currentColor" viewBox="0 0 90 120">
+                    <path
+                      d="M90,0 L90,120 L11,120 C4.92486775,120 0,115.075132 0,109 L0,11 C0,4.92486775 4.92486775,0 11,0 L90,0 Z M71.5,81 L18.5,81 C17.1192881,81 16,82.1192881 16,83.5 C16,84.8254834 17.0315359,85.9100387 18.3356243,85.9946823 L18.5,86 L71.5,86 C72.8807119,86 74,84.8807119 74,83.5 C74,82.1745166 72.9684641,81.0899613 71.6643757,81.0053177 L71.5,81 Z M71.5,57 L18.5,57 C17.1192881,57 16,58.1192881 16,59.5 C16,60.8254834 17.0315359,61.9100387 18.3356243,61.9946823 L18.5,62 L71.5,62 C72.8807119,62 74,60.8807119 74,59.5 C74,58.1192881 72.8807119,57 71.5,57 Z M71.5,33 L18.5,33 C17.1192881,33 16,34.1192881 16,35.5 C16,36.8254834 17.0315359,37.9100387 18.3356243,37.9946823 L18.5,38 L71.5,38 C72.8807119,38 74,36.8807119 74,35.5 C74,34.1192881 72.8807119,33 71.5,33 Z">
+                    </path>
+                  </svg>
+                </li>
+                <li>
+                  <svg fill="currentColor" viewBox="0 0 90 120">
+                    <path
+                      d="M90,0 L90,120 L11,120 C4.92486775,120 0,115.075132 0,109 L0,11 C0,4.92486775 4.92486775,0 11,0 L90,0 Z M71.5,81 L18.5,81 C17.1192881,81 16,82.1192881 16,83.5 C16,84.8254834 17.0315359,85.9100387 18.3356243,85.9946823 L18.5,86 L71.5,86 C72.8807119,86 74,84.8807119 74,83.5 C74,82.1745166 72.9684641,81.0899613 71.6643757,81.0053177 L71.5,81 Z M71.5,57 L18.5,57 C17.1192881,57 16,58.1192881 16,59.5 C16,60.8254834 17.0315359,61.9100387 18.3356243,61.9946823 L18.5,62 L71.5,62 C72.8807119,62 74,60.8807119 74,59.5 C74,58.1192881 72.8807119,57 71.5,57 Z M71.5,33 L18.5,33 C17.1192881,33 16,34.1192881 16,35.5 C16,36.8254834 17.0315359,37.9100387 18.3356243,37.9946823 L18.5,38 L71.5,38 C72.8807119,38 74,36.8807119 74,35.5 C74,34.1192881 72.8807119,33 71.5,33 Z">
+                    </path>
+                  </svg>
+                </li>
+                <li>
+                  <svg fill="currentColor" viewBox="0 0 90 120">
+                    <path
+                      d="M90,0 L90,120 L11,120 C4.92486775,120 0,115.075132 0,109 L0,11 C0,4.92486775 4.92486775,0 11,0 L90,0 Z M71.5,81 L18.5,81 C17.1192881,81 16,82.1192881 16,83.5 C16,84.8254834 17.0315359,85.9100387 18.3356243,85.9946823 L18.5,86 L71.5,86 C72.8807119,86 74,84.8807119 74,83.5 C74,82.1745166 72.9684641,81.0899613 71.6643757,81.0053177 L71.5,81 Z M71.5,57 L18.5,57 C17.1192881,57 16,58.1192881 16,59.5 C16,60.8254834 17.0315359,61.9100387 18.3356243,61.9946823 L18.5,62 L71.5,62 C72.8807119,62 74,60.8807119 74,59.5 C74,58.1192881 72.8807119,57 71.5,57 Z M71.5,33 L18.5,33 C17.1192881,33 16,34.1192881 16,35.5 C16,36.8254834 17.0315359,37.9100387 18.3356243,37.9946823 L18.5,38 L71.5,38 C72.8807119,38 74,36.8807119 74,35.5 C74,34.1192881 72.8807119,33 71.5,33 Z">
+                    </path>
+                  </svg>
+                </li>
+                <li>
+                  <svg fill="currentColor" viewBox="0 0 90 120">
+                    <path
+                      d="M90,0 L90,120 L11,120 C4.92486775,120 0,115.075132 0,109 L0,11 C0,4.92486775 4.92486775,0 11,0 L90,0 Z M71.5,81 L18.5,81 C17.1192881,81 16,82.1192881 16,83.5 C16,84.8254834 17.0315359,85.9100387 18.3356243,85.9946823 L18.5,86 L71.5,86 C72.8807119,86 74,84.8807119 74,83.5 C74,82.1745166 72.9684641,81.0899613 71.6643757,81.0053177 L71.5,81 Z M71.5,57 L18.5,57 C17.1192881,57 16,58.1192881 16,59.5 C16,60.8254834 17.0315359,61.9100387 18.3356243,61.9946823 L18.5,62 L71.5,62 C72.8807119,62 74,60.8807119 74,59.5 C74,58.1192881 72.8807119,57 71.5,57 Z M71.5,33 L18.5,33 C17.1192881,33 16,34.1192881 16,35.5 C16,36.8254834 17.0315359,37.9100387 18.3356243,37.9946823 L18.5,38 L71.5,38 C72.8807119,38 74,36.8807119 74,35.5 C74,34.1192881 72.8807119,33 71.5,33 Z">
+                    </path>
+                  </svg>
+                </li>
+                <li>
+                  <svg fill="currentColor" viewBox="0 0 90 120">
+                    <path
+                      d="M90,0 L90,120 L11,120 C4.92486775,120 0,115.075132 0,109 L0,11 C0,4.92486775 4.92486775,0 11,0 L90,0 Z M71.5,81 L18.5,81 C17.1192881,81 16,82.1192881 16,83.5 C16,84.8254834 17.0315359,85.9100387 18.3356243,85.9946823 L18.5,86 L71.5,86 C72.8807119,86 74,84.8807119 74,83.5 C74,82.1745166 72.9684641,81.0899613 71.6643757,81.0053177 L71.5,81 Z M71.5,57 L18.5,57 C17.1192881,57 16,58.1192881 16,59.5 C16,60.8254834 17.0315359,61.9100387 18.3356243,61.9946823 L18.5,62 L71.5,62 C72.8807119,62 74,60.8807119 74,59.5 C74,58.1192881 72.8807119,57 71.5,57 Z M71.5,33 L18.5,33 C17.1192881,33 16,34.1192881 16,35.5 C16,36.8254834 17.0315359,37.9100387 18.3356243,37.9946823 L18.5,38 L71.5,38 C72.8807119,38 74,36.8807119 74,35.5 C74,34.1192881 72.8807119,33 71.5,33 Z">
+                    </path>
+                  </svg>
+                </li>
+                <li>
+                  <svg fill="currentColor" viewBox="0 0 90 120">
+                    <path
+                      d="M90,0 L90,120 L11,120 C4.92486775,120 0,115.075132 0,109 L0,11 C0,4.92486775 4.92486775,0 11,0 L90,0 Z M71.5,81 L18.5,81 C17.1192881,81 16,82.1192881 16,83.5 C16,84.8254834 17.0315359,85.9100387 18.3356243,85.9946823 L18.5,86 L71.5,86 C72.8807119,86 74,84.8807119 74,83.5 C74,82.1745166 72.9684641,81.0899613 71.6643757,81.0053177 L71.5,81 Z M71.5,57 L18.5,57 C17.1192881,57 16,58.1192881 16,59.5 C16,60.8254834 17.0315359,61.9100387 18.3356243,61.9946823 L18.5,62 L71.5,62 C72.8807119,62 74,60.8807119 74,59.5 C74,58.1192881 72.8807119,57 71.5,57 Z M71.5,33 L18.5,33 C17.1192881,33 16,34.1192881 16,35.5 C16,36.8254834 17.0315359,37.9100387 18.3356243,37.9946823 L18.5,38 L71.5,38 C72.8807119,38 74,36.8807119 74,35.5 C74,34.1192881 72.8807119,33 71.5,33 Z">
+                    </path>
+                  </svg>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <h2 id="wipingStatus">Initializing Wipe...</h2>
+          <div class="wiping-progress-container">
+            <div class="wiping-progress-bar" id="wipingProgress"></div>
+          </div>
+          <p id="wipingPercentage">0%</p>
+        </div>
+      </div>
+
+      <!-- MODAL ROOT -->
+      <div id="modalRoot"></div>
+  </main>
+
+  <!-- JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="../public/assets/features/notification/toast.js"></script>
+  <script src="../public/assets/sidebar-pages/settings/settings.js"></script>
+  <script src="../public/assets/features/sidebar/sidebar.js"></script>
+  <script src="../public/js/assistant-speaker.js"></script>
+  <script src="../public/js/theme-toggle.js"></script>
+  <script src="../public/assets/features/notification/notification.js"></script>
+  <script src="../public/assets/sidebar-pages/global/global-background-animation.js"></script>
+  <div id="scrollArrow">▲</div>
+  <script src="../public/assets/features/scroll-toggle.js"></script>
+
+  <!-- TOAST CONTAINER -->
+  <div id="toastBox"></div>
+
+  <script src="../public/js/shortcuts.js"></script>
+</body>
+
+</html>

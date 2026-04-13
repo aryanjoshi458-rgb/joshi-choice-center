@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>New Customer | Joshi Choice Center</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../public/css/style.css">
+    <link rel="stylesheet" href="../public/css/loader.css">
+    <script src="../public/js/loader.js"></script>
+    <script src="../public/js/translations.js"></script>
+    <script src="../public/js/language-manager.js"></script>
+
+    <link rel="stylesheet" href="../public/css/new-customer-buttons.css">
+    <link rel="stylesheet" href="../public/css/modals-shared.css">
+
+    <!-- UPER ME JO TOGGLES LAGA HAI USKA CSS LINK HAI -->
+    <link rel="stylesheet" href="../public/assets/features/sidebar/sidebar.css">
+    <link rel="stylesheet" href="../public/css/theme-toggle.css">
+    <link rel="stylesheet" href="../public/css/assistant-speaker.css">
+    <link rel="stylesheet" href="../public/assets/features/notification/notification.css">
+
+    <!-- UPER/NICHE JANE WALA SLIDER BUTTON HAI SMOOTH SLIDE -->
+    <link rel="stylesheet" href="../public/assets/features/scroll-toggle.css">
+
+    <!-- FEATURES -->
+    <link rel="stylesheet" href="../public/assets/features/modern-datepicker/modern-datepicker.css">
+    <link rel="stylesheet" href="../public/assets/sidebar-pages/global/global-background-animation.css">
+    <link rel="stylesheet" href="../public/assets/features/notification/toast.css">
+    <script src="../public/js/auth.js"></script>
+    <script>Auth.protectPage();</script>
+</head>
+
+<body>
+    <!-- GLOBAL BACKGROUND KA CODE HAI -->
+    <div class="animated-bg"></div>
+
+    <!-- Sidebar -->
+    <div id="proSidebar">
+        <div class="sidebar-header">
+            <div class="logo" style="width: 30px; height: 30px; font-size: 0.8rem; margin: 0;">JC</div>
+            <span data-i18n="app-title">Joshi Choice Center</span>
+        </div>
+
+        <div class="sidebar-menu">
+            <a href="dashboard.html">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="sidebar-icon">
+                    <rect width="7" height="9" x="3" y="3" rx="1" />
+                    <rect width="7" height="5" x="14" y="3" rx="1" />
+                    <rect width="7" height="9" x="14" y="12" rx="1" />
+                    <rect width="7" height="5" x="3" y="16" rx="1" />
+                </svg>
+                <span data-i18n="sidebar-dashboard">Dashboard</span>
+            </a>
+            <a href="#" class="active">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="sidebar-icon">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <line x1="19" y1="8" x2="19" y2="14" />
+                    <line x1="16" y1="11" x2="22" y2="11" />
+                </svg>
+                <span data-i18n="sidebar-new-customer">New Customer</span>
+            </a>
+            <a href="customer-directory.html">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                </svg>
+                <span data-i18n="sidebar-customer-directory">Customer Directory</span>
+            </a>
+            <a href="notifications.html">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="sidebar-icon">
+                    <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+                    <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+                </svg>
+                <span data-i18n="sidebar-notification">Notification</span>
+            </a>
+            <a href="print-receipt.html">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="sidebar-icon">
+                    <polyline points="6 9 6 2 18 2 18 9" />
+                    <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+                    <rect width="12" height="8" x="6" y="14" />
+                </svg>
+                <span data-i18n="sidebar-print-receipt">Print Receipt</span>
+            </a>
+            <a href="pending-payments.html">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="sidebar-icon">
+                    <circle cx="12" cy="12" r="10" />
+                    <polyline points="12 6 12 12 16 14" />
+                </svg>
+                <span data-i18n="sidebar-pending-payments">Pending Payments</span>
+            </a>
+            <a href="reports.html">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="sidebar-icon">
+                    <line x1="18" y1="20" x2="18" y2="10" />
+                    <line x1="12" y1="20" x2="12" y2="4" />
+                    <line x1="6" y1="20" x2="6" y2="14" />
+                </svg>
+                <span data-i18n="sidebar-reports">Reports</span>
+            </a>
+            <a href="expenses.html">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="sidebar-icon">
+                    <path d="M21 12V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-1" />
+                    <path d="M16 12h5" />
+                </svg>
+                <span>Expenses</span>
+            </a>
+            <a href="rate-list.html">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="sidebar-icon">
+                    <path d="M6 3h12" />
+                    <path d="M6 8h12" />
+                    <path d="m6 13 8.5 8" />
+                    <path d="M6 13h3" />
+                    <path d="M9 13c6.667 0 6.667-10 0-10" />
+                </svg>
+                <span data-i18n="sidebar-service-rates">Service Rates</span>
+            </a>
+            <a href="settings.html">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="sidebar-icon">
+                    <path
+                        d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
+                    <circle cx="12" cy="12" r="3" />
+                </svg>
+                <span data-i18n="sidebar-settings">Settings</span>
+            </a>
+            <a href="#" onclick="Auth.logout()"
+                style="color: #f87171; border-top: 1px solid rgba(248, 113, 113, 0.1); margin-top: 10px; padding-top: 15px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="sidebar-icon">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                    <polyline points="16 17 21 12 16 7" />
+                    <line x1="21" y1="12" x2="9" y2="12" />
+                </svg>
+                <span>Logout</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Toggle Button (Speak ke niche) -->
+    <button id="sidebarToggle">☰</button>
+
+    <!-- VOICE + THEME CONTROLS -->
+    <div class="assistant-speaker" id="assistantSpeaker">
+        <svg class="icon" viewBox="0 0 24 24">
+            <path d="M3 10v4h4l5 5V5L7 10H3z" />
+        </svg>
+        <span>Speak</span>
+    </div>
+
+    <div class="slider light" id="themeToggle">
+        <div class="slider-toggle light"></div>
+        <div class="slider-accent light"></div>
+    </div>
+
+    <!-- MAIN -->
+    <main class="main">
+
+        <!-- CENTER HEADER -->
+        <header class="brand">
+            <div class="brand-box">
+                <div class="logo">JC</div>
+                <h1 class="app-title" data-i18n="app-title">Joshi Choice Center</h1>
+            </div>
+        </header>
+
+        <div class="content">
+            <!-- UNIFIED TRANSACTION ENTRY -->
+            <section class="card unified-card premium-shadow">
+                <div class="card-header glass-header">
+                    <div class="title-with-icon">
+                        <svg class="icon-m" viewBox="0 0 24 24">
+                            <path
+                                d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" />
+                        </svg>
+                        <h2 data-i18n="unified-entry-title">Unified Transaction Entry</h2>
+                    </div>
+                    <div class="header-badges">
+                        <span class="badge premium-badge" id="nextTxnIdBadge">ID: <span
+                                id="transactionIdText">...</span></span>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3 class="section-title"><svg class="icon-s" viewBox="0 0 24 24">
+                            <path
+                                d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                        </svg> Customer Information</h3>
+                    <div class="form-grid">
+                        <div class="floating-group">
+                            <input id="custMobile" type="text" placeholder="10 digit mobile" maxlength="10">
+                            <label>Mobile Number <span class="required-star">*</span></label>
+                        </div>
+                        <div class="floating-group">
+                            <input id="custName" type="text" placeholder="Enter name">
+                            <label>Customer Name <span id="nameReqStar" style="display:none;"
+                                    class="required-star">*</span></label>
+                        </div>
+                        <div class="floating-group">
+                            <input id="custAadhar" type="text" placeholder="XXXX-XXXX-XXXX" maxlength="14">
+                            <label>Aadhar Card Number <span id="aadharReqStar" style="display:none;"
+                                    class="required-star">*</span></label>
+                        </div>
+                        <div class="floating-group">
+                            <input id="custAddress" type="text" placeholder="Address">
+                            <label>Address <span id="addrReqStar" style="display:none;"
+                                    class="required-star">*</span></label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-divider"></div>
+
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <svg class="icon-s" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M6 3h12M6 8h12m-6 5 8.5 8M6 13h3M9 13c6.667 0 6.667-10 0-10" />
+                        </svg>
+                        Transaction Details
+                    </h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Transaction Date</label>
+                            <input id="txnDate" type="date">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Service Type <span class="required-star">*</span></label>
+                            <select id="txnService">
+                                <option value="">-- Select --</option>
+                                <option>Banking & Financial Services</option>
+                                <option>Mobile & Utility Services</option>
+                                <option>Printing & Document Services</option>
+                                <option disabled>Online Form & Government Services</option>
+                                <option disabled>Education & Exam Services</option>
+                                <option disabled>Others</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Service Blocks -->
+                    <div id="dynamicServiceBlocks" class="dynamic-container">
+                        <div id="bankBlock" class="form-group" style="display:none;">
+                            <label>Select Bank</label>
+                            <select id="bankSelect">
+                                <option>-- Select Bank --</option>
+                                <option>Axis Bank</option>
+                                <option>Airtel Payments Bank</option>
+                                <option>Bank of Baroda</option>
+                                <option>Bank of India</option>
+                                <option>Bank of Maharashtra</option>
+                                <option>Canara Bank</option>
+                                <option>Central Bank of India</option>
+                                <option>Chhattisgarh Rajya Gramin Bank</option>
+                                <option>HDFC Bank</option>
+                                <option>India Post Payments Bank</option>
+                                <option>Indian Bank</option>
+                                <option>Indian Overseas Bank</option>
+                                <option>Punjab National Bank</option>
+                                <option>State Bank of India</option>
+                                <option>UCO Bank</option>
+                                <option>Union Bank</option>
+                            </select>
+                        </div>
+
+                        <div id="bankServiceBlock" class="form-group" style="display:none;">
+                            <label>Bank Service</label>
+                            <select id="bankService">
+                                <option>-- Select Service --</option>
+                                <option>Cash Deposit</option>
+                                <option>Cash Withdrawal</option>
+                                <option>Balance Enquiry</option>
+                                <option>Mini Statement</option>
+                                <option>Account Opening</option>
+                                <option>Fund Transfer</option>
+                            </select>
+                        </div>
+
+                        <div id="printServiceBlock" class="form-group" style="display:none;">
+                            <label>Printing Service</label>
+                            <select id="printService">
+                                <option>-- Select --</option>
+                                <option>Black & White Photocopy</option>
+                                <option>PDF Print Out</option>
+                                <option>Document Lamination</option>
+                            </select>
+                        </div>
+
+                        <div id="serviceNameBlock" class="form-group" style="display:none;">
+                            <label>Service Name</label>
+                            <select id="serviceName">
+                                <option>-- Select --</option>
+                                <option>Mobile Recharge</option>
+                                <option>Google Play Recharge</option>
+                                <option>Money Transfer (PhonePe/UPI)</option>
+                                <option>Electricity Bill Payment</option>
+                            </select>
+                        </div>
+
+                        <div id="operatorBlock" class="form-group" style="display:none;">
+                            <label>Operator Name</label>
+                            <select id="operatorName">
+                                <option>-- Select --</option>
+                                <option>Airtel</option>
+                                <option>Jio</option>
+                                <option>VI (Vodafone - Idea)</option>
+                                <option>BSNL</option>
+                            </select>
+                        </div>
+
+                        <div id="electricityBlock" class="form-group" style="display:none;">
+                            <label>Electricity Provider</label>
+                            <select id="electricitySelect">
+                                <option>-- Select --</option>
+                                <option>State Electricity Board</option>
+                                <option>Private Electricity Company</option>
+                            </select>
+                        </div>
+
+                        <div id="transferBlock" class="form-grid mt-10"
+                            style="display:none; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <div class="form-group">
+                                <label>Target Number / UPI ID</label>
+                                <input id="targetId" type="text" placeholder="e.g. 9876543210@ybl">
+                            </div>
+                            <div class="form-group">
+                                <label>Receiver Name</label>
+                                <input id="receiverName" type="text" placeholder="Optional">
+                            </div>
+                        </div>
+
+                        <div id="externalRefBlock" class="form-group mt-10" style="display:none;">
+                            <label>External Ref No. / Txn ID (PhonePe/GPay)</label>
+                            <input id="externalRefNo" type="text" placeholder="Enter Reference Number">
+                        </div>
+                    </div>
+
+                    <div id="amountBlock" class="form-grid mt-20" style="display:none;">
+                        <div class="form-group" id="amountGroup">
+                            <label>Amount (₹)</label>
+                            <input id="amount" type="number" placeholder="0.00">
+                        </div>
+                        <div class="form-group" id="chargeGroup">
+                            <label>Charge (₹)</label>
+                            <input id="charge" type="number" placeholder="0.00">
+                        </div>
+                        <div class="form-group" id="totalGroup">
+                            <label>Total Amount (₹)</label>
+                            <input id="totalAmount" type="number" placeholder="0.00" readonly class="readonly-input">
+                        </div>
+                        <div class="form-group" id="paymentModeGroup">
+                            <label>Payment Mode</label>
+                            <select id="paymentMode">
+                                <option value="Cash">Cash</option>
+                                <option value="UPI">UPI</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="statusGroup">
+                            <label>Status</label>
+                            <select id="status">
+                                <option value="Success">Success</option>
+                                <option value="Pending">Pending</option>
+                                <option value="Failed">Failed</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-footer premium-footer">
+                    <button id="saveTransaction" class="btn-primary">
+                        <svg class="icon-s" viewBox="0 0 24 24">
+                            <path
+                                d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z" />
+                        </svg> Save
+                    </button>
+                    <button id="saveAndPrint" class="btn-success">
+                        <svg class="icon-s" viewBox="0 0 24 24">
+                            <path
+                                d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z" />
+                        </svg> Save & Print
+                    </button>
+                    <button id="resetForm" class="btn-secondary">
+                        <svg class="icon-s" viewBox="0 0 24 24">
+                            <path
+                                d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z" />
+                        </svg> Reset
+                    </button>
+                </div>
+
+                <!-- Hidden Print Frame -->
+                <iframe id="printFrame" style="display:none;"></iframe>
+            </section>
+
+            <!-- REPORT -->
+            <div class="report-card">
+                <h3 style="display: flex; align-items: center; gap: 12px;">
+                    <svg class="title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                        stroke-linecap="round" stroke-linejoin="round"
+                        style="width:22px; height:22px; color: var(--primary-color);">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                    Today's Report
+                </h3>
+
+                <table id="reportTable">
+                    <thead>
+                        <tr>
+                            <th>SN</th>
+                            <th>Date</th>
+                            <th>Customer Name</th>
+                            <th>Mobile Number</th>
+                            <th>Aadhar Number</th>
+                            <th>Address</th> <!-- ✅ YE NEW -->
+                            <th>Service Type</th>
+                            <th>Amount</th>
+                            <th>Charge</th>
+                            <th>Total Amount</th>
+                            <th>Mode</th>
+                            <th>Status</th>
+                            <th>Transaction ID</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="reportTableBody">
+                        <tr>
+                            <td>1</td>
+                            <td>12/21/2025</td>
+                            <td>Ramesh</td>
+                            <td>9876543210</td>
+                            <td>1234 5678 9012</td>
+                            <td>Mobile Recharge</td>
+                            <td>100</td>
+                            <td>2</td>
+                            <td>102</td>
+                            <td class="status-success">Success</td>
+                            <td>TXN102938</td>
+                            <td>
+                                <button class="delete-btn">Delete</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </main>
+    </div>
+
+    <!-- JS LINK -->
+
+    <!-- Modern Alert -->
+
+    <script src="../public/js/delete-transaction.js"></script>
+    <!-- Transaction / Customer logic -->
+    <script src="../public/js/script.js"></script>
+    <script src="../public/js/calculation.js"></script>
+    <script src="../public/js/assistant-speaker.js"></script>
+    <script src="../public/js/theme-toggle.js"></script>
+    <script src="../public/js/today-report.js"></script>
+    <script src="../public/js/script-2.js"></script>
+    <script src="../public/js/pagination.js"></script>
+
+    <div id="scrollArrow">▲</div>
+    <script src="../public/assets/features/scroll-toggle.js"></script>
+    <script src="../public/assets/features/sidebar/sidebar.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="../public/assets/features/modern-datepicker/modern-datepicker.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="../public/assets/features/notification/toast.js"></script>
+    <script src="../public/assets/sidebar-pages/global/global-background-animation.js"></script>
+    <script src="../public/assets/features/notification/notification.js"></script>
+
+    <!-- Professional Toast Success Popup styles -->
+    <div id="toastBox"></div>
+    <!-- EDIT TRANSACTION MODAL (SYNCED WITH REPORTS) -->
+    <div id="editModal" class="modal">
+        <div class="modal-content edit-modal-content">
+            <div class="modal-header">
+                <h2>
+                    <svg class="title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                    </svg>
+                    Edit Transaction
+                </h2>
+                <span class="close-modal" onclick="closeEditModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="editTransactionForm" class="edit-form-grid">
+                    <input type="hidden" id="editTxnId">
+
+                    <div class="form-group">
+                        <label>Date</label>
+                        <input type="date" id="editDate" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Customer Name</label>
+                        <input type="text" id="editName" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Mobile Number</label>
+                        <input type="text" id="editMobile">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Aadhar Number</label>
+                        <input type="text" id="editAadhar">
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label>Address</label>
+                        <input type="text" id="editAddress">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Service Type</label>
+                        <input type="text" id="editService" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Amount (₹)</label>
+                        <input type="number" id="editAmount" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Charge (₹)</label>
+                        <input type="number" id="editCharge" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Payment Mode</label>
+                        <select id="editPaymentMode" required>
+                            <option value="Cash">Cash</option>
+                            <option value="UPI">UPI</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select id="editStatus" required>
+                            <option value="Success">Success</option>
+                            <option value="Pending">Pending</option>
+                            <option value="Failed">Failed</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Target / UPI ID</label>
+                        <input type="text" id="editTargetId">
+                    </div>
+
+                    <div class="form-group">
+                        <label>External Ref No</label>
+                        <input type="text" id="editExternalRef">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closeEditModal()">Cancel</button>
+                <button class="btn-print-final" onclick="saveTransactionEdit()">Update Data</button>
+            </div>
+        </div>
+    </div>
+    <script src="../public/js/shortcuts.js"></script>
+</body>
+
+
+</html>
