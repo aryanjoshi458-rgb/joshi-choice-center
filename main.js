@@ -2,15 +2,17 @@ const { app, BrowserWindow, ipcMain, shell } = require('electron');
 const path = require('path');
 const https = require('https');
 const fs = require('fs');
+const { exec } = require('child_process');
 
 function createWindow() {
   const win = new BrowserWindow({
     width: 1200,
     height: 800,
     webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false,
-      sandbox: false
+      preload: path.join(__dirname, 'preload.js'),
+      contextIsolation: true,
+      nodeIntegration: false,
+      sandbox: true
     }
   });
 
@@ -34,7 +36,7 @@ app.on('window-all-closed', () => {
 const REPO = 'aryanjoshi458-rgb/joshi-choice-center';
 
 ipcMain.handle('check-for-update', async () => {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const options = {
       hostname: 'api.github.com',
       path: `/repos/${REPO}/releases/latest`,
@@ -42,36 +44,41 @@ ipcMain.handle('check-for-update', async () => {
     };
 
     https.get(options, (res) => {
+      if (res.statusCode === 403) {
+        resolve({ error: "GitHub rate limit exceeded. Try again later." });
+        return;
+      }
+      
       let data = '';
       res.on('data', (chunk) => data += chunk);
       res.on('end', () => {
         try {
           const release = JSON.parse(data);
-          if (release.message === "Not Found") {
+          if (!release || release.message === "Not Found" || !release.tag_name) {
             resolve({ error: "No releases found on GitHub." });
             return;
           }
           
-          // Get the .exe asset
-          const asset = release.assets.find(a => a.name.endsWith('.exe'));
+          const asset = release.assets ? release.assets.find(a => a.name.endsWith('.exe')) : null;
           
           resolve({
             version: release.tag_name.replace('v', ''),
-            changelog: release.body,
+            changelog: release.body || "Mini bugs fixed & performance improvements.",
             size: asset ? (asset.size / (1024 * 1024)).toFixed(2) : '0',
             downloadUrl: asset ? asset.browser_download_url : null
           });
         } catch (e) {
-          reject(e);
+          resolve({ error: "Failed to read release data." });
         }
       });
-    }).on('error', (e) => reject(e));
+    }).on('error', () => {
+      resolve({ error: "Network Error: Check your connection." });
+    });
   });
 });
 
 ipcMain.on('download-update', (event, url) => {
-  // Use a temporary path or downloads folder
-  const downloadPath = path.join(app.getPath('downloads'), 'JoshiChoiceCenter_Update.exe');
+  const downloadPath = path.join(app.getPath('downloads'), 'JCC_Update_Installer.exe');
   const file = fs.createWriteStream(downloadPath);
   
   https.get(url, (response) => {
@@ -87,13 +94,15 @@ ipcMain.on('download-update', (event, url) => {
     response.on('data', (chunk) => {
       downloadedSize += chunk.length;
       file.write(chunk);
-      
       const progress = Math.floor((downloadedSize / totalSize) * 100);
       event.reply('download-progress', progress);
     });
 
     response.on('end', () => {
       file.end();
+    });
+
+    file.on('finish', () => {
       event.reply('download-complete', downloadPath);
     });
   }).on('error', (err) => {
@@ -103,10 +112,14 @@ ipcMain.on('download-update', (event, url) => {
 });
 
 ipcMain.on('restart-app', (event, downloadPath) => {
-  if (downloadPath) {
-    shell.openPath(downloadPath).then(() => {
-      app.quit();
+  if (downloadPath && fs.existsSync(downloadPath)) {
+    exec(`"${downloadPath}"`, (err) => {
+      if (err) console.error("Execution Error:", err);
     });
+    
+    setTimeout(() => {
+      app.quit();
+    }, 800);
   } else {
     app.relaunch();
     app.exit();

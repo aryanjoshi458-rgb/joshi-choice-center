@@ -463,8 +463,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // 9. PROFESSIONAL ABOUT / UPDATE CHECK
-    const { ipcRenderer } = require('electron');
+    // 9. PROFESSIONAL ABOUT / UPDATE CHECK (PRELOAD VERSION)
     const updateBtn = document.getElementById("checkUpdates");
     const updateModal = document.getElementById("updateModal");
     const btnUpdateNow = document.getElementById("btnUpdateNow");
@@ -479,7 +478,8 @@ document.addEventListener("DOMContentLoaded", () => {
     let latestReleaseInfo = null;
 
     async function initVersion() {
-        const currentVer = await ipcRenderer.invoke('get-app-version');
+        if (!window.electronAPI) return;
+        const currentVer = await window.electronAPI.getAppVersion();
         const vDisplay = document.getElementById("currentAppVersion");
         if (vDisplay) vDisplay.innerText = `Version ${currentVer}`;
     }
@@ -497,90 +497,93 @@ document.addEventListener("DOMContentLoaded", () => {
         return false;
     }
 
-    updateBtn.addEventListener("click", async () => {
-        updateBtn.disabled = true;
-        updateBtn.innerText = "Checking...";
-        updateStatusInline.innerHTML = ""; // Clear previous
-
-        try {
-            const currentVer = await ipcRenderer.invoke('get-app-version');
-            const release = await ipcRenderer.invoke('check-for-update');
-
-            if (release.error) {
-                showNotification(release.error, "error");
-                updateBtn.disabled = false;
-                updateBtn.innerText = "Check for Updates";
+    if (updateBtn) {
+        updateBtn.addEventListener("click", async () => {
+            if (!window.electronAPI) {
+                showNotification("System bridge error. Please restart.", "error");
                 return;
             }
 
-            if (isNewerVersion(currentVer, release.version)) {
-                latestReleaseInfo = release;
-                document.getElementById("newVersionBadge").innerText = `Version ${release.version} Ready (${release.size} MB)`;
-                
-                // Set Changelog
-                const changelogUl = updateModal.querySelector(".changelog-box ul");
-                if (changelogUl && release.changelog) {
-                    const features = release.changelog.split('\n').filter(l => l.trim().length > 0);
-                    changelogUl.innerHTML = features.map(line => `<li>${line.replace(/[*#-]/g, '').trim()}</li>`).join('');
+            updateBtn.disabled = true;
+            updateBtn.innerText = "Checking...";
+            updateStatusInline.innerHTML = "";
+
+            try {
+                const currentVer = await window.electronAPI.getAppVersion();
+                const release = await window.electronAPI.checkForUpdate();
+
+                if (release.error) {
+                    showNotification(release.error, "error");
+                    updateStatusInline.innerHTML = `<span style="color: #ef4444; font-size: 0.85rem; margin-top: 8px; display: block;">${release.error}</span>`;
+                } else if (isNewerVersion(currentVer, release.version)) {
+                    latestReleaseInfo = release;
+                    document.getElementById("newVersionBadge").innerText = `Version ${release.version} Ready (${release.size} MB)`;
+                    
+                    const changelogUl = updateModal.querySelector(".changelog-box ul");
+                    if (changelogUl && release.changelog) {
+                        const features = release.changelog.split('\n').filter(l => l.trim().length > 0);
+                        changelogUl.innerHTML = features.map(line => `<li>${line.replace(/[*#-]/g, '').trim()}</li>`).join('');
+                    }
+
+                    updateModal.classList.add("active");
+                } else {
+                    updateStatusInline.innerHTML = `<span style="color: #16a34a; font-size: 0.9rem; margin-top: 10px; display: block; font-weight: 600;">Software is up to date (v${currentVer}) ✅</span>`;
                 }
-
-                updateModal.classList.add("active");
-            } else {
-                updateStatusInline.innerHTML = `<span style="color: #16a34a; font-size: 0.9rem; margin-top: 10px; display: block; font-weight: 600;">Software is up to date (v${currentVer}) ✅</span>`;
+            } catch (err) {
+                console.error(err);
+                showNotification("Failed to check for updates.", "error");
             }
-        } catch (err) {
-            console.error(err);
-            showNotification("Failed to check for updates.", "error");
-        }
 
-        updateBtn.disabled = false;
-        updateBtn.innerText = "Check for Updates";
-    });
+            updateBtn.disabled = false;
+            updateBtn.innerText = "Check for Updates";
+        });
+    }
 
-    btnUpdateLater.addEventListener("click", () => {
-        updateModal.classList.remove("active");
-    });
+    if (btnUpdateNow) {
+        btnUpdateNow.addEventListener("click", () => {
+            if (!latestReleaseInfo || !latestReleaseInfo.downloadUrl) return;
 
-    btnUpdateNow.addEventListener("click", () => {
-        if (!latestReleaseInfo || !latestReleaseInfo.downloadUrl) {
-            showNotification("No update file found.", "error");
-            return;
-        }
+            updateActionButtons.style.display = "none";
+            updateProgressContainer.style.display = "block";
+            updateStepText.innerText = "Initializing connection...";
 
-        // Hide buttons, show progress
-        updateActionButtons.style.display = "none";
-        updateProgressContainer.style.display = "block";
-        updateStepText.innerText = "Starting Download...";
+            window.electronAPI.downloadUpdate(latestReleaseInfo.downloadUrl);
+        });
+    }
 
-        ipcRenderer.send('download-update', latestReleaseInfo.downloadUrl);
-    });
+    if (btnUpdateLater) {
+        btnUpdateLater.addEventListener("click", () => {
+            updateModal.classList.remove("active");
+        });
+    }
 
-    ipcRenderer.on('download-progress', (event, progress) => {
-        gsap.to(updateProgressBar, { width: progress + "%", duration: 0.3, ease: "none" });
-        updatePercentText.innerText = progress + "%";
-        
-        if (progress < 10) updateStepText.innerText = "Establishing secure connection...";
-        else if (progress < 90) updateStepText.innerText = `Downloading assets (${latestReleaseInfo.size} MB)...`;
-        else updateStepText.innerText = "Finalizing download...";
-    });
+    // Handlers from Preload Bridge
+    if (window.electronAPI) {
+        window.electronAPI.onDownloadProgress((progress) => {
+            gsap.to(updateProgressBar, { width: progress + "%", duration: 0.3, ease: "none" });
+            updatePercentText.innerText = progress + "%";
+            
+            if (progress < 10) updateStepText.innerText = "Connecting to server...";
+            else if (progress < 90) updateStepText.innerText = `Downloading assets (${latestReleaseInfo.size} MB)...`;
+            else updateStepText.innerText = "Finishing download...";
+        });
 
-    ipcRenderer.on('download-complete', (event, path) => {
-        updateStepText.innerText = "Update Downloaded! Installing...";
-        updateStepText.style.color = "#16a34a";
-        
-        setTimeout(() => {
-            updateStepText.innerText = "System ready. Starting installer...";
+        window.electronAPI.onDownloadComplete((path) => {
+            updateStepText.innerText = "Download Successful! Starting installer...";
+            updateStepText.style.color = "#16a34a";
+            
             setTimeout(() => {
-                ipcRenderer.send('restart-app', path);
-            }, 1500);
-        }, 1000);
-    });
+                window.electronAPI.restartApp(path);
+            }, 1000);
+        });
 
-    ipcRenderer.on('download-error', (event, error) => {
-        showNotification("Download Failed: " + error, "error");
-        updateActionButtons.style.display = "flex";
-        updateProgressContainer.style.display = "none";
-    });
+        window.electronAPI.onDownloadError((error) => {
+            showNotification("Download Failed: " + error, "error");
+            updateActionButtons.style.display = "flex";
+            updateProgressContainer.style.display = "none";
+        });
+    }
+
 
 
     // 10. LANGUAGE SELECTION LOGIC (NEW)
