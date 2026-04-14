@@ -1298,6 +1298,9 @@ input[type="range"]::-webkit-slider-thumb:hover {
 .update-card {
     background: var(--card-bg, rgba(255, 255, 255, 0.95));
     width: 500px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
     border-radius: 24px;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -1364,12 +1367,45 @@ input[type="range"]::-webkit-slider-thumb:hover {
 
 .update-body {
     padding: 30px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.changelog-box {
+    max-height: 250px;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+/* Premium Scrollbar for Changelog */
+.changelog-box::-webkit-scrollbar {
+    width: 6px;
+}
+
+.changelog-box::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 10px;
+}
+
+.changelog-box::-webkit-scrollbar-thumb {
+    background: rgba(37, 99, 235, 0.3);
+    border-radius: 10px;
+    transition: all 0.3s;
+}
+
+.changelog-box::-webkit-scrollbar-thumb:hover {
+    background: rgba(37, 99, 235, 0.6);
 }
 
 .changelog-box h4 {
     color: var(--text-main);
     font-size: 14px;
     margin-bottom: 15px;
+    position: sticky;
+    top: 0;
+    background: var(--card-bg, white);
+    padding-bottom: 5px;
+    z-index: 10;
 }
 
 .changelog-box ul {
