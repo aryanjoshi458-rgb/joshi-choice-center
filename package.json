@@ -1,53 +1,46 @@
 {
   "name": "joshi-choice-center",
-  "version": "1.3.1",
+  "version": "1.3.2",
   "description": "Professional Management Software for Joshi Choice Center",
   "main": "main.js",
   "author": "Aryan Joshi",
   "license": "ISC",
   "type": "commonjs",
-
   "scripts": {
     "start": "electron .",
     "build": "electron-builder"
   },
-
   "repository": {
     "type": "git",
     "url": "https://github.com/aryanjoshi458-rgb/joshi-choice-center.git"
   },
-
   "keywords": [],
-
   "devDependencies": {
     "electron": "^40.1.0",
     "electron-builder": "^24.13.3"
   },
-
   "build": {
     "appId": "com.joshichoice.app",
     "productName": "Joshi Choice Center",
-
     "directories": {
       "output": "dist"
     },
-
     "files": [
       "**/*"
     ],
-
     "win": {
       "target": "nsis",
       "icon": "build/icon.ico"
     },
-
     "nsis": {
       "oneClick": false,
       "perMachine": false,
       "allowToChangeInstallationDirectory": true,
       "installerIcon": "build/icon.ico",
       "uninstallerIcon": "build/icon.ico",
-      "installerHeaderIcon": "build/icon.ico"
+      "installerHeaderIcon": "build/icon.ico",
+      "installerSidebar": "build/sidebar-icon.bmp",
+      "uninstallerSidebar": "build/sidebar-icon.bmp"
     }
   }
 }
