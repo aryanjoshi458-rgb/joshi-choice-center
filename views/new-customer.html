@@ -210,7 +210,7 @@
                     <div class="form-grid">
                         <div class="floating-group">
                             <input id="custMobile" type="text" placeholder="10 digit mobile" maxlength="10">
-                            <label>Mobile Number <span class="required-star">*</span></label>
+                            <label>Mobile Number <span id="mobileReqStar" class="required-star">*</span></label>
                         </div>
                         <div class="floating-group">
                             <input id="custName" type="text" placeholder="Enter name">
@@ -369,6 +369,10 @@
                         <div class="form-group" id="totalGroup">
                             <label>Total Amount (₹)</label>
                             <input id="totalAmount" type="number" placeholder="0.00" readonly class="readonly-input">
+                        </div>
+                        <div class="form-group" id="netPayableGroup" style="display:none;">
+                            <label>Cash to Customer (₹)</label>
+                            <input id="netPayable" type="number" placeholder="0.00" readonly class="readonly-input" style="background: rgba(34, 197, 94, 0.1); border-color: #22c55e; color: #22c55e; font-weight: bold;">
                         </div>
                         <div class="form-group" id="paymentModeGroup">
                             <label>Payment Mode</label>
@@ -556,6 +560,11 @@
                     <div class="form-group">
                         <label>Charge (₹)</label>
                         <input type="number" id="editCharge" required>
+                    </div>
+
+                    <div class="form-group" id="editNetPayableGroup">
+                        <label>Cash to Customer (₹)</label>
+                        <input type="number" id="editNetPayable" readonly class="readonly-input" style="background: rgba(34, 197, 94, 0.1); border-color: #22c55e; color: #22c55e; font-weight: bold;">
                     </div>
 
                     <div class="form-group">

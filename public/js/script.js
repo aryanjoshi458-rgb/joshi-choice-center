@@ -19,6 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const nameStar = document.getElementById("nameReqStar");
   const aadharStar = document.getElementById("aadharReqStar");
   const addrStar = document.getElementById("addrReqStar");
+  const mobileStar = document.getElementById("mobileReqStar");
 
   const txnDate = document.getElementById("txnDate");
   const serviceType = document.getElementById("txnService");
@@ -79,9 +80,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function performSave(shouldPrint = false) {
     // Shared Validation
-    if (!custMobile.value || custMobile.value.length !== 10) {
-      alert("Enter a valid 10-digit mobile number.");
-      return;
+    const isBanking = serviceType.value === "Banking & Financial Services";
+
+    if (!isBanking) {
+      if (!custMobile.value || custMobile.value.length !== 10) {
+        alert("Enter a valid 10-digit mobile number.");
+        return;
+      }
     }
     if (!serviceType.value) {
       alert("Please select a service type.");
@@ -89,7 +94,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Banking-Specific Validation
-    const isBanking = serviceType.value === "Banking & Financial Services";
     if (isBanking) {
       if (!custName.value.trim()) {
         alert("Customer Name is MANDATORY for Banking services.");
@@ -139,6 +143,7 @@ document.addEventListener("DOMContentLoaded", () => {
       amount: document.getElementById("amount")?.value || "0",
       charge: document.getElementById("charge")?.value || "0",
       totalAmount: document.getElementById("totalAmount")?.value || "0",
+      netPayable: document.getElementById("netPayable")?.value || "0",
       paymentMode: document.getElementById("paymentMode")?.value || "Cash",
       status: document.getElementById("status")?.value || "Success",
       targetId: document.getElementById("targetId")?.value || "",
@@ -205,6 +210,7 @@ document.addEventListener("DOMContentLoaded", () => {
     amountGroup: document.getElementById("amountGroup"),
     chargeGroup: document.getElementById("chargeGroup"),
     totalGroup: document.getElementById("totalGroup"),
+    netPayableGroup: document.getElementById("netPayableGroup"),
     paymentModeGroup: document.getElementById("paymentModeGroup")
   };
 
@@ -229,6 +235,7 @@ document.addEventListener("DOMContentLoaded", () => {
       nameStar.style.display = isBanking ? "inline" : "none";
       aadharStar.style.display = isBanking ? "inline" : "none";
       addrStar.style.display = isBanking ? "inline" : "none";
+      if (mobileStar) mobileStar.style.display = isBanking ? "none" : "inline";
 
       if (isBanking) {
         blocks.bank.style.display = "block";
@@ -262,8 +269,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const isWithdraw = val === "Cash Withdrawal";
         const isEnquiry = val === "Balance Enquiry" || val === "Mini Statement";
 
-        // 1. Hide Payment Mode for Cash Withdrawal
+        // 1. Hide Payment Mode for Cash Withdrawal, Show Net Payable
         blocks.paymentModeGroup.style.display = isWithdraw ? "none" : "block";
+        if (blocks.netPayableGroup) blocks.netPayableGroup.style.display = isWithdraw ? "block" : "none";
 
         // 2. Hide Amount/Charge for Balance Enquiry or Mini Statement
         const amountDisplay = isEnquiry ? "none" : "block";
@@ -357,6 +365,7 @@ Amount: Rs. ${Number(t.amount || 0).toFixed(2)}
 Charge: Rs. ${Number(t.charge || 0).toFixed(2)}
 -------------------------
 Total: Rs. ${Number(t.totalAmount || 0).toFixed(2)}
+${t.netPayable && Number(t.netPayable) !== 0 ? `Cash to Customer: Rs. ${Number(t.netPayable).toFixed(2)}` : ""}
 
 Mode: ${(t.paymentMode || "Cash").toUpperCase()}
 Status: ${(t.status || "Paid").toUpperCase()}
@@ -491,6 +500,11 @@ window.openEditModal = function (id) {
   document.getElementById("editService").value = t.serviceName || t.serviceType || "";
   document.getElementById("editAmount").value = t.amount || 0;
   document.getElementById("editCharge").value = t.charge || 0;
+  
+  if (document.getElementById("editNetPayable")) {
+    document.getElementById("editNetPayable").value = t.netPayable || (Number(t.amount || 0) - Number(t.charge || 0));
+    document.getElementById("editNetPayableGroup").style.display = (t.serviceName || "").includes("Cash Withdrawal") ? "block" : "none";
+  }
 
   const paymentModeEl = document.getElementById("editPaymentMode");
   if (paymentModeEl) paymentModeEl.value = t.paymentMode || "Cash";
@@ -536,6 +550,7 @@ window.saveTransactionEdit = function () {
   if (paymentModeEl) reports[index].paymentMode = paymentModeEl.value;
 
   reports[index].totalAmount = Number(reports[index].amount) + Number(reports[index].charge);
+  reports[index].netPayable = Number(reports[index].amount) - Number(reports[index].charge);
   reports[index].status = document.getElementById("editStatus").value;
 
   // New Fields
@@ -597,12 +612,13 @@ window.resetTransactionForm = function () {
     const star = document.getElementById(id);
     if (star) star.style.display = "none";
   });
+  if (mobileStar) mobileStar.style.display = "inline";
 
   // Reset Sub-groups visibility
   const subGroups = ["amountGroup", "chargeGroup", "totalGroup", "paymentModeGroup"];
   subGroups.forEach(id => {
     const el = document.getElementById(id);
-    if (el) el.style.display = "block";
+    if (el) el.style.display = (id === "netPayableGroup") ? "none" : "block";
   });
 
   if (typeof updateNextTransactionId === "function") updateNextTransactionId();

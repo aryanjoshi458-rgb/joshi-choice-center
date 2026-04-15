@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", () => {
+window.updateTodayDashboard = function () {
 
   const txns = JSON.parse(localStorage.getItem("transactions")) || [];
   const today = new Date();
@@ -30,7 +30,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (isToday) {
       totalTransactions++;
       totalCommission += Number(txn.charge) || 0;
-      totalAmount += Number(txn.totalAmount || txn.total || txn.amount) || 0;
+      // "Total Business" should only be the base amount (cash handled)
+      totalAmount += Number(txn.amount || 0);
     }
   });
 
@@ -69,4 +70,6 @@ document.addEventListener("DOMContentLoaded", () => {
   </div>
   `;
 
-});
+};
+
+document.addEventListener("DOMContentLoaded", window.updateTodayDashboard);
