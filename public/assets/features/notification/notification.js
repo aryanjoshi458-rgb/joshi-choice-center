@@ -3,22 +3,67 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const alertBtn = document.createElement("button");
   alertBtn.className = "notification-alert";
-  alertBtn.innerHTML = `<span>🔔</span> Alerts`;
+  alertBtn.id = "globalAlertBtn";
+  alertBtn.innerHTML = `
+    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+      <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+    </svg>
+    <span>Alerts</span>
+  `;
   alertBtn.title = "Notifications";
 
-  // 👉 theme toggle ke niche lagana
-  const themeToggle =
-    document.querySelector(".theme-toggle") ||
-    document.querySelector(".dark-mode-toggle");
+  // Redirect on Click
+  alertBtn.addEventListener("click", () => {
+    window.location.href = "notifications.html";
+  });
 
-  if (themeToggle && themeToggle.parentElement) {
+  // 👉 theme toggle ke niche lagana (Right Side Cluster)
+  const themeToggle = document.getElementById("themeToggleV4");
+
+  if (themeToggle) {
     themeToggle.parentElement.appendChild(alertBtn);
-    alertBtn.style.marginTop = "8px";
   } else {
-    // fallback (safe)
-    alertBtn.style.position = "fixed";
-    alertBtn.style.top = "70px";
-    alertBtn.style.right = "20px";
-    document.body.appendChild(alertBtn);
+    // Fallback if ID is different
+    const fallbackToggle = document.getElementById("themeToggle");
+    if (fallbackToggle) {
+        fallbackToggle.parentElement.appendChild(alertBtn);
+    } else {
+        alertBtn.style.position = "fixed";
+        alertBtn.style.right = "20px";
+        alertBtn.style.bottom = "20px";
+        document.body.appendChild(alertBtn);
+    }
   }
+
+  // BADGE LOGIC
+  function updateAlertButtonBadge() {
+    const notifs = JSON.parse(localStorage.getItem("app_notifications") || "[]");
+    const unreadCount = notifs.filter(n => !n.read).length;
+    
+    let badge = alertBtn.querySelector(".alert-badge");
+    
+    if (unreadCount > 0) {
+        if (!badge) {
+            badge = document.createElement("div");
+            badge.className = "alert-badge";
+            alertBtn.appendChild(badge);
+        }
+        badge.innerText = unreadCount;
+    } else if (badge) {
+        badge.remove();
+    }
+  }
+
+  updateAlertButtonBadge();
+  window.addEventListener("storage", (e) => {
+    if (e.key === "app_notifications") updateAlertButtonBadge();
+  });
+  
+  // Hook into global badge update
+  const originalUpdate = window.updateSidebarBadge;
+  window.updateSidebarBadge = function() {
+    if (originalUpdate) originalUpdate();
+    updateAlertButtonBadge();
+  };
 });

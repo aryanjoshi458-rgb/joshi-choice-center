@@ -4,12 +4,7 @@
  */
 
 const Auth = {
-    // Config
-    MASTER_KEY: '8080', // In a real app, this should be more secure or hashed
-
-    /**
-     * Initializes credentials in localStorage if not present.
-     */
+    // Config - Now loads from localStorage with defaults
     init() {
         if (!localStorage.getItem('jc_username')) {
             localStorage.setItem('jc_username', 'admin');
@@ -17,13 +12,16 @@ const Auth = {
         if (!localStorage.getItem('jc_password')) {
             localStorage.setItem('jc_password', '123');
         }
+        if (!localStorage.getItem('jc_master_key')) {
+            localStorage.setItem('jc_master_key', '8080');
+        }
+        
+        // Start inactivity monitor
+        this.initTimeoutMonitor();
     },
 
     /**
      * Attempts to log in the user.
-     * @param {string} username 
-     * @param {string} password 
-     * @returns {boolean}
      */
     login(username, password) {
         this.init();
@@ -33,6 +31,7 @@ const Auth = {
         if (username === storedUser && password === storedPass) {
             sessionStorage.setItem('jc_isLoggedIn', 'true');
             sessionStorage.setItem('jc_lastLogin', new Date().toISOString());
+            this.resetTimeout();
             return true;
         }
         return false;
@@ -40,51 +39,76 @@ const Auth = {
 
     /**
      * Verifies the Master Recovery Key.
-     * @param {string} key 
-     * @returns {boolean}
      */
     verifyMasterKey(key) {
-        return key === this.MASTER_KEY;
+        const storedKey = localStorage.getItem('jc_master_key') || '8080';
+        return key === storedKey;
     },
 
     /**
-     * Resets the password using the Master Key.
-     * @param {string} masterKey 
-     * @param {string} newPassword 
-     * @returns {boolean}
+     * Updates Security Settings
      */
-    resetPassword(masterKey, newPassword) {
-        if (this.verifyMasterKey(masterKey)) {
-            localStorage.setItem('jc_password', newPassword);
-            return true;
-        }
-        return false;
+    updateCredentials(newUsername, newPassword) {
+        if (newUsername) localStorage.setItem('jc_username', newUsername);
+        if (newPassword) localStorage.setItem('jc_password', newPassword);
+        return true;
+    },
+
+    updateMasterKey(newKey) {
+        if (newKey) localStorage.setItem('jc_master_key', newKey);
+        return true;
+    },
+
+    /**
+     * Session Timeout Logic
+     */
+    timeoutTimer: null,
+    
+    initTimeoutMonitor() {
+        const timeoutMinutes = parseInt(localStorage.getItem('jc_session_timeout') || '0');
+        if (timeoutMinutes <= 0) return; // Disable if 0 (Never)
+
+        const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'];
+        events.forEach(name => {
+            document.addEventListener(name, () => this.resetTimeout());
+        });
+
+        this.resetTimeout();
+    },
+
+    resetTimeout() {
+        const timeoutMinutes = parseInt(localStorage.getItem('jc_session_timeout') || '0');
+        if (timeoutMinutes <= 0) return;
+
+        if (this.timeoutTimer) clearTimeout(this.timeoutTimer);
+        
+        this.timeoutTimer = setTimeout(() => {
+            if (this.isLoggedIn()) {
+                console.log("Session timed out due to inactivity.");
+                this.logout();
+            }
+        }, timeoutMinutes * 60 * 1000);
     },
 
     /**
      * Logs out the user.
      */
     logout() {
-        if (window.AppLoader) window.AppLoader.show("Logging out...");
+        // Only show loader if we have ui interaction
+        if (window.AppLoader) window.AppLoader.show("Session Expired...");
         sessionStorage.removeItem('jc_isLoggedIn');
         sessionStorage.removeItem('jc_lastLogin');
+        sessionStorage.removeItem('activeSettingsTab'); // Reset settings tab on logout
         
         setTimeout(() => {
             window.location.href = 'login.html';
-        }, 600);
+        }, 800);
     },
 
-    /**
-     * Checks if the user is currently logged in.
-     * @returns {boolean}
-     */
     isLoggedIn() {
         return sessionStorage.getItem('jc_isLoggedIn') === 'true';
     },
 
-    /**
-     * Protects a page by redirecting to login if not authenticated.
-     */
     protectPage() {
         if (!this.isLoggedIn()) {
             if (!window.location.pathname.includes('login.html')) {
@@ -96,6 +120,4 @@ const Auth = {
 
 // Initialize on load
 Auth.init();
-
-// Export to window
 window.Auth = Auth;

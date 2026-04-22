@@ -30,7 +30,7 @@
     <!-- Sidebar -->
     <div id="proSidebar">
         <div class="sidebar-header">
-            <div class="logo" style="width: 30px; height: 30px; font-size: 0.8rem; margin: 0;">JC</div>
+            <div class="sidebar-logo">JC</div>
             <span data-i18n="app-title">Joshi Choice Center</span>
         </div>
 
@@ -151,7 +151,14 @@
     </div>
 
     <!-- Toggle Button (Speak ke niche) -->
-    <button id="sidebarToggle">☰</button>
+    <button id="sidebarToggle">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+            stroke-linejoin="round">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+    </button>
 
     <!-- VOICE + THEME CONTROLS -->
     <div class="assistant-speaker" id="assistantSpeaker">
@@ -161,9 +168,10 @@
         <span>Speak</span>
     </div>
 
-    <div class="slider light" id="themeToggle">
-        <div class="slider-toggle light"></div>
-        <div class="slider-accent light"></div>
+    <!-- AURA CELESTIAL v4 THEME SLIDER -->
+    <div class="aura-celestial-v4" id="themeToggleV4">
+        <div class="celestial-sky-window"></div>
+        <div class="celestial-knob-v4" id="celestialKnob"></div>
     </div>
 
     <main class="main">
@@ -187,6 +195,7 @@
                             <th>Service Name</th>
                             <th>Category</th>
                             <th>Price</th>
+                            <th>Charge</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -206,6 +215,7 @@
                 <input type="text" id="serviceName" class="modal-input" placeholder="Service Name (e.g. Color Copy)">
                 <input type="text" id="serviceCategory" class="modal-input" placeholder="Category (e.g. Printing)">
                 <input type="number" id="servicePrice" class="modal-input" placeholder="Price (₹)">
+                <input type="number" id="serviceCharge" class="modal-input" placeholder="Default Charge (₹)">
 
                 <div class="modal-footer">
                     <button type="button" id="cancelRateBtn" class="modal-btn cancel">Cancel</button>
@@ -216,15 +226,18 @@
     </div>
 
     <div id="toastBox"></div>
+    <div id="scrollArrow">▲</div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <!-- JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="../public/assets/features/sidebar/sidebar.js"></script>
     <script src="../public/js/theme-toggle.js"></script>
-    <script src="../public/assets/sidebar-pages/extra/rate-list.js"></script>
-    <script src="../public/assets/features/notification/toast.js"></script>
-    <script src="../public/assets/sidebar-pages/global/global-background-animation.js"></script>
+    <script src="../public/js/assistant-speaker.js"></script>
     <script src="../public/assets/features/notification/notification.js"></script>
-    <div id="scrollArrow">▲</div>
+    <script src="../public/assets/features/notification/toast.js"></script>
+
+    <script src="../public/assets/sidebar-pages/global/global-background-animation.js"></script>
+    <script src="../public/assets/sidebar-pages/extra/rate-list.js"></script>
     <script src="../public/assets/features/scroll-toggle.js"></script>
     <script src="../public/js/shortcuts.js"></script>
 </body>

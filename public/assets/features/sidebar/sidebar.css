@@ -1,10 +1,7 @@
-/* Sidebar LOGO */
-
-
-
 /* ===============================
-   SIDEBAR BASE - MODERN GLASSMORPHISM
+   AURA SIDEBAR - PREMIUM GLASS
    =============================== */
+
 #proSidebar {
   position: fixed;
   top: 0;
@@ -24,6 +21,215 @@
   overflow: hidden;
 }
 
+/* DYNAMIC EFECTS CANVAS LAYER */
+.sidebar-fx-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+#proSidebar[class*="bg-monsoon"] .sidebar-fx-canvas,
+#proSidebar[class*="bg-winter"] .sidebar-fx-canvas {
+  opacity: 1;
+}
+
+/* DYNAMIC EFECTS CANVAS LAYER */
+.sidebar-fx-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+/* BACKGROUND EFFECTS LAYER */
+#proSidebar::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  transition: opacity 0.5s;
+  opacity: 0;
+}
+
+#proSidebar[class*="bg-"]::after {
+  opacity: 1;
+}
+
+/* Mesh Effect - More Vibrant */
+#proSidebar.bg-mesh::after {
+  background:
+    radial-gradient(circle at 0% 0%, rgba(99, 102, 241, 0.35) 0%, transparent 60%),
+    radial-gradient(circle at 100% 100%, rgba(168, 85, 247, 0.35) 0%, transparent 60%);
+  animation: sidebarMesh 8s infinite alternate linear;
+}
+
+/* Cyber Effect */
+#proSidebar.bg-cyber::after {
+  background-image:
+    linear-gradient(rgba(99, 102, 241, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(99, 102, 241, 0.1) 1px, transparent 1px);
+  background-size: 25px 25px;
+  mask-image: linear-gradient(to bottom, black, transparent);
+  -webkit-mask-image: linear-gradient(to bottom, black, transparent);
+  opacity: 0.6;
+}
+
+/* Dust Effect */
+#proSidebar.bg-dust::after {
+  background-image: radial-gradient(1.5px 1.5px at 20px 30px, #fff, rgba(0, 0, 0, 0)),
+    radial-gradient(1.5px 1.5px at 40px 70px, #fff, rgba(0, 0, 0, 0)),
+    radial-gradient(1.5px 1.5px at 50px 160px, #fff, rgba(0, 0, 0, 0)),
+    radial-gradient(1.5px 1.5px at 90px 40px, #fff, rgba(0, 0, 0, 0));
+  background-size: 120px 120px;
+  animation: sidebarDust 15s infinite linear;
+  opacity: 0.4;
+}
+
+/* Aurora Effect - Brighter & Larger */
+#proSidebar.bg-aurora::after {
+  background: linear-gradient(180deg,
+      transparent 0%,
+      rgba(99, 102, 241, 0.25) 40%,
+      rgba(168, 85, 247, 0.4) 100%);
+  filter: blur(50px);
+  transform: translateY(15%);
+  animation: sidebarAurora 6s infinite alternate ease-in-out;
+}
+
+/* Ripple Effect - Softer & Defined */
+#proSidebar.bg-ripple::after {
+  background: radial-gradient(circle at center, rgba(99, 102, 241, 0.25) 0%, transparent 65%);
+  animation: sidebarRipple 3s infinite ease-out;
+}
+
+@keyframes sidebarMesh {
+  from {
+    background-position: -20% -20%, 120% 120%;
+  }
+
+  to {
+    background-position: 120% 120%, -20% -20%;
+  }
+}
+
+@keyframes sidebarDust {
+  from {
+    background-position: 0 0;
+  }
+
+  to {
+    background-position: 0 1000px;
+  }
+}
+
+@keyframes sidebarAurora {
+  from {
+    transform: translateY(15%) scale(1);
+    opacity: 0.3;
+  }
+
+  to {
+    transform: translateY(0%) scale(1.3);
+    opacity: 0.7;
+  }
+}
+
+@keyframes sidebarRipple {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+
+  50% {
+    opacity: 0.4;
+  }
+
+  100% {
+    transform: scale(3);
+    opacity: 0;
+  }
+}
+
+/* Seasonal: Summer Sunbeams */
+#proSidebar.bg-summer::after {
+  background: linear-gradient(135deg,
+      rgba(253, 230, 138, 0.1) 0%,
+      rgba(245, 158, 11, 0.2) 50%,
+      transparent 100%);
+  background-size: 200% 200%;
+  animation: sidebarSummer 5s infinite alternate ease-in-out;
+}
+
+/* Seasonal: Monsoon Rain */
+#proSidebar.bg-monsoon::after {
+  background: linear-gradient(to bottom,
+      rgba(100, 116, 139, 0.1),
+      rgba(30, 41, 59, 0.2));
+  opacity: 1;
+}
+
+/* Seasonal: Winter Snow */
+#proSidebar.bg-winter::after {
+  background-image:
+    radial-gradient(3px 3px at 50px 50px, #fff, transparent),
+    radial-gradient(4px 4px at 150px 150px, #fff, transparent),
+    radial-gradient(2px 2px at 100px 300px, #fff, transparent),
+    radial-gradient(3px 3px at 200px 450px, #fff, transparent);
+  background-size: 250px 500px;
+  animation: sidebarWinter 10s infinite linear;
+  opacity: 0.6;
+}
+
+@keyframes sidebarSummer {
+  from {
+    background-position: 0% 0%;
+  }
+
+  to {
+    background-position: 100% 100%;
+  }
+}
+
+@keyframes sidebarMonsoon {
+  from {
+    background-position: 0 0;
+  }
+
+  to {
+    background-position: 0 80px;
+  }
+}
+
+@keyframes sidebarWinter {
+  from {
+    background-position: 0 0;
+  }
+
+  to {
+    background-position: 30px 500px;
+  }
+}
+
+/* Content layer stays above background effects */
+.sidebar-header,
+.sidebar-menu {
+  position: relative;
+  z-index: 5;
+}
+
+body.dark-mode #proSidebar {
+  background: rgba(10, 15, 25, 0.85);
+  /* Slightly darker for better effect pop */
+  border-color: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+}
+
 #proSidebar.open {
   left: 0;
 }
@@ -31,40 +237,38 @@
 /* ===============================
    HEADER
    =============================== */
-/* .sidebar-header {
-  padding: 10px 20px;
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--text-main);
-  letter-spacing: -0.02em;
-  border-bottom: 1px solid var(--border-color);
-  margin-bottom: 12px;
-} */
-
 .sidebar-header {
   display: flex;
-  /* Logo aur text ko side-by-side karne ke liye */
   align-items: center;
-  /* Dono ko vertical center karne ke liye */
   gap: 15px;
-  /* Logo aur text ke beech thodi jagah */
-  padding: 15px 20px;
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--text-main);
-  border-bottom: 1px solid var(--border-color);
-  margin-bottom: 12px;
+  padding: 25px 25px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  margin-bottom: 15px;
+}
+
+body.dark-mode .sidebar-header {
+  border-bottom-color: rgba(255, 255, 255, 0.05);
 }
 
 .sidebar-logo {
-  width: 35px;
-  /* Logo ki width */
-  height: 35px;
-  /* Logo ki height */
-  object-fit: contain;
-  /* Taaki logo stretch na ho */
-  border-radius: 8px;
-  /* Agar aapko thoda rounded corners chahiye */
+  width: 42px;
+  height: 42px;
+  background: linear-gradient(135deg, #6366f1, #a855f7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 900;
+  border-radius: 14px;
+  font-size: 1.2rem;
+  box-shadow: 0 8px 15px rgba(99, 102, 241, 0.3);
+}
+
+.sidebar-header span {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--text-main);
+  letter-spacing: -0.5px;
 }
 
 /* ===============================
@@ -74,119 +278,684 @@
   padding: 0 12px 20px 12px;
   overflow-y: auto;
   flex: 1;
+  position: relative;
+  /* For indicator */
+
+  /* HIDE SCROLLBAR */
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE/Edge */
+}
+
+.sidebar-menu::-webkit-scrollbar {
+  display: none;
+  /* Chrome/Safari */
 }
 
 .sidebar-menu a {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 16px;
-  margin-bottom: 6px;
-  border-radius: 12px;
-  color: var(--text-muted);
+  padding: 10px 16px;
+  /* Reduced padding */
+  margin-bottom: 4px;
+  /* Tighter gap */
+  border-radius: 15px;
+  color: #64748b;
   text-decoration: none;
-  font-size: 0.95rem;
-  font-weight: 600;
-  transition: all 0.25s ease;
+  font-size: 0.9rem;
+  /* Slightly smaller */
+  font-weight: 700;
+  transition: color 0.3s;
   position: relative;
+  z-index: 2;
+  /* Above indicator */
 }
 
-/* Icons */
+body.dark-mode .sidebar-menu a {
+  color: #94a3b8;
+}
+
 .sidebar-icon {
   width: 20px;
   height: 20px;
   stroke-width: 2;
-  transition: transform 0.25s ease;
+  transition: all 0.3s;
   flex-shrink: 0;
 }
 
+/* SIDEBAR NOTIFICATION BADGE */
+.sidebar-badge {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  background: #ef4444;
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 800;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--sidebar-bg);
+  box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
+  animation: badgePulse 2s infinite;
+  pointer-events: none;
+  z-index: 5;
+}
+
+@keyframes badgePulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+body.layout-rail .sidebar-badge {
+    top: 5px;
+    right: 15px;
+}
+
+/* SLIDING INDICATOR */
+.aura-sidebar-indicator {
+  position: absolute;
+  left: 12px;
+  width: calc(100% - 24px);
+  height: 44px;
+  /* Matches a height */
+  background: linear-gradient(135deg, #6366f1, #a855f7);
+  border-radius: 15px;
+  z-index: 1;
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.25);
+  pointer-events: none;
+  opacity: 0;
+}
+
 .sidebar-menu a:hover {
-  background: color-mix(in srgb, var(--primary-color), transparent 90%);
-  color: var(--primary-color);
-  transform: translateX(4px);
+  color: #6366f1;
 }
 
-.sidebar-menu a:hover .sidebar-icon {
-  transform: scale(1.1);
+body.dark-mode .sidebar-menu a:hover {
+  color: #fff;
 }
 
+/* Active State - Now handled by logic setting indicator, 
+   but we keep color classes for fallback/clarity */
 .sidebar-menu a.active {
-  background: linear-gradient(135deg, #2563eb, #1d4ed8);
-  color: #ffffff;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+  color: #ffffff !important;
 }
 
 .sidebar-menu a.active .sidebar-icon {
-  color: #ffffff;
+  color: #ffffff !important;
 }
 
 /* ===============================
-   SIDEBAR TOGGLE BUTTON
+   SIDEBAR TOGGLE BUTTON (PRESERVED)
    =============================== */
 #sidebarToggle {
   position: fixed;
-  top: 50px;
-  left: 22px;
+  top: 60px;
+  /* Adjusted to stack nicely below Speak button */
+  left: 23px;
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 38px;
-  background: #ffffff;
-  border-radius: 22px;
-  border: 1px solid #e0e0e0;
+  justify-content: center;
+  width: 100px;
+  height: 40px;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   cursor: pointer;
   z-index: 9999;
-  overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  transition: background 0.25s, box-shadow 0.25s, transform 0.2s;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 #sidebarToggle:hover {
-  background: #1d4ed8;
-  color: #ffffff;
-  box-shadow: 0 8px 20px rgba(29, 78, 216, 0.35);
-  transform: translateY(-1px);
+  background: rgba(30, 41, 59, 0.8);
+  border-color: rgba(99, 102, 241, 0.4);
+  box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+  transform: translateY(-2px) scale(1.05);
+}
+
+#sidebarToggle:active {
+  transform: translateY(0) scale(0.95);
+}
+
+#sidebarToggle .icon {
+  width: 20px;
+  height: 20px;
+  stroke: rgba(255, 255, 255, 0.8);
+}
+
+body.sidebar-open #sidebarToggle {
+  transform: translateX(280px);
+  /* Smoothly slide with sidebar */
+  border-radius: 0 14px 14px 0;
+  /* Anchor to sidebar edge */
+  border-left: none;
+}
+
+/* ===============================
+   LIGHT MODE OVERRIDES
+   =============================== */
+body:not(.dark-mode) #sidebarToggle {
+  background: rgba(255, 255, 255, 0.6);
+  border-color: rgba(99, 102, 241, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+body:not(.dark-mode) #sidebarToggle:hover {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(99, 102, 241, 0.3);
+  box-shadow: 0 15px 40px rgba(99, 102, 241, 0.1);
+}
+
+body:not(.dark-mode) #sidebarToggle .icon {
+  stroke: #1e293b;
+}
+
+body:not(.dark-mode) #sidebarToggle:hover .icon {
+  stroke: #6366f1;
 }
 
 /* ===============================
    PAGE SHIFT ANIMATION
    =============================== */
 body {
-  transition: padding-left 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+  transition: padding-left 0.5s cubic-bezier(0.19, 1, 0.22, 1);
 }
 
 body.sidebar-open {
   padding-left: 280px;
 }
 
-/* REMOVE OLD DIVIDER */
-.sidebar-divider {
-  display: none;
+/* Compact specific padding-left */
+body.layout-compact.sidebar-open {
+  padding-left: 70px;
+}
+
+.notransition {
+  transition: none !important;
 }
 
 /* ===============================
-   THEME COMPATIBILITY OVERRIDES
+   SIDEBAR LAYOUTS (PREMIUM ENGINES)
    =============================== */
-/* Specific glass transparency for darker themes */
-body.dark-mode #proSidebar,
-body.midnight-slate-mode #proSidebar,
-body.royal-amethyst-mode #proSidebar,
-body.cyberpunk-mode #proSidebar {
-  background: color-mix(in srgb, var(--sidebar-bg), transparent 25%);
+
+/* 1. COMPACT (MINI) LAYOUT */
+body.layout-compact #proSidebar {
+  width: 70px !important;
+  left: 0 !important;
+  border-radius: 0 20px 20px 0;
 }
 
-#sidebarToggle {
-  background: var(--card-bg);
-  color: var(--text-main);
-  border: 1px solid var(--border-color);
+body.layout-compact .sidebar-header {
+  padding: 70px 0 15px 0;
+  /* Move down below Speak button */
+  justify-content: center;
+  gap: 0;
 }
 
-#sidebarToggle:hover {
-  background: var(--primary-color);
+body.layout-compact .sidebar-header span,
+body.layout-compact .sidebar-menu span {
+  opacity: 0 !important;
+  pointer-events: none;
+  display: none !important;
+}
+
+body.layout-compact #proSidebar:hover {
+  width: 280px !important;
+  box-shadow: 20px 0 50px rgba(0, 0, 0, 0.3);
+}
+
+body.layout-compact #proSidebar:hover .sidebar-header {
+  padding: 25px 25px;
+  justify-content: flex-start;
+  gap: 15px;
+}
+
+body.layout-compact #proSidebar:hover .sidebar-header span,
+body.layout-compact #proSidebar:hover .sidebar-menu span {
+  opacity: 1 !important;
+  display: flex !important;
+}
+
+body.layout-compact #sidebarToggle {
+  display: none;
+}
+
+body.layout-compact.sidebar-open #proSidebar {
+  width: 70px !important;
+}
+
+/* 2. FLOATING AURA LAYOUT */
+body.layout-floating #proSidebar {
+  top: 15px;
+  left: -295px;
+  height: calc(100vh - 30px);
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 15px 15px 40px rgba(0, 0, 0, 0.2);
+}
+
+body.layout-floating #proSidebar.open {
+  left: 15px;
+}
+
+body.layout-floating #sidebarToggle {
+  top: 75px;
+  left: 30px;
+}
+
+body.layout-floating.sidebar-open #sidebarToggle {
+  transform: translateX(280px);
+}
+
+/* /* 3. GLASS MINIMAL LAYOUT */
+body.layout-minimal #proSidebar {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(30px) saturate(200%);
+  border-right: none;
+  border-left: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+body.dark-mode.layout-minimal #proSidebar {
+  background: rgba(0, 0, 0, 0.2);
+  border-color: rgba(255, 255, 255, 0.02);
+}
+
+/* 4. MODERN RAIL (PRO) LAYOUT */
+body.layout-rail #proSidebar {
+  width: 70px !important;
+  left: 0 !important;
+  border-radius: 0 20px 20px 0;
+}
+
+body.layout-rail .sidebar-header {
+  padding: 70px 0 0px 0;
+  /* Keep logo at 70px as requested */
+  justify-content: center;
+  flex-direction: column;
+  border: none;
+  margin-bottom: 0 !important;
+  /* Remove gap after header */
+}
+
+/* More Compact Divider and Logo */
+body.layout-rail .sidebar-logo {
+  width: 38px;
+  height: 38px;
+  box-shadow: 0 0 20px rgba(168, 85, 247, 0.3);
+}
+
+body.layout-rail .sidebar-header::after {
+  content: "";
+  width: 35px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+  margin-top: 8px;
+  /* Tighter gap below logo */
+}
+
+body.layout-rail .sidebar-header span,
+body.layout-rail .sidebar-menu span {
+  opacity: 0 !important;
+  pointer-events: none;
+  display: none !important;
+}
+
+body.layout-rail .sidebar-menu {
+  padding: 0;
+  margin-top: -5px;
+  /* Pull ONLY the icons up */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+body.layout-rail .sidebar-menu a {
+  justify-content: center;
+  width: 70px;
+  height: 44px;
+  /* More compact item height */
+  padding: 0;
+  margin: 1px 0;
+  border-radius: 0;
+  transition: all 0.3s ease;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+body.layout-rail .sidebar-menu a:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+/* Vertical indicator stays precise */
+body.layout-rail .aura-sidebar-indicator {
+  left: 0;
+  width: 4px;
+  height: 28px;
+  background: linear-gradient(to bottom, #6366f1, #a855f7);
+  border-radius: 0 4px 4px 0;
+  box-shadow: 2px 0 8px rgba(99, 102, 241, 0.3);
+}
+
+/* Logout separation logic */
+body.layout-rail .sidebar-menu a[onclick*="logout"] {
+  color: #f87171 !important;
+  margin-top: auto;
+  padding-top: 15px;
+  border-top: 1px solid rgba(248, 113, 113, 0.1);
+  width: 40px;
+}
+
+body.layout-rail .sidebar-icon {
+  width: 21px;
+  /* Smaller, cleaner icons */
+  height: 21px;
+  stroke-width: 1.8;
+}
+
+body.layout-rail #sidebarToggle {
+  display: none;
+}
+
+/* Page Shift Lock - Enforce padding whenever rail is active to prevent overlap */
+body.layout-rail {
+  padding-left: 70px !important;
+}
+
+body.layout-rail.sidebar-open {
+  padding-left: 70px !important;
+}
+
+/* 5. MODERN NAVBAR (PRO) LAYOUT */
+body.layout-navbar #proSidebar {
+  width: 100% !important;
+  height: 70px !important;
+  top: 0 !important;
+  left: 0 !important;
+  flex-direction: row !important;
+  border-right: none;
+  border-bottom: 1px solid var(--border-color);
+  border-radius: 0;
+  transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+  box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
+  overflow: visible;
+  /* Allow indicator to be visible if needed */
+}
+
+body.layout-navbar .sidebar-header {
+  height: 100%;
+  padding: 0 30px;
+  margin-bottom: 0 !important;
+  border-bottom: none;
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  flex-shrink: 0;
+  display: flex !important;
+  align-items: center !important;
+  flex-direction: row !important;
+}
+
+body.layout-navbar .sidebar-header::after {
+  display: none;
+  /* Hide vertical separator */
+}
+
+body.layout-navbar .sidebar-menu {
+  display: flex !important;
+  flex-direction: row !important;
+  padding: 0 20px;
+  align-items: center !important;
+  overflow-y: visible !important;
+  overflow-x: auto !important;
+  flex: 1;
+  height: 100%;
+}
+
+body.layout-navbar .sidebar-menu a {
+  display: flex !important;
+  align-items: center !important;
+  height: 44px;
+  /* Fixed height for navbar items */
+  margin: 0 4px;
+  padding: 0 16px;
+  white-space: nowrap !important;
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+
+body.layout-navbar .sidebar-icon {
+  width: 20px;
+  height: 20px;
+}
+
+body.layout-navbar .aura-sidebar-indicator {
+  bottom: -1px;
+  left: auto;
+  width: 0;
+  /* JS will set width */
+  height: 3px;
+  background: linear-gradient(to right, #6366f1, #a855f7);
+  border-radius: 10px 10px 0 0;
+  box-shadow: 0 -4px 15px rgba(99, 102, 241, 0.4);
+}
+
+body.layout-navbar #sidebarToggle {
+  display: none;
+}
+
+/* Push floating controls down */
+body.layout-navbar #assistantSpeaker,
+body.layout-navbar .assistant-speaker {
+  top: 90px !important;
+  left: 20px !important;
+}
+
+body.layout-navbar #themeToggleV4,
+body.layout-navbar .aura-celestial-v4 {
+  top: 90px !important;
+  left: 140px !important;
+  /* Side by side with Speak */
+}
+
+/* Page Shift - TOP instead of LEFT */
+body.layout-navbar {
+  padding-left: 0 !important;
+  padding-top: 70px !important;
+}
+
+/* Navbar Viz in Settings */
+.aura-layout-viz.navbar .viz-navbar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 6px;
+  background: linear-gradient(135deg, #6366f1, #a855f7);
+  border-radius: 2px 2px 0 0;
+}
+
+/* Navbar Scroll Arrows */
+.nav-scroll-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  color: #fff;
+  display: none;
+  /* Only show in navbar mode */
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 100;
+  transition: all 0.3s ease;
+}
+
+body.layout-navbar .nav-scroll-btn {
+  display: flex;
+}
+
+.nav-scroll-btn:hover {
+  background: rgba(99, 102, 241, 0.3);
+  border-color: rgba(99, 102, 241, 0.5);
+  box-shadow: 0 0 15px rgba(99, 102, 241, 0.3);
+}
+
+.nav-scroll-btn.left {
+  left: 280px;
+  /* Right after the sidebar header/logo area */
+}
+
+.nav-scroll-btn.right {
+  right: 15px;
+}
+
+/* Navbar item margin adjust for arrows */
+body.layout-navbar .sidebar-menu {
+  padding: 0 50px;
+  /* Give room for arrows */
+}
+
+/* FINAL OVERRIDES */
+body.layout-compact.sidebar-open {
+  padding-left: 70px !important;
+}
+
+/* ===============================
+   SIDEBAR STYLES (SIMPLE vs GLASS)
+   =============================== */
+
+/* 1. SIMPLE DESIGN (THEME-AWARE) */
+#proSidebar.style-simple {
+  background: #ffffff !important; 
+  backdrop-filter: none !important;
+  border-right: 1px solid #f1f5f9 !important;
+  box-shadow: 15px 0 50px rgba(0, 0, 0, 0.03) !important;
+}
+
+/* Dark Mode Overrides for Simple Sidebar */
+body.dark-mode #proSidebar.style-simple {
+  background: #0f172a !important;
+  border-color: rgba(255, 255, 255, 0.05) !important;
+  box-shadow: 15px 0 50px rgba(0, 0, 0, 0.3) !important;
+}
+
+#proSidebar.style-simple .sidebar-header {
+  background: #ffffff;
+  padding: 20px 20px; /* Reduced from 25px */
+  border-bottom: 1px solid #f1f5f9;
+  margin-bottom: 5px; /* Reduced from 15px */
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  transition: all 0.3s ease;
+}
+
+body.dark-mode #proSidebar.style-simple .sidebar-header {
+  background: #0f172a;
+  border-bottom-color: rgba(255, 255, 255, 0.05);
+}
+
+#proSidebar.style-simple .sidebar-logo {
+  width: 44px;
+  height: 44px;
+  background: #2563eb; 
+  color: #ffffff;
+  font-weight: 800;
+  border-radius: 14px; /* Changed from 50% to square-ish */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2);
+}
+
+#proSidebar.style-simple .sidebar-header span {
+  color: #0f172a;
+  font-size: 1.2rem; /* Slightly smaller to fit in one line if needed */
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  white-space: nowrap; /* Keep on one line */
+  transition: color 0.3s ease;
+}
+
+body.dark-mode #proSidebar.style-simple .sidebar-header span {
   color: #ffffff;
 }
 
-/* ISSE 1 SECOND SIDEBAR CLOSE HOKE OPEN HOTA THA VO NAHI HOGA */
-.notransition {
-  transition: none !important;
+#proSidebar.style-simple .sidebar-menu {
+  padding: 0 12px;
+}
+
+#proSidebar.style-simple .sidebar-menu a {
+  color: #64748b;
+  padding: 12px 18px;
+  margin-bottom: 5px;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: all 0.25s ease;
+}
+
+body.dark-mode #proSidebar.style-simple .sidebar-menu a {
+  color: #94a3b8;
+}
+
+#proSidebar.style-simple .sidebar-menu a:hover {
+  color: #2563eb;
+  background: rgba(37, 99, 235, 0.06);
+}
+
+body.dark-mode #proSidebar.style-simple .sidebar-menu a:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+#proSidebar.style-simple .sidebar-menu a.active {
+  background: #2563eb !important;
+  color: #ffffff !important;
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+}
+
+#proSidebar.style-simple .sidebar-menu a.active .sidebar-icon {
+  color: #ffffff !important;
+  stroke-width: 2.5;
+}
+
+#proSidebar.style-simple .sidebar-menu a[onclick*="logout"] {
+  color: #f87171 !important;
+  margin-top: 15px;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 15px;
+}
+
+body.dark-mode #proSidebar.style-simple .sidebar-menu a[onclick*="logout"] {
+  border-top-color: rgba(255, 255, 255, 0.05);
+}
+
+#proSidebar.style-simple .sidebar-menu a[onclick*="logout"]:hover {
+  background: rgba(248, 113, 113, 0.08);
+}
+
+/* Hide sliding indicator in simple mode */
+#proSidebar.style-simple .aura-sidebar-indicator {
+  display: none !important;
+}
+
+
+body.layout-compact #proSidebar .sidebar-header {
+  flex-direction: column;
 }

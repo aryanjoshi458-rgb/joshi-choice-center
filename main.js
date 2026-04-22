@@ -8,12 +8,21 @@ function createWindow() {
   const win = new BrowserWindow({
     width: 1200,
     height: 800,
+    show: false, // Prevent white flash
+    backgroundColor: '#0c0e14', // Match app theme
+    autoHideMenuBar: false, // Cleaner UI
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
       nodeIntegration: false,
       sandbox: true
     }
+  });
+
+  // Smoothly show window when content is ready
+  win.once('ready-to-show', () => {
+    win.show();
+    win.focus();
   });
 
   win.loadFile(path.join(__dirname, 'views/login.html'));

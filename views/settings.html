@@ -12,7 +12,8 @@
   <script src="../public/js/language-manager.js"></script>
   <link rel="stylesheet" href="../public/css/style.css">
   <link rel="stylesheet" href="../public/css/loader.css">
-  <link rel="stylesheet" href="../public/assets/features/sidebar/sidebar.css">
+  <link rel="stylesheet" href="../public/assets/features/scroll-toggle.css">
+
   <script src="../public/js/loader.js"></script>
   <link rel="stylesheet" href="../public/css/assistant-speaker.css">
   <link rel="stylesheet" href="../public/css/theme-toggle.css">
@@ -21,6 +22,9 @@
   <link rel="stylesheet" href="../public/assets/sidebar-pages/global/global-background-animation.css">
   <link rel="stylesheet" href="../public/assets/features/scroll-toggle.css">
   <link rel="stylesheet" href="../public/assets/features/notification/toast.css">
+  <link rel="stylesheet" href="../public/assets/features/sidebar/sidebar.css">
+  <link rel="stylesheet" href="../public/css/aura-modals.css">
+  <link rel="stylesheet" href="../public/css/aura-assistant.css">
   <script src="../public/js/auth.js"></script>
   <script>Auth.protectPage();</script>
 
@@ -33,7 +37,7 @@
   <!-- Sidebar -->
   <div id="proSidebar">
     <div class="sidebar-header">
-      <div class="logo" style="width: 30px; height: 30px; font-size: 0.8rem; margin: 0;">JC</div>
+      <div class="sidebar-logo">JC</div>
       <span data-i18n="app-title">Joshi Choice Center</span>
     </div>
 
@@ -144,19 +148,59 @@
   </div>
 
   <!-- Toggle Button (Speak ke niche) -->
-  <button id="sidebarToggle">☰</button>
+  <button id="sidebarToggle">
+    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+      stroke-linejoin="round">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </button>
 
   <!-- VOICE + THEME CONTROLS -->
   <div class="assistant-speaker" id="assistantSpeaker">
-    <svg class="icon" viewBox="0 0 24 24">
-      <path d="M3 10v4h4l5 5V5L7 10H3z" />
+    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+      stroke-linejoin="round">
+      <path d="M11 5L6 9H2v6h4l5 4V5z"></path>
+      <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
     </svg>
     <span>Speak</span>
   </div>
 
-  <div class="slider light" id="themeToggle">
-    <div class="slider-toggle light"></div>
-    <div class="slider-accent light"></div>
+  <!-- AURA CELESTIAL v4 THEME SLIDER -->
+  <div class="aura-celestial-v4" id="themeToggleV4">
+    <div class="celestial-sky-window"></div>
+    <div class="celestial-knob-v4" id="celestialKnob"></div>
+  </div>
+
+  <!-- AURA SMART CHAT PANEL -->
+  <div id="auraChatPanel" class="aura-chat-panel">
+    <div class="aura-chat-header">
+      <div class="aura-chat-header-left">
+        <div class="aura-chat-logo">AI</div>
+        <div class="aura-chat-header-info">
+          <h3>Aura Assistant</h3>
+          <p>Your Smart Companion</p>
+        </div>
+      </div>
+      <div class="aura-chat-controls">
+        <div class="aura-chat-control min"></div>
+        <div class="aura-chat-control max"></div>
+        <div id="closeAuraChat" class="aura-chat-control close"></div>
+      </div>
+    </div>
+    <div class="aura-chat-history" id="auraChatHistory">
+      <!-- Messages appear here -->
+    </div>
+    <div class="aura-chat-input-area">
+      <input type="text" id="auraChatInput" placeholder="Ask about the software...">
+      <button class="aura-chat-send" id="auraChatSend">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="22" y1="2" x2="11" y2="13" />
+          <polygon points="22 2 15 22 11 13 2 9 22 2" />
+        </svg>
+      </button>
+    </div>
   </div>
 
   <!-- Main content -->
@@ -170,404 +214,961 @@
       </div>
     </header>
 
-    <div id="settingsContainer">
-      <div class="settings-card">
-        <div class="settings-tabs">
-          <button class="tab-btn active" data-tab="shop" data-i18n="tab-shop-profile">Shop Profile</button>
-          <button class="tab-btn" data-tab="theme" data-i18n="sidebar-themes">Themes</button>
-          <button class="tab-btn" data-tab="animation" data-i18n="sidebar-animation">BG Animations</button>
-          <button class="tab-btn" data-tab="print" data-i18n="settings-print">Print Settings</button>
-          <button class="tab-btn" data-tab="reset" data-i18n="sidebar-reset">Reset</button>
-          <button class="tab-btn" data-tab="about" data-i18n="sidebar-about">About</button>
-          <button class="tab-btn" data-tab="language" data-i18n="sidebar-language">Language</button>
-          <button class="tab-btn" data-tab="shortcuts">Shortcuts</button>
-        </div>
+    <div id="settingsContainer" class="aura-layout">
+      <!-- Top Navigation Island -->
+      <header class="settings-aura-header">
+        <div class="aura-nav-island">
+          <button class="aura-nav-btn active" data-tab="shop">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+              <polyline points="9 22 9 12 15 12 15 22" />
+            </svg>
+            <span data-i18n="tab-shop-profile">Shop</span>
+          </button>
+          <button class="aura-nav-btn" data-tab="theme">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20z" />
+            </svg>
+            <span data-i18n="sidebar-themes">Themes</span>
+          </button>
+          <button class="aura-nav-btn" data-tab="animation">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path
+                d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+            </svg>
+            <span data-i18n="sidebar-animation">Visuals</span>
+          </button>
+          <button class="aura-nav-btn" data-tab="sidebarAnim">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path
+                d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+            </svg>
+            <span data-i18n="tab-sidebar-fx">Sidebar FX</span>
+          </button>
 
+          <button class="aura-nav-btn" data-tab="display">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
+            <span data-i18n="tab-display">Display</span>
+          </button>
+          <button class="aura-nav-btn" data-tab="language">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="m5 8 6 6" />
+              <path d="m4 14 6-6 2-3" />
+              <path d="M2 5h12" />
+              <path d="M7 2h1" />
+              <path d="m22 22-5-10-5 10" />
+              <path d="M14 18h6" />
+            </svg>
+            <span data-i18n="sidebar-language">Language</span>
+          </button>
+          <button class="aura-nav-btn" data-tab="shortcuts">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
+              <rect x="2" y="4" width="20" height="16" rx="2" ry="2" />
+              <path d="M6 8h.01" />
+              <path d="M10 8h.01" />
+              <path d="M14 8h.01" />
+              <path d="M18 8h.01" />
+              <path d="M6 12h.01" />
+              <path d="M10 12h.01" />
+              <path d="M14 12h.01" />
+              <path d="M18 12h.01" />
+              <path d="M7 16h10" />
+            </svg>
+            <span>Keys</span>
+          </button>
+          <button class="aura-nav-btn" data-tab="security">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+              <path d="m9 12 2 2 4-4" />
+            </svg>
+            <span data-i18n="tab-security">Security</span>
+          </button>
+          <button class="aura-nav-btn" data-tab="reset">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+              <line x1="12" y1="9" x2="12" y2="13" />
+              <line x1="12" y1="17" x2="12.01" y2="17" />
+            </svg>
+            <span data-i18n="sidebar-reset">Reset</span>
+          </button>
+          <button class="aura-nav-btn" data-tab="about">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="16" x2="12" y2="12" />
+              <line x1="12" y1="8" x2="12.01" y2="8" />
+            </svg>
+            <span data-i18n="sidebar-about">About</span>
+          </button>
+
+          <!-- Animated Indicator -->
+          <div class="aura-nav-indicator"></div>
+        </div>
+      </header>
+
+      <!-- Main Content Aura -->
+      <div class="settings-aura-body">
         <div class="tab-content active" id="shop">
-          <div class="shop-grid">
-            <div class="logo-section">
-              <div class="logo-preview" id="logoPreview">JC</div>
-              <input type="file" id="shopLogo" accept="image/*" style="display:none">
-              <button class="btn-primary" onclick="document.getElementById('shopLogo').click()">Upload Logo</button>
+          <div class="aura-section-card">
+            <div class="aura-card-header">
+              <div class="aura-icon-box blue">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                  <polyline points="9 22 9 12 15 12 15 22" />
+                </svg>
+              </div>
+              <div class="aura-title-stack">
+                <h2 data-i18n="tab-shop-profile">Business Profile</h2>
+                <p>Configure your shop identity and branding</p>
+              </div>
             </div>
-            <div class="info-section">
-              <div class="form-group">
-                <label>Shop Name</label>
-                <input type="text" id="shopName" placeholder="Enter Shop Name">
+
+            <div class="aura-shop-layout">
+              <div class="aura-logo-area">
+                <div class="aura-logo-preview" id="logoPreview">JC</div>
+                <input type="file" id="shopLogo" accept="image/*" style="display:none">
+                <button class="aura-action-btn sm" onclick="document.getElementById('shopLogo').click()">Change
+                  Logo</button>
               </div>
-              <div class="form-group">
-                <label>Owner Name</label>
-                <input type="text" id="ownerName" placeholder="Enter Owner Name">
+
+              <div class="aura-form-area">
+                <div class="aura-input-grid">
+                  <div class="aura-field">
+                    <label>Shop Name</label>
+                    <input type="text" id="shopName" placeholder="Enter your shop name">
+                  </div>
+                  <div class="aura-field">
+                    <label>Owner Name</label>
+                    <input type="text" id="ownerName" placeholder="Full Name">
+                  </div>
+                  <div class="aura-field">
+                    <label>Contact Number</label>
+                    <input type="text" id="phoneNumber" placeholder="Enter 10 Digit Number">
+                  </div>
+                  <div class="aura-field">
+                    <label>Business Email</label>
+                    <input type="email" id="shopEmail" placeholder="support@joshichoice.com">
+                  </div>
+                  <div class="aura-field span-2">
+                    <label>Shop Address</label>
+                    <input type="text" id="shopAddress" placeholder="Enter Full Shop Address">
+                  </div>
+                  <div class="aura-field">
+                    <label>State</label>
+                    <select id="shopState">
+                      <option value="">Select State</option>
+                      <option value="Andhra Pradesh">Andhra Pradesh</option>
+                      <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+                      <option value="Assam">Assam</option>
+                      <option value="Bihar">Bihar</option>
+                      <option value="Chhattisgarh">Chhattisgarh</option>
+                      <option value="Goa">Goa</option>
+                      <option value="Gujarat">Gujarat</option>
+                      <option value="Haryana">Haryana</option>
+                      <option value="Himachal Pradesh">Himachal Pradesh</option>
+                      <option value="Jharkhand">Jharkhand</option>
+                      <option value="Karnataka">Karnataka</option>
+                      <option value="Kerala">Kerala</option>
+                      <option value="Madhya Pradesh">Madhya Pradesh</option>
+                      <option value="Maharashtra">Maharashtra</option>
+                      <option value="Manipur">Manipur</option>
+                      <option value="Meghalaya">Meghalaya</option>
+                      <option value="Mizoram">Mizoram</option>
+                      <option value="Nagaland">Nagaland</option>
+                      <option value="Odisha">Odisha</option>
+                      <option value="Punjab">Punjab</option>
+                      <option value="Rajasthan">Rajasthan</option>
+                      <option value="Sikkim">Sikkim</option>
+                      <option value="Tamil Nadu">Tamil Nadu</option>
+                      <option value="Telangana">Telangana</option>
+                      <option value="Tripura">Tripura</option>
+                      <option value="Uttar Pradesh">Uttar Pradesh</option>
+                      <option value="Uttarakhand">Uttarakhand</option>
+                      <option value="West Bengal">West Bengal</option>
+                      <option value="Andaman and Nicobar Islands">Andaman and Nicobar Islands</option>
+                      <option value="Chandigarh">Chandigarh</option>
+                      <option value="Dadra and Nagar Haveli and Daman and Diu">Dadra and Nagar Haveli and Daman and Diu
+                      </option>
+                      <option value="Lakshadweep">Lakshadweep</option>
+                      <option value="Delhi">Delhi</option>
+                      <option value="Puducherry">Puducherry</option>
+                      <option value="Ladakh">Ladakh</option>
+                      <option value="Jammu and Kashmir">Jammu and Kashmir</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="aura-form-footer">
+                  <button class="aura-premium-btn" id="saveShopProfile">Update Details</button>
+                </div>
               </div>
-              <div class="form-group">
-                <label>Phone Number</label>
-                <input type="text" id="phoneNumber" placeholder="Enter Phone Number">
-              </div>
-              <div class="form-group">
-                <label>Email Address</label>
-                <input type="email" id="shopEmail" placeholder="Enter Shop Email">
-              </div>
-              <div class="form-group">
-                <label>Address</label>
-                <input type="text" id="shopAddress" placeholder="Enter Shop Address">
-              </div>
-              <div class="form-group">
-                <label>State</label>
-                <input type="text" id="shopState" placeholder="Enter State">
-              </div>
-              <button class="btn-save" id="saveShopProfile">Save Profile</button>
             </div>
           </div>
         </div>
 
         <div class="tab-content" id="theme">
-          <div class="theme-grid">
-            <div class="theme-card active" data-theme="light">
-              <div class="theme-preview light system-default-style">
-                <div class="p-header"></div>
-                <div class="p-body"></div>
+          <div class="aura-section-card">
+            <div class="aura-card-header">
+              <div class="aura-icon-box purple">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20z" />
+                </svg>
               </div>
-              <span>Standard Light</span>
-            </div>
-            <div class="theme-card" data-theme="dark">
-              <div class="theme-preview dark system-default-style">
-                <div class="p-header"></div>
-                <div class="p-body"></div>
+              <div class="aura-title-stack">
+                <h2 data-i18n="sidebar-themes">Interface Themes</h2>
+                <p>Customize the visual style of your software</p>
               </div>
-              <span>Standard Dark</span>
             </div>
-            <div class="theme-card" data-theme="eye-protector">
-              <div class="theme-preview eye-protector"></div>
-              <span>Eye Protector</span>
+
+            <div class="aura-preset-grid">
+              <div class="aura-preset-card" data-theme="light">
+                <div class="aura-preset-viz light"></div>
+                <span>Light</span>
+              </div>
+              <div class="aura-preset-card" data-theme="dark">
+                <div class="aura-preset-viz dark"></div>
+                <span>Dark</span>
+              </div>
+              <div class="aura-preset-card" data-theme="eye-protector">
+                <div class="aura-preset-viz eye-protector"></div>
+                <span>Comfort</span>
+              </div>
+              <div class="aura-preset-card" data-theme="ocean">
+                <div class="aura-preset-viz ocean"></div>
+                <span>Ocean</span>
+              </div>
+              <div class="aura-preset-card" data-theme="business">
+                <div class="aura-preset-viz business"></div>
+                <span>Pro</span>
+              </div>
+              <div class="aura-preset-card" data-theme="midnight-slate">
+                <div class="aura-preset-viz midnight-slate"></div>
+                <span>Slate</span>
+              </div>
+              <div class="aura-preset-card" data-theme="royal-amethyst">
+                <div class="aura-preset-viz royal-amethyst"></div>
+                <span>Amethyst</span>
+              </div>
+              <div class="aura-preset-card" data-theme="emerald-haven">
+                <div class="aura-preset-viz emerald-haven"></div>
+                <span>Emerald</span>
+              </div>
+              <div class="aura-preset-card" data-theme="sunset-horizon">
+                <div class="aura-preset-viz sunset-horizon"></div>
+                <span>Sunset</span>
+              </div>
+              <div class="aura-preset-card" data-theme="cyberpunk">
+                <div class="aura-preset-viz cyberpunk"></div>
+                <span>Neon</span>
+              </div>
+              <div class="aura-preset-card" data-theme="summer">
+                <div class="aura-preset-viz summer"></div>
+                <span>Summer</span>
+              </div>
+              <div class="aura-preset-card" data-theme="monsoon">
+                <div class="aura-preset-viz monsoon"></div>
+                <span>Monsoon</span>
+              </div>
+              <div class="aura-preset-card" data-theme="winter">
+                <div class="aura-preset-viz winter"></div>
+                <span>Winter</span>
+              </div>
+              <div class="aura-preset-card" data-theme="sakura">
+                <div class="aura-preset-viz sakura"></div>
+                <span>Sakura</span>
+              </div>
             </div>
-            <div class="theme-card" data-theme="ocean">
-              <div class="theme-preview ocean"></div>
-              <span>Ocean Blue</span>
+          </div>
+
+          <!-- MOUSE STYLE SECTION -->
+          <div class="aura-section-card" style="margin-top: 30px;">
+            <div class="aura-card-header">
+              <div class="aura-icon-box blue">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M15 15l-3 3-3-3" />
+                  <path d="M12 18V6" />
+                  <path d="M15 9l-3-3-3 3" />
+                </svg>
+              </div>
+              <div class="aura-title-stack">
+                <h2 data-i18n="sidebar-mouse-style">Premium Mouse Skins</h2>
+                <p>High-end cursor designs for MacBook, Gaming, and more</p>
+              </div>
             </div>
-            <div class="theme-card" data-theme="business">
-              <div class="theme-preview business"></div>
-              <span>Premium Business</span>
-            </div>
-            <!-- NEW PROFESSIONAL THEMES -->
-            <div class="theme-card" data-theme="midnight-slate">
-              <div class="theme-preview midnight-slate"></div>
-              <span>Midnight Slate</span>
-            </div>
-            <div class="theme-card" data-theme="royal-amethyst">
-              <div class="theme-preview royal-amethyst"></div>
-              <span>Royal Amethyst</span>
-            </div>
-            <div class="theme-card" data-theme="emerald-haven">
-              <div class="theme-preview emerald-haven"></div>
-              <span>Emerald Haven</span>
-            </div>
-            <!-- NEW CREATIVE THEMES -->
-            <div class="theme-card" data-theme="sunset-horizon">
-              <div class="theme-preview sunset-horizon"></div>
-              <span>Sunset Horizon</span>
-            </div>
-            <div class="theme-card" data-theme="cyberpunk">
-              <div class="theme-preview cyberpunk"></div>
-              <span>Cyberpunk Neon</span>
-            </div>
-            <div class="theme-card" data-theme="sakura">
-              <div class="theme-preview sakura"></div>
-              <span>Soft Sakura</span>
+
+            <div class="aura-mouse-grid">
+              <div class="aura-mouse-card" data-mouse="default">
+                <div class="aura-mouse-viz default"></div>
+                <span>Default Aura</span>
+              </div>
+              <div class="aura-mouse-card" data-mouse="macbook">
+                <div class="aura-mouse-viz macbook"></div>
+                <span>MacBook Pro</span>
+              </div>
+              <div class="aura-mouse-card" data-mouse="gaming">
+                <div class="aura-mouse-viz gaming"></div>
+                <span>Neon Gaming</span>
+              </div>
+              <div class="aura-mouse-card" data-mouse="stealth">
+                <div class="aura-mouse-viz stealth"></div>
+                <span>Phantom Stealth</span>
+              </div>
+              <div class="aura-mouse-card" data-mouse="minimal">
+                <div class="aura-mouse-viz minimal"></div>
+                <span>Minimal Luxe</span>
+              </div>
             </div>
           </div>
         </div>
 
         <div class="tab-content" id="animation">
-          <div class="animation-grid">
-            <div class="animation-card" data-anim="none">
-              <div class="animation-preview none-preview">
-                <div class="p-none">/</div>
+          <div class="aura-section-card">
+            <div class="aura-card-header">
+              <div class="aura-icon-box orange">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path
+                    d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+                </svg>
               </div>
-              <span>Disabled</span>
+              <div class="aura-title-stack">
+                <h2 data-i18n="sidebar-animation">Visual Effects</h2>
+                <p>Background animations for an immersive experience</p>
+              </div>
             </div>
-            <div class="animation-card" data-anim="squares">
-              <div class="anim-preview squares"></div>
-              <span>Floating Squares</span>
-            </div>
-            <div class="animation-card" data-anim="nexus">
-              <div class="anim-preview nexus"></div>
-              <span>Geometric Nexus</span>
-            </div>
-            <div class="animation-card" data-anim="circles">
-              <div class="anim-preview circles"></div>
-              <span>Animated Circles</span>
-            </div>
-            <div class="animation-card" data-anim="waves">
-              <div class="anim-preview waves"></div>
-              <span>Soft Waves</span>
-            </div>
-            <div class="animation-card" data-anim="bubbles">
-              <div class="anim-preview bubbles"></div>
-              <span>Floating Bubbles</span>
-            </div>
-            <div class="animation-card" data-anim="auto">
-              <div class="anim-preview auto"></div>
-              <span style="color: #2563eb; font-weight: 800;">Dynamic Fusion (Auto)</span>
-            </div>
-            <div class="animation-card" data-anim="grid">
-              <div class="anim-preview grid"></div>
-              <span>Interactive Square Grid</span>
-            </div>
-            <div class="animation-card" data-anim="particles">
-              <div class="anim-preview particles"></div>
-              <span>Quantum Particle Flow</span>
-            </div>
-            <div class="animation-card" data-anim="liquid">
-              <div class="anim-preview liquid"></div>
-              <span>Liquid Quantum Flow</span>
-            </div>
-            <div class="animation-card" data-anim="cyber">
-              <div class="anim-preview cyber"></div>
-              <span>Cyber Intelligence</span>
+            <div class="aura-preset-grid">
+              <div class="aura-anim-card" data-anim="none">
+                <div class="aura-anim-viz none">Ø</div>
+                <span>None</span>
+              </div>
+              <div class="aura-anim-card" data-anim="auto">
+                <div class="aura-anim-viz auto"></div>
+                <span class="sparkle-text">Auto Cycle</span>
+              </div>
+              <div class="aura-anim-card" data-anim="seasonal_auto">
+                <div class="aura-anim-viz auto" style="background: linear-gradient(45deg, #f59e0b, #64748b, #0ea5e9);">
+                </div>
+                <span class="sparkle-text">Seasonal Auto</span>
+              </div>
+              <div class="aura-anim-card" data-anim="squares">
+                <div class="aura-anim-viz squares"></div>
+                <span>Squares</span>
+              </div>
+              <div class="aura-anim-card" data-anim="nexus">
+                <div class="aura-anim-viz nexus"></div>
+                <span>Nexus</span>
+              </div>
+              <div class="aura-anim-card" data-anim="circles">
+                <div class="aura-anim-viz circles"></div>
+                <span>Circles</span>
+              </div>
+              <div class="aura-anim-card" data-anim="waves">
+                <div class="aura-anim-viz waves"></div>
+                <span>Waves</span>
+              </div>
+              <div class="aura-anim-card" data-anim="bubbles">
+                <div class="aura-anim-viz bubbles"></div>
+                <span>Bubbles</span>
+              </div>
+              <div class="aura-anim-card" data-anim="grid">
+                <div class="aura-anim-viz grid-viz"></div>
+                <span>Grid</span>
+              </div>
+              <div class="aura-anim-card" data-anim="particles">
+                <div class="aura-anim-viz particles"></div>
+                <span>Particles</span>
+              </div>
+              <div class="aura-anim-card" data-anim="liquid">
+                <div class="aura-anim-viz liquid"></div>
+                <span>Liquid</span>
+              </div>
+              <div class="aura-anim-card" data-anim="summer">
+                <div class="aura-anim-viz summer-viz" style="background: linear-gradient(to bottom, #fde68a, #f59e0b);">
+                </div>
+                <span>Sunbeams</span>
+              </div>
+              <div class="aura-anim-card" data-anim="monsoon">
+                <div class="aura-anim-viz monsoon-viz"
+                  style="background: linear-gradient(to bottom, #cbd5e1, #64748b);"></div>
+                <span>Monsoon Rain</span>
+              </div>
+              <div class="aura-anim-card" data-anim="winter">
+                <div class="aura-anim-viz winter-viz" style="background: linear-gradient(to bottom, #e0f2fe, #0ea5e9);">
+                </div>
+                <span>Winter Snow</span>
+              </div>
             </div>
           </div>
         </div>
-
-        <div class="tab-content" id="print">
-          <div class="print-settings-layout">
-            <div class="print-fields">
-              <div class="form-group">
-                <label>Receipt Title</label>
-                <input type="text" id="printTitle" placeholder="e.g. TAX INVOICE">
+        <div class="tab-content" id="sidebarAnim">
+          <!-- 1. SIDEBAR LAYOUT SELECTION (NEW) -->
+          <div class="aura-section-card">
+            <div class="aura-card-header">
+              <div class="aura-icon-box orange">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                  <path d="M9 3v18" />
+                </svg>
               </div>
-              <div class="form-group">
-                <label>Header Message</label>
-                <input type="text" id="printHeader" placeholder="e.g. Official Receipt">
+              <div class="aura-title-stack">
+                <h2 data-i18n="sidebar-layout-settings">Sidebar Layout</h2>
+                <p data-i18n="sidebar-layout-desc">Choose your preferred professional navigation style</p>
               </div>
-              <div class="form-group">
-                <label>Footer Message 1</label>
-                <input type="text" id="printFooter1" placeholder="e.g. Thank You">
-              </div>
-              <div class="form-group">
-                <label>Footer Message 2</label>
-                <input type="text" id="printFooter2" placeholder="e.g. Please Visit Again">
-              </div>
-              <div class="form-group">
-                <label>Preview Format</label>
-                <select id="previewFormat">
-                  <option value="1">Classic</option>
-                  <option value="2">Premium Design</option>
-                  <option value="3">Modern Receipt</option>
-                  <option value="4">Compact Bill</option>
-                  <option value="5">Detailed Service</option>
-                </select>
-              </div>
-
-              <!-- RECEIPT DETAILING (NEW) -->
-              <div class="print-detailing-section">
-                <div class="detailing-header">
-                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                    <polyline points="14 2 14 8 20 8" />
-                    <line x1="16" y1="13" x2="8" y2="13" />
-                    <line x1="16" y1="17" x2="8" y2="17" />
-                    <polyline points="10 9 9 9 8 9" />
-                  </svg>
-                  <span>Receipt Detailing (Advanced)</span>
+            </div>
+            <div class="aura-preset-grid">
+              <div class="aura-anim-card layout-card" data-sidebar-layout="classic">
+                <div class="recommended-tag">Recommended</div>
+                <div class="aura-layout-viz classic">
+                  <div class="viz-sidebar"></div>
+                  <div class="viz-content"></div>
                 </div>
-
-                <div class="form-group detailing-full">
-                  <label>GST / Tax Number</label>
-                  <input type="text" id="taxId" placeholder="e.g. 22AAAAA0000A1Z5">
+                <span data-i18n="layout-classic">Classic Full (Default)</span>
+              </div>
+              <div class="aura-anim-card layout-card" data-sidebar-layout="compact">
+                <div class="aura-layout-viz compact">
+                  <div class="viz-sidebar"></div>
+                  <div class="viz-content"></div>
                 </div>
-
-                <div class="form-group detailing-full">
-                  <label>Terms & Conditions (Max 3 lines)</label>
-                  <textarea id="receiptTerms"
-                    placeholder="1. No Refund&#10;2. Goods once sold won't be taken back"></textarea>
+                <span data-i18n="layout-compact">Compact Mini</span>
+              </div>
+              <div class="aura-anim-card layout-card" data-sidebar-layout="floating">
+                <div class="aura-layout-viz floating">
+                  <div class="viz-sidebar"></div>
+                  <div class="viz-content"></div>
                 </div>
-
-                <div class="detailing-controls">
-                  <label class="switch-label">
-                    <input type="checkbox" id="showTax">
-                    <span>Show Tax (Calculated)</span>
-                  </label>
-
-                  <div class="range-group">
-                    <div class="range-header">
-                      <label>Logo Scale</label>
-                      <span id="logoScaleVal">100%</span>
-                    </div>
-                    <input type="range" id="logoScale" min="50" max="150" value="100">
+                <span data-i18n="layout-floating">Floating Aura</span>
+              </div>
+              <div class="aura-anim-card layout-card" data-sidebar-layout="minimal">
+                <div class="aura-layout-viz minimal">
+                  <div class="viz-sidebar"></div>
+                  <div class="viz-content"></div>
+                </div>
+                <span data-i18n="layout-minimal">Glass Minimal</span>
+              </div>
+              <div class="aura-anim-card layout-card" data-sidebar-layout="rail">
+                <div class="aura-layout-viz rail">
+                  <div class="viz-sidebar"></div>
+                  <div class="viz-content"></div>
+                </div>
+                <span>Modern Rail (Pro)</span>
+              </div>
+              <div class="aura-anim-card layout-card" data-sidebar-layout="navbar">
+                <div class="aura-layout-viz navbar">
+                  <div class="viz-navbar"></div>
+                  <div class="viz-content"></div>
+                </div>
+                <span>Modern Navbar (Pro)</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- NEW: SIDEBAR STYLE SELECTION -->
+          <div class="aura-section-card" style="margin-top: 30px;">
+            <div class="aura-card-header">
+              <div class="aura-icon-box blue">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                </svg>
+              </div>
+              <div class="aura-title-stack">
+                <h2>Sidebar Style</h2>
+                <p>Choose the visual aesthetic for your menu items and background</p>
+              </div>
+            </div>
+            <div class="aura-preset-grid">
+              <div class="aura-anim-card style-card" data-sidebar-style="simple">
+                <div class="recommended-tag">Default</div>
+                <div class="aura-style-viz simple">
+                  <div class="viz-head"></div>
+                  <div class="viz-body">
+                    <div class="viz-item active"></div>
+                    <div class="viz-item"></div>
                   </div>
                 </div>
+                <span>Simple Design</span>
               </div>
+              <div class="aura-anim-card style-card" data-sidebar-style="glass">
+                <div class="aura-style-viz glass-viz">
+                  <div class="viz-head"></div>
+                  <div class="viz-body">
+                    <div class="viz-item active"></div>
+                    <div class="viz-item"></div>
+                  </div>
+                </div>
+                <span>Premium Glass</span>
+              </div>
+            </div>
+          </div>
 
-              <div class="toggle-group">
-                <label class="switch-label">
-                  <input type="checkbox" id="showContact" checked>
-                  <span>Show Contact</span>
-                </label>
-                <label class="switch-label">
-                  <input type="checkbox" id="showAddress" checked>
-                  <span>Show Address</span>
-                </label>
+          <!-- 2. SIDEBAR ANIMATIONS SECTION -->
+          <div class="aura-section-card">
+            <div class="aura-card-header">
+              <div class="aura-icon-box purple">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path
+                    d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+                </svg>
               </div>
-              <button class="btn-save" id="savePrintSettings">Save Settings</button>
+              <div class="aura-title-stack">
+                <h2 data-i18n="sidebar-fx-settings">Sidebar Animations</h2>
+                <p data-i18n="sidebar-fx-desc">Choose how menu items appear when opening the sidebar</p>
+              </div>
+            </div>
+            <div class="aura-preset-grid">
+              <div class="aura-anim-card sidebar-fx-card" data-sidebar-anim="classic">
+                <div class="aura-anim-viz classic-viz"></div>
+                <span data-i18n="anim-classic">Classic Aura</span>
+              </div>
+              <div class="aura-anim-card sidebar-fx-card" data-sidebar-anim="elastic">
+                <div class="aura-anim-viz elastic-viz"></div>
+                <span data-i18n="anim-elastic">Elastic Swing</span>
+              </div>
+              <div class="aura-anim-card sidebar-fx-card" data-sidebar-anim="ghost">
+                <div class="aura-anim-viz ghost-viz"></div>
+                <span data-i18n="anim-ghost">Spectral Fade</span>
+              </div>
+              <div class="aura-anim-card sidebar-fx-card" data-sidebar-anim="gravity">
+                <div class="aura-anim-viz gravity-viz"></div>
+                <span data-i18n="anim-gravity">Gravity Fall</span>
+              </div>
+              <div class="aura-anim-card sidebar-fx-card" data-sidebar-anim="perspective">
+                <div class="aura-anim-viz perspective-viz"></div>
+                <span data-i18n="anim-perspective">3D Perspective</span>
+              </div>
+              <div class="aura-anim-card sidebar-fx-card" data-sidebar-anim="zoom">
+                <div class="aura-anim-viz zoom-viz"></div>
+                <span data-i18n="anim-zoom">Zoom Burst</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- SIDEBAR BACKGROUND EFFECTS SECTION -->
+          <div class="aura-section-card" style="margin-top: 30px;">
+            <div class="aura-card-header">
+              <div class="aura-icon-box blue">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M4 14l6-6 6 6" />
+                  <path d="M4 6h16" />
+                  <path d="M4 10h16" />
+                  <path d="M4 18h16" />
+                </svg>
+              </div>
+              <div class="aura-title-stack">
+                <h2 data-i18n="sidebar-bg-fx-settings">Sidebar Background Effects</h2>
+                <p data-i18n="sidebar-bg-fx-desc">Add animated visual layers to the sidebar background</p>
+              </div>
+            </div>
+            <div class="aura-preset-grid">
+              <div class="aura-anim-card sidebar-bg-fx-card" data-sidebar-bg="glass">
+                <div class="aura-anim-viz bg-glass-viz"></div>
+                <span data-i18n="bg-glass">Pure Glass</span>
+              </div>
+              <div class="aura-anim-card sidebar-bg-fx-card" data-sidebar-bg="mesh">
+                <div class="aura-anim-viz bg-mesh-viz"></div>
+                <span data-i18n="bg-mesh">Animated Mesh</span>
+              </div>
+              <div class="aura-anim-card sidebar-bg-fx-card" data-sidebar-bg="cyber">
+                <div class="aura-anim-viz bg-cyber-viz"></div>
+                <span data-i18n="bg-cyber">Matrix Grid</span>
+              </div>
+              <div class="aura-anim-card sidebar-bg-fx-card" data-sidebar-bg="dust">
+                <div class="aura-anim-viz bg-dust-viz"></div>
+                <span data-i18n="bg-dust">Stellar Dust</span>
+              </div>
+              <div class="aura-anim-card sidebar-bg-fx-card" data-sidebar-bg="aurora">
+                <div class="aura-anim-viz bg-aurora-viz"></div>
+                <span data-i18n="bg-aurora">Aurora Glow</span>
+              </div>
+              <div class="aura-anim-card sidebar-bg-fx-card" data-sidebar-bg="ripple">
+                <div class="aura-anim-viz bg-ripple-viz"></div>
+                <span data-i18n="bg-ripple">Glass Ripples</span>
+              </div>
+              <div class="aura-anim-card sidebar-bg-fx-card" data-sidebar-bg="summer">
+                <div class="aura-anim-viz bg-summer-viz"></div>
+                <span data-i18n="bg-summer">Summer Presets</span>
+              </div>
+              <div class="aura-anim-card sidebar-bg-fx-card" data-sidebar-bg="monsoon">
+                <div class="aura-anim-viz bg-monsoon-viz"></div>
+                <span data-i18n="bg-monsoon">Monsoon Presets</span>
+              </div>
+              <div class="aura-anim-card sidebar-bg-fx-card" data-sidebar-bg="winter">
+                <div class="aura-anim-viz bg-winter-viz"></div>
+                <span data-i18n="bg-winter">Winter Presets</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-content" id="display">
+          <div class="aura-section-card">
+            <div class="aura-card-header">
+              <div class="aura-icon-box pink">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+                </svg>
+              </div>
+              <div class="aura-title-stack">
+                <h2 data-i18n="display-zoom-settings">Viewport Zoom</h2>
+                <p data-i18n="display-zoom-desc">Adjust the overall scale of the application UI</p>
+              </div>
             </div>
 
-            <div class="print-preview-column">
-              <label class="preview-label">Live Receipt Preview</label>
-              <div class="receipt-paper" id="liveReceiptPreview">
-                <!-- Preview injected via JS -->
+            <div class="aura-control-panel">
+              <div class="aura-slider-group">
+                <label>Zoom Level</label>
+                <div style="display:flex; align-items:center; gap: 15px;">
+                  <button class="aura-action-btn sm" id="zoomOut">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="3">
+                      <line x1="5" y1="12" x2="19" y2="12" />
+                    </svg>
+                  </button>
+                  <input type="range" id="appZoom" min="0.7" max="1.5" step="0.05" value="1.0" style="flex: 1;">
+                  <button class="aura-action-btn sm" id="zoomIn">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="3">
+                      <line x1="12" y1="5" x2="12" y2="19" />
+                      <line x1="5" y1="12" x2="19" y2="12" />
+                    </svg>
+                  </button>
+                  <span id="zoomVal" class="aura-badge" style="min-width: 50px; text-align: center;">100%</span>
+                </div>
+              </div>
+
+              <div style="margin-top: 20px; display: flex; justify-content: flex-end;">
+                <button class="aura-action-btn secondary" id="resetZoom" data-i18n="btn-reset-zoom">Reset to
+                  Default</button>
               </div>
             </div>
           </div>
         </div>
 
 
-        <div class="tab-content" id="reset">
-          <div class="reset-section">
-            <h3>Danger Zone</h3>
-            <p>Resetting the software will delete all customer data, transaction history, and settings. This action
-              cannot be undone.</p>
-            <button class="btn-danger" id="resetSoftware">Full Software Reset</button>
+
+        <div class="tab-content" id="language">
+          <div class="aura-section-card centered">
+            <div class="aura-icon-box cyan large">
+              <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="m5 8 6 6" />
+                <path d="m4 14 6-6 2-3" />
+                <path d="M2 5h12" />
+                <path d="M7 2h1" />
+                <path d="m22 22-5-10-5 10" />
+                <path d="M14 18h6" />
+              </svg>
+            </div>
+            <h2 data-i18n="language-settings">Interface Language</h2>
+            <p>Select your primary language for the digital workspace.</p>
+
+            <div class="aura-lang-grid">
+              <label class="aura-lang-item">
+                <input type="radio" name="appLang" value="en">
+                <div class="aura-lang-box">
+                  <span class="flag">🇺🇸</span>
+                  <strong>English</strong>
+                  <span>Global Standard</span>
+                </div>
+              </label>
+              <label class="aura-lang-item">
+                <input type="radio" name="appLang" value="hi">
+                <div class="aura-lang-box">
+                  <span class="flag">🇮🇳</span>
+                  <strong>हिंदी (Hindi)</strong>
+                  <span>Regional Accent</span>
+                </div>
+              </label>
+            </div>
+            <button class="aura-premium-btn" id="saveLanguage">Save Preferences</button>
+          </div>
+        </div>
+
+        <div class="tab-content" id="shortcuts">
+          <div class="aura-section-card">
+            <div class="aura-card-header">
+              <div class="aura-icon-box dark">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="2" y="4" width="20" height="16" rx="2" ry="2" />
+                  <path d="M6 8h.01" />
+                  <path d="M10 8h.01" />
+                  <path d="M14 8h.01" />
+                  <path d="M18 8h.01" />
+                  <path d="M6 12h.01" />
+                  <path d="M10 12h.01" />
+                  <path d="M14 12h.01" />
+                  <path d="M18 12h.01" />
+                  <path d="M7 16h10" />
+                </svg>
+              </div>
+              <div class="aura-title-stack">
+                <h2>Keyboard Mapping</h2>
+                <p>Speed up your workflow with custom keys</p>
+              </div>
+            </div>
+
+            <div class="aura-shortcut-list">
+              <div class="aura-sh-row">
+                <label>Dashboard Access</label>
+                <div class="aura-sh-input">
+                  <input type="text" readonly data-action="dashboard" class="shortcut-recording-input"
+                    placeholder="Record...">
+                  <kbd id="kb-dashboard" class="current-key-display">Alt + D</kbd>
+                </div>
+              </div>
+              <div class="aura-sh-row">
+                <label>Register Customer</label>
+                <div class="aura-sh-input">
+                  <input type="text" readonly data-action="new-customer" class="shortcut-recording-input"
+                    placeholder="Record...">
+                  <kbd id="kb-new-customer" class="current-key-display">Alt + N</kbd>
+                </div>
+              </div>
+              <div class="aura-sh-row">
+                <label>Open Directory</label>
+                <div class="aura-sh-input">
+                  <input type="text" readonly data-action="customer-directory" class="shortcut-recording-input"
+                    placeholder="Record...">
+                  <kbd id="kb-customer-directory" class="current-key-display">Alt + C</kbd>
+                </div>
+              </div>
+              <div class="aura-sh-row">
+                <label>System Settings</label>
+                <div class="aura-sh-input">
+                  <input type="text" readonly data-action="settings" class="shortcut-recording-input"
+                    placeholder="Record...">
+                  <kbd id="kb-settings" class="current-key-display">Alt + S</kbd>
+                </div>
+              </div>
+              <div class="aura-sh-row">
+                <label>View Reports</label>
+                <div class="aura-sh-input">
+                  <input type="text" readonly data-action="reports" class="shortcut-recording-input"
+                    placeholder="Record...">
+                  <kbd id="kb-reports" class="current-key-display">Alt + R</kbd>
+                </div>
+              </div>
+              <div class="aura-sh-row">
+                <label>Expense Manager</label>
+                <div class="aura-sh-input">
+                  <input type="text" readonly data-action="expenses" class="shortcut-recording-input"
+                    placeholder="Record...">
+                  <kbd id="kb-expenses" class="current-key-display">Alt + E</kbd>
+                </div>
+              </div>
+              <div class="aura-sh-row">
+                <label>Print Receipt</label>
+                <div class="aura-sh-input">
+                  <input type="text" readonly data-action="print-receipt" class="shortcut-recording-input"
+                    placeholder="Record...">
+                  <kbd id="kb-print-receipt" class="current-key-display">Alt + P</kbd>
+                </div>
+              </div>
+              <div class="aura-sh-row">
+                <label>Pending Payments</label>
+                <div class="aura-sh-input">
+                  <input type="text" readonly data-action="pending-payments" class="shortcut-recording-input"
+                    placeholder="Record...">
+                  <kbd id="kb-pending-payments" class="current-key-display">Alt + B</kbd>
+                </div>
+              </div>
+              <div class="aura-sh-row">
+                <label>Notifications</label>
+                <div class="aura-sh-input">
+                  <input type="text" readonly data-action="notifications" class="shortcut-recording-input"
+                    placeholder="Record...">
+                  <kbd id="kb-notifications" class="current-key-display">Alt + I</kbd>
+                </div>
+              </div>
+              <div class="aura-sh-row">
+                <label>Customer Profile</label>
+                <div class="aura-sh-input">
+                  <input type="text" readonly data-action="customer-profile" class="shortcut-recording-input"
+                    placeholder="Record...">
+                  <kbd id="kb-customer-profile" class="current-key-display">Alt + U</kbd>
+                </div>
+              </div>
+              <div class="aura-sh-row">
+                <label>Toggle Theme</label>
+                <div class="aura-sh-input">
+                  <input type="text" readonly data-action="theme-toggle" class="shortcut-recording-input"
+                    placeholder="Record...">
+                  <kbd id="kb-theme-toggle" class="current-key-display">Alt + T</kbd>
+                </div>
+              </div>
+
+              <div class="aura-sh-row">
+                <label>Software Zoom (Dynamic)</label>
+                <div class="aura-sh-input">
+                  <input type="text" readonly class="shortcut-recording-input" placeholder="System Default">
+                  <kbd id="kb-software-zoom" class="current-key-display">Ctrl + Mouse Wheel</kbd>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="aura-form-footer split">
+            <button class="aura-premium-btn sm" id="saveShortcuts">Save Maps</button>
+            <button class="aura-action-btn sm" id="resetShortcuts">Defaults</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 11. SECURITY & ACCESS CONTROL -->
+      <div id="security" class="tab-content">
+        <div class="aura-section-card">
+          <div class="aura-card-header">
+            <div class="aura-icon-box orange">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                <path d="m9 12 2 2 4-4" />
+              </svg>
+            </div>
+            <div class="aura-title-stack">
+              <h2 data-i18n="tab-security">Security & Access Control</h2>
+              <p>Manage administrative access and session security</p>
+            </div>
           </div>
 
-          <div class="separator-line"></div>
+          <div class="aura-form-area">
+            <div class="aura-input-grid">
+              <!-- Admin Credentials -->
+              <div class="aura-field">
+                <label>Administrator Username</label>
+                <input type="text" id="adminUsername" placeholder="Enter username">
+              </div>
+              <div class="aura-field">
+                <label>Current Password</label>
+                <div class="aura-field-wrapper">
+                  <input type="password" id="currentPassword" placeholder="Required for changes">
+                  <button class="password-toggle-btn" type="button" data-for="currentPassword">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                      <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <div class="aura-field">
+                <label>New Password</label>
+                <div class="aura-field-wrapper">
+                  <input type="password" id="newPassword" placeholder="Leave blank if no change">
+                  <button class="password-toggle-btn" type="button" data-for="newPassword">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                      <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <div class="aura-field">
+                <label>Master Recovery Key</label>
+                <div class="aura-field-wrapper">
+                  <input type="password" id="adminMasterKey" placeholder="Recovery Key (e.g. 8080)">
+                  <button class="password-toggle-btn" type="button" data-for="adminMasterKey">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                      <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <div class="aura-field span-2">
+                <label>Auto Logout (Inactivity Timer)</label>
+                <select id="sessionTimeout">
+                  <option value="0">Never (Always Active)</option>
+                  <option value="5">After 5 Minutes</option>
+                  <option value="15">After 15 Minutes</option>
+                  <option value="30">After 30 Minutes</option>
+                  <option value="60">After 1 Hour</option>
+                </select>
+              </div>
+            </div>
+            <div class="aura-form-footer">
+              <button class="aura-premium-btn" id="saveSecuritySettings">Update Security Config</button>
+            </div>
+          </div>
+        </div>
+      </div>
 
-          <div class="data-management-section">
-            <h3>Data Backups</h3>
-            <p>Download a copy of your data for safety or import a previous backup to restore your system.</p>
-            <div class="backup-actions">
-              <button class="btn-backup export" id="exportBackup">
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+      <div class="tab-content" id="reset">
+        <div class="aura-section-card danger">
+          <h2 data-i18n="sidebar-reset">Advanced Maintenance</h2>
+          <p>Dangerous operations. Proceed with extreme caution.</p>
+
+          <div class="aura-danger-stack">
+            <div class="aura-danger-item">
+              <div class="aura-danger-text">
+                <h3>Secure Application Reset</h3>
+                <p>Permanently erase all business logs, customer records, and customized settings.</p>
+              </div>
+              <button class="aura-danger-btn" id="resetSoftware">Wipe Everything</button>
+            </div>
+          </div>
+
+          <div class="aura-backup-mgmt">
+            <h3>System Backups</h3>
+            <p>Safe data mobility for migration or records.</p>
+            <div class="aura-backup-row">
+              <button class="aura-backup-btn export" id="exportBackup">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5">
                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
                 </svg>
                 Export Data
               </button>
-              <button class="btn-backup import" id="importBackup">
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+              <button class="aura-backup-btn import" id="importBackup">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5">
                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" />
                 </svg>
-                Restore Backup
+                Restore Point
               </button>
-              <input type="file" id="importFile" accept=".json" style="display: none;">
             </div>
+            <input type="file" id="importFile" accept=".json" style="display: none;">
           </div>
         </div>
+      </div>
 
-        <div class="tab-content" id="about">
-          <div class="about-section">
-            <div class="about-logo">JC</div>
-            <h2>Joshi Choice Center</h2>
-            <p id="currentAppVersion">Version 1.0.0</p>
-            <p>© 2026 Joshi Choice Center. All rights reserved.</p>
-            <button class="btn-secondary" id="checkUpdates">Check for Updates</button>
-            <div id="updateStatus"></div>
-          </div>
-        </div>
+      <div class="tab-content" id="about">
+        <div class="aura-about-hero">
+          <div class="aura-about-logo">JC</div>
+          <h1>Joshi Choice Center</h1>
+          <p class="aura-tagline">Empowering Small Business with Digital Intelligence</p>
 
-        <div class="tab-content" id="language">
-          <div class="language-card">
-            <h3 data-i18n="language-settings">Language Settings</h3>
-            <p data-i18n="select-language">Select Software Language</p>
-
-            <div class="language-options">
-              <label class="lang-option">
-                <input type="radio" name="appLang" value="en">
-                <span data-i18n="english">English</span>
-              </label>
-              <label class="lang-option">
-                <input type="radio" name="appLang" value="hi">
-                <span data-i18n="hindi">Hindi (हिंदी)</span>
-              </label>
+          <div class="version-info-grid">
+            <div class="version-card current">
+              <span class="v-label">Current Version</span>
+              <strong class="v-value" id="currentAppVersion">v1.3.3</strong>
             </div>
-
-            <button class="btn-save-lang" id="saveLanguage">Save Language Preference</button>
-          </div>
-        </div>
-
-        <!-- NEW SHORTCUTS TAB -->
-        <div class="tab-content" id="shortcuts">
-          <div class="shortcuts-header-container">
-            <h3>⌨️ Custom Keyboard Shortcuts</h3>
-            <p>Record your own shortcuts for faster navigation. Press <b>Escape</b> to clear.</p>
-          </div>
-
-          <div class="shortcuts-card-grid">
-            <div class="shortcut-item-card">
-              <label>Dashboard</label>
-              <div class="shortcut-input-group">
-                <input type="text" readonly data-action="dashboard" class="shortcut-recording-input"
-                  placeholder="Record...">
-                <div class="current-key-display">Alt + D</div>
-              </div>
-            </div>
-            <div class="shortcut-item-card">
-              <label>New Customer</label>
-              <div class="shortcut-input-group">
-                <input type="text" readonly data-action="new-customer" class="shortcut-recording-input"
-                  placeholder="Record...">
-                <div class="current-key-display">Alt + N</div>
-              </div>
-            </div>
-            <div class="shortcut-item-card">
-              <label>Directory</label>
-              <div class="shortcut-input-group">
-                <input type="text" readonly data-action="customer-directory" class="shortcut-recording-input"
-                  placeholder="Record...">
-                <div class="current-key-display">Alt + C</div>
-              </div>
-            </div>
-            <div class="shortcut-item-card">
-              <label>Reports</label>
-              <div class="shortcut-input-group">
-                <input type="text" readonly data-action="reports" class="shortcut-recording-input"
-                  placeholder="Record...">
-                <div class="current-key-display">Alt + R</div>
-              </div>
-            </div>
-            <div class="shortcut-item-card">
-              <label>Expenses</label>
-              <div class="shortcut-input-group">
-                <input type="text" readonly data-action="expenses" class="shortcut-recording-input"
-                  placeholder="Record...">
-                <div class="current-key-display">Alt + E</div>
-              </div>
-            </div>
-            <div class="shortcut-item-card">
-              <label>Settings</label>
-              <div class="shortcut-input-group">
-                <input type="text" readonly data-action="settings" class="shortcut-recording-input"
-                  placeholder="Record...">
-                <div class="current-key-display">Alt + S</div>
-              </div>
+            <div class="version-card latest">
+              <span class="v-label">Latest Stable</span>
+              <strong class="v-value" id="latestAppVersion">v1.3.3</strong>
             </div>
           </div>
 
-          <div class="shortcuts-actions-footer">
-            <button class="btn-save" id="saveShortcuts">Save Shortcuts</button>
-            <button class="btn-primary" id="resetShortcuts">Reset Defaults</button>
+          <div class="aura-status-pill success" id="versionStatusPill">
+            <span class="dot"></span>
+            <span id="versionStatusText">SOFTWARE UP TO DATE</span>
+          </div>
+
+          <div class="update-controls">
+            <button class="aura-update-btn" id="checkUpdates">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"
+                class="btn-icon">
+                <path d="M21 2v6h-6M3 12a9 9 0 0 1 15-6.7L21 8M3 22v-6h6M21 12a9 9 0 0 1-15 6.7L3 16"></path>
+              </svg>
+              <span>Check for Updates</span>
+            </button>
+            <p class="last-checked" id="lastCheckedText">Last checked: Just now</p>
+          </div>
+
+          <div id="updateStatus"></div>
+
+          <div class="about-footer-info">
+            <p class="aura-credits">© 2026 Joshi Choice Center. Developed with ❤️ for Business efficiency.</p>
           </div>
         </div>
       </div>
     </div>
-
-    <!-- RESET MODAL -->
-    <div id="resetModal" class="reset-overlay">
-      <div class="reset-modal-card">
-        <div class="reset-icon">⚠️</div>
-        <h3>Are you absolutely sure?</h3>
-        <p>This action will permanently delete all customer records, transaction history, and custom settings. <b>This
-            cannot be undone.</b></p>
-
-        <div class="reset-confirm-box">
-          <label for="resetComment">Type "CONFIRM" to proceed</label>
-          <textarea id="resetComment" placeholder="Type CONFIRM here..."></textarea>
-        </div>
-
-        <div class="reset-modal-actions">
-          <button class="btn-cancel" id="cancelReset">No, Keep Data</button>
-          <button class="btn-confirm-reset" id="confirmReset" disabled>Yes, Wipe Everything</button>
-        </div>
-      </div>
     </div>
+
+    <!-- Modal logic handled by aura-modals.js dynamically -->
 
     <!-- PROFESSIONAL UPDATE MODAL -->
     <div id="updateModal" class="update-overlay">
@@ -614,85 +1215,66 @@
       </div>
     </div>
 
-    <!-- WIPING OVERLAY -->
+    <!-- WIPING OVERLAY (PREMIUM SYSTEM PURGE) -->
     <div id="wipingOverlay" class="wiping-screen">
+      <div class="glitch-overlay"></div>
       <div class="wiping-content">
-        <div class="wiping-loader">
-          <div class="loader">
-            <div>
-              <ul>
-                <li>
-                  <svg fill="currentColor" viewBox="0 0 90 120">
-                    <path
-                      d="M90,0 L90,120 L11,120 C4.92486775,120 0,115.075132 0,109 L0,11 C0,4.92486775 4.92486775,0 11,0 L90,0 Z M71.5,81 L18.5,81 C17.1192881,81 16,82.1192881 16,83.5 C16,84.8254834 17.0315359,85.9100387 18.3356243,85.9946823 L18.5,86 L71.5,86 C72.8807119,86 74,84.8807119 74,83.5 C74,82.1745166 72.9684641,81.0899613 71.6643757,81.0053177 L71.5,81 Z M71.5,57 L18.5,57 C17.1192881,57 16,58.1192881 16,59.5 C16,60.8254834 17.0315359,61.9100387 18.3356243,61.9946823 L18.5,62 L71.5,62 C72.8807119,62 74,60.8807119 74,59.5 C74,58.1192881 72.8807119,57 71.5,57 Z M71.5,33 L18.5,33 C17.1192881,33 16,34.1192881 16,35.5 C16,36.8254834 17.0315359,37.9100387 18.3356243,37.9946823 L18.5,38 L71.5,38 C72.8807119,38 74,36.8807119 74,35.5 C74,34.1192881 72.8807119,33 71.5,33 Z">
-                    </path>
-                  </svg>
-                </li>
-                <li>
-                  <svg fill="currentColor" viewBox="0 0 90 120">
-                    <path
-                      d="M90,0 L90,120 L11,120 C4.92486775,120 0,115.075132 0,109 L0,11 C0,4.92486775 4.92486775,0 11,0 L90,0 Z M71.5,81 L18.5,81 C17.1192881,81 16,82.1192881 16,83.5 C16,84.8254834 17.0315359,85.9100387 18.3356243,85.9946823 L18.5,86 L71.5,86 C72.8807119,86 74,84.8807119 74,83.5 C74,82.1745166 72.9684641,81.0899613 71.6643757,81.0053177 L71.5,81 Z M71.5,57 L18.5,57 C17.1192881,57 16,58.1192881 16,59.5 C16,60.8254834 17.0315359,61.9100387 18.3356243,61.9946823 L18.5,62 L71.5,62 C72.8807119,62 74,60.8807119 74,59.5 C74,58.1192881 72.8807119,57 71.5,57 Z M71.5,33 L18.5,33 C17.1192881,33 16,34.1192881 16,35.5 C16,36.8254834 17.0315359,37.9100387 18.3356243,37.9946823 L18.5,38 L71.5,38 C72.8807119,38 74,36.8807119 74,35.5 C74,34.1192881 72.8807119,33 71.5,33 Z">
-                    </path>
-                  </svg>
-                </li>
-                <li>
-                  <svg fill="currentColor" viewBox="0 0 90 120">
-                    <path
-                      d="M90,0 L90,120 L11,120 C4.92486775,120 0,115.075132 0,109 L0,11 C0,4.92486775 4.92486775,0 11,0 L90,0 Z M71.5,81 L18.5,81 C17.1192881,81 16,82.1192881 16,83.5 C16,84.8254834 17.0315359,85.9100387 18.3356243,85.9946823 L18.5,86 L71.5,86 C72.8807119,86 74,84.8807119 74,83.5 C74,82.1745166 72.9684641,81.0899613 71.6643757,81.0053177 L71.5,81 Z M71.5,57 L18.5,57 C17.1192881,57 16,58.1192881 16,59.5 C16,60.8254834 17.0315359,61.9100387 18.3356243,61.9946823 L18.5,62 L71.5,62 C72.8807119,62 74,60.8807119 74,59.5 C74,58.1192881 72.8807119,57 71.5,57 Z M71.5,33 L18.5,33 C17.1192881,33 16,34.1192881 16,35.5 C16,36.8254834 17.0315359,37.9100387 18.3356243,37.9946823 L18.5,38 L71.5,38 C72.8807119,38 74,36.8807119 74,35.5 C74,34.1192881 72.8807119,33 71.5,33 Z">
-                    </path>
-                  </svg>
-                </li>
-                <li>
-                  <svg fill="currentColor" viewBox="0 0 90 120">
-                    <path
-                      d="M90,0 L90,120 L11,120 C4.92486775,120 0,115.075132 0,109 L0,11 C0,4.92486775 4.92486775,0 11,0 L90,0 Z M71.5,81 L18.5,81 C17.1192881,81 16,82.1192881 16,83.5 C16,84.8254834 17.0315359,85.9100387 18.3356243,85.9946823 L18.5,86 L71.5,86 C72.8807119,86 74,84.8807119 74,83.5 C74,82.1745166 72.9684641,81.0899613 71.6643757,81.0053177 L71.5,81 Z M71.5,57 L18.5,57 C17.1192881,57 16,58.1192881 16,59.5 C16,60.8254834 17.0315359,61.9100387 18.3356243,61.9946823 L18.5,62 L71.5,62 C72.8807119,62 74,60.8807119 74,59.5 C74,58.1192881 72.8807119,57 71.5,57 Z M71.5,33 L18.5,33 C17.1192881,33 16,34.1192881 16,35.5 C16,36.8254834 17.0315359,37.9100387 18.3356243,37.9946823 L18.5,38 L71.5,38 C72.8807119,38 74,36.8807119 74,35.5 C74,34.1192881 72.8807119,33 71.5,33 Z">
-                    </path>
-                  </svg>
-                </li>
-                <li>
-                  <svg fill="currentColor" viewBox="0 0 90 120">
-                    <path
-                      d="M90,0 L90,120 L11,120 C4.92486775,120 0,115.075132 0,109 L0,11 C0,4.92486775 4.92486775,0 11,0 L90,0 Z M71.5,81 L18.5,81 C17.1192881,81 16,82.1192881 16,83.5 C16,84.8254834 17.0315359,85.9100387 18.3356243,85.9946823 L18.5,86 L71.5,86 C72.8807119,86 74,84.8807119 74,83.5 C74,82.1745166 72.9684641,81.0899613 71.6643757,81.0053177 L71.5,81 Z M71.5,57 L18.5,57 C17.1192881,57 16,58.1192881 16,59.5 C16,60.8254834 17.0315359,61.9100387 18.3356243,61.9946823 L18.5,62 L71.5,62 C72.8807119,62 74,60.8807119 74,59.5 C74,58.1192881 72.8807119,57 71.5,57 Z M71.5,33 L18.5,33 C17.1192881,33 16,34.1192881 16,35.5 C16,36.8254834 17.0315359,37.9100387 18.3356243,37.9946823 L18.5,38 L71.5,38 C72.8807119,38 74,36.8807119 74,35.5 C74,34.1192881 72.8807119,33 71.5,33 Z">
-                    </path>
-                  </svg>
-                </li>
-                <li>
-                  <svg fill="currentColor" viewBox="0 0 90 120">
-                    <path
-                      d="M90,0 L90,120 L11,120 C4.92486775,120 0,115.075132 0,109 L0,11 C0,4.92486775 4.92486775,0 11,0 L90,0 Z M71.5,81 L18.5,81 C17.1192881,81 16,82.1192881 16,83.5 C16,84.8254834 17.0315359,85.9100387 18.3356243,85.9946823 L18.5,86 L71.5,86 C72.8807119,86 74,84.8807119 74,83.5 C74,82.1745166 72.9684641,81.0899613 71.6643757,81.0053177 L71.5,81 Z M71.5,57 L18.5,57 C17.1192881,57 16,58.1192881 16,59.5 C16,60.8254834 17.0315359,61.9100387 18.3356243,61.9946823 L18.5,62 L71.5,62 C72.8807119,62 74,60.8807119 74,59.5 C74,58.1192881 72.8807119,57 71.5,57 Z M71.5,33 L18.5,33 C17.1192881,33 16,34.1192881 16,35.5 C16,36.8254834 17.0315359,37.9100387 18.3356243,37.9946823 L18.5,38 L71.5,38 C72.8807119,38 74,36.8807119 74,35.5 C74,34.1192881 72.8807119,33 71.5,33 Z">
-                    </path>
-                  </svg>
-                </li>
-              </ul>
-            </div>
+        <div class="system-alert-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+            <line x1="12" y1="9" x2="12" y2="13" />
+            <line x1="12" y1="17" x2="12.01" y2="17" />
+          </svg>
+        </div>
+
+        <h1 class="wipe-title">SYSTEM_PURGE_INITIALIZED</h1>
+
+        <div class="terminal-container">
+          <div class="terminal-header">
+            <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+            <span class="terminal-title">db_purge.sh</span>
           </div>
-          <h2 id="wipingStatus">Initializing Wipe...</h2>
-          <div class="wiping-progress-container">
+          <div id="wipeConsole" class="terminal-body">
+            <div class="log-line info">> Booting secured wipe module...</div>
+          </div>
+        </div>
+
+        <div class="wiping-progress-wrapper">
+          <div class="progress-stats">
+            <span id="wipingStatus">Formatting Clusters...</span>
+            <span id="wipingPercentage">0%</span>
+          </div>
+          <div class="wiping-loader-glow">
             <div class="wiping-progress-bar" id="wipingProgress"></div>
           </div>
-          <p id="wipingPercentage">0%</p>
+        </div>
+
+        <div class="warning-footer">
+          CRITICAL ERROR: DATA_LOSS_EMINENT
         </div>
       </div>
+    </div>
 
-      <!-- MODAL ROOT -->
-      <div id="modalRoot"></div>
+    <!-- MODAL ROOT -->
+    <div id="modalRoot"></div>
   </main>
 
-  <!-- JS -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-  <script src="../public/assets/features/notification/toast.js"></script>
-  <script src="../public/assets/sidebar-pages/settings/settings.js"></script>
-  <script src="../public/assets/features/sidebar/sidebar.js"></script>
-  <script src="../public/js/assistant-speaker.js"></script>
-  <script src="../public/js/theme-toggle.js"></script>
-  <script src="../public/assets/features/notification/notification.js"></script>
-  <script src="../public/assets/sidebar-pages/global/global-background-animation.js"></script>
-  <div id="scrollArrow">▲</div>
-  <script src="../public/assets/features/scroll-toggle.js"></script>
-
-  <!-- TOAST CONTAINER -->
   <div id="toastBox"></div>
+  <div id="scrollArrow">▲</div>
 
+  <!-- JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="../public/assets/features/sidebar/sidebar.js"></script>
+  <script src="../public/js/theme-toggle.js"></script>
+  <script src="../public/js/assistant-speaker.js"></script>
+  <script src="../public/assets/features/notification/notification.js"></script>
+  <script src="../public/assets/features/notification/toast.js"></script>
+
+  <script src="../public/assets/sidebar-pages/global/global-background-animation.js"></script>
+  <script src="../public/js/aura-modals.js"></script>
+
+  <script src="../public/assets/sidebar-pages/settings/settings.js"></script>
+  <script src="../public/assets/features/scroll-toggle.js"></script>
   <script src="../public/js/shortcuts.js"></script>
 </body>
 

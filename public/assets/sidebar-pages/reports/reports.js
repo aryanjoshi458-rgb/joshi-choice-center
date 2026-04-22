@@ -24,7 +24,7 @@ function loadReports() {
   tbody.innerHTML = "";
 
   if (reports.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="14" style="text-align:center;">No Reports Found</td></tr>`;
+    tbody.innerHTML = `<tr class="no-data-row"><td colspan="14" style="text-align:center;">No Reports Found</td></tr>`;
     filteredReportsData = []; // ✅ Clear globally
     return;
   }
@@ -292,9 +292,10 @@ function updateSummaryMetrics() {
   const rows = document.querySelectorAll("#reportsTable tbody tr");
 
   rows.forEach(row => {
-    // Only count visible rows
-    if (row.style.display !== "none") {
-      const chargeCell = row.querySelector("td:nth-child(9)");
+    // Skip if no-data placeholder or hidden
+    if (row.classList.contains("no-data-row") || row.style.display === "none") return;
+
+    const chargeCell = row.querySelector("td:nth-child(9)");
       const totalCell = row.querySelector("td:nth-child(10)");
 
       const charge = parseFloat(chargeCell?.textContent.replace(/[^\d.]/g, "")) || 0;

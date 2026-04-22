@@ -1,19 +1,29 @@
-/* CUSTOMER DIRECTORY LOGIC - JOSHI CHOICE CENTER */
+/* ADVANCED CUSTOMER DIRECTORY LOGIC - JOSHI CHOICE CENTER */
 
 document.addEventListener("DOMContentLoaded", () => {
     const customerGrid = document.getElementById("customerGrid");
     const customerSearch = document.getElementById("customerSearch");
     const totalCustCount = document.getElementById("totalCustCount");
+    const totalBusinessValue = document.getElementById("totalBusinessValue");
+    const returningRate = document.getElementById("returningRate");
+    const filterTabs = document.getElementById("filterTabs");
+    const directorySort = document.getElementById("directorySort");
 
     let allCustomers = [];
+    let currentFilter = "all";
+    let currentSort = "lastSeen";
 
-    // 1. DATA EXTRACTION
+    // 1. DATA EXTRACTION & STATS
     function loadCustomers() {
         const txns = JSON.parse(localStorage.getItem("transactions") || "[]");
         const customerMap = new Map();
+        let totalBusiness = 0;
 
         txns.forEach(t => {
             const mobile = t.mobileNumber.toString();
+            const txnAmount = Number(t.totalAmount || 0);
+            totalBusiness += txnAmount;
+
             if (!customerMap.has(mobile)) {
                 customerMap.set(mobile, {
                     name: t.customerName || "Customer",
@@ -21,18 +31,28 @@ document.addEventListener("DOMContentLoaded", () => {
                     totalVisits: 0,
                     totalSpend: 0,
                     lastSeen: new Date(0),
-                    address: t.address || "-"
+                    firstSeen: new Date(t.date || Date.now()),
+                    address: t.address || "-",
+                    history: [] // Store last 3 txns
                 });
             }
 
             const c = customerMap.get(mobile);
             c.totalVisits += 1;
-            c.totalSpend += Number(t.totalAmount || 0);
+            c.totalSpend += txnAmount;
+            
+            // Manage History (Keep last 3)
+            c.history.unshift({
+                service: t.serviceName || "Service",
+                amount: txnAmount,
+                status: (t.status || "Success").toLowerCase(),
+                date: t.date
+            });
+            if (c.history.length > 3) c.history.pop();
             
             const txnDate = new Date(t.date);
             if (txnDate > c.lastSeen) {
                 c.lastSeen = txnDate;
-                // If this is a newer txn, update name/address if they were missing
                 if (t.customerName) c.name = t.customerName;
                 if (t.address && t.address !== "-") c.address = t.address;
             }
@@ -40,36 +60,86 @@ document.addEventListener("DOMContentLoaded", () => {
 
         allCustomers = Array.from(customerMap.values());
         
-        // Calculate Top Customers (Top 5 by Spend)
+        // Calculate Top Customers
         const sortedBySpend = [...allCustomers].sort((a,b) => b.totalSpend - a.totalSpend);
-        const top5Threshold = sortedBySpend.length >= 5 ? sortedBySpend[4].totalSpend : 0;
+        const topThreshold = sortedBySpend.length >= 5 ? sortedBySpend[Math.floor(allCustomers.length * 0.1) || 4].totalSpend : 0;
         
         allCustomers.forEach(c => {
-            if (c.totalSpend >= top5Threshold && c.totalSpend > 0) {
-                c.isTop = true;
-            }
+            if (c.totalSpend >= topThreshold && c.totalSpend > 0) c.isTop = true;
         });
 
-        allCustomers.sort((a, b) => b.lastSeen - a.lastSeen); // Keep newest last seen first
-        
+        // Dashboard Stats
         totalCustCount.innerText = allCustomers.length;
-        renderCustomers(allCustomers);
+        totalBusinessValue.innerText = `₹${new Intl.NumberFormat('en-IN').format(totalBusiness)}`;
+        
+        const returningCusts = allCustomers.filter(c => c.totalVisits > 1).length;
+        const rate = allCustomers.length > 0 ? Math.round((returningCusts / allCustomers.length) * 100) : 0;
+        returningRate.innerText = `${rate}%`;
+
+        applyFiltersAndSearch();
     }
 
-    // 2. RENDERING
+    // 2. FILTER & SORT ENGINE
+    function applyFiltersAndSearch() {
+        const searchTerm = customerSearch.value.toLowerCase();
+        const now = new Date();
+        const thirtyDaysAgo = new Date(now.setDate(now.getDate() - 30));
+
+        let filtered = allCustomers.filter(c => {
+            const matchesSearch = c.name.toLowerCase().includes(searchTerm) || c.mobile.includes(searchTerm);
+            if (!matchesSearch) return false;
+
+            if (currentFilter === "all") return true;
+            if (currentFilter === "regular") return c.totalVisits >= 5;
+            if (currentFilter === "top") return c.isTop;
+            if (currentFilter === "new") return new Date(c.firstSeen) > thirtyDaysAgo;
+            
+            return true;
+        });
+
+        // Apply Sorting
+        filtered.sort((a, b) => {
+            if (currentSort === "lastSeen") return b.lastSeen - a.lastSeen;
+            if (currentSort === "spend") return b.totalSpend - a.totalSpend;
+            if (currentSort === "visits") return b.totalVisits - a.totalVisits;
+            if (currentSort === "name") return a.name.localeCompare(b.name);
+            return 0;
+        });
+
+        renderCustomers(filtered);
+    }
+
+    // 3. RENDERING
     function renderCustomers(data) {
         if (data.length === 0) {
-            customerGrid.innerHTML = `<div class="loading-state">No customers found matching your search.</div>`;
+            customerGrid.innerHTML = `<div class="loading-state">No customers found matching your criteria.</div>`;
             return;
         }
 
         let html = "";
-        data.forEach((c, idx) => {
+        data.forEach(c => {
             const initial = c.name.charAt(0).toUpperCase();
             const lastDate = c.lastSeen.getTime() === 0 ? "N/A" : c.lastSeen.toLocaleDateString("en-GB").replace(/\//g, "-");
             const starHtml = c.isTop ? `<div class="star-badge" title="Top Customer">★</div>` : "";
             const topClass = c.isTop ? "is-top-elite" : "";
             
+            // Build Quick Preview HTML
+            let historyHtml = "";
+            if (c.history && c.history.length > 0) {
+                historyHtml = `<div class="quick-preview">
+                    <span class="preview-title">Recent Activity</span>
+                    ${c.history.map(h => `
+                        <div class="preview-item">
+                            <span class="p-service">${h.service}</span>
+                            <div style="display:flex; align-items:center;">
+                                <span class="p-amount">₹${h.amount}</span>
+                                <div class="p-status ${h.status}"></div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>`;
+            }
+
             html += `
                 <div class="customer-card premium-shadow ${topClass}" onclick="viewProfile('${c.mobile}')" style="opacity: 0; transform: translateY(20px);">
                     ${starHtml}
@@ -87,12 +157,14 @@ document.addEventListener("DOMContentLoaded", () => {
                             <span class="lab">Visits</span>
                         </div>
                         <div class="stat-item">
-                            <span class="val">₹${c.totalSpend.toFixed(0)}</span>
+                            <span class="val">₹${new Intl.NumberFormat('en-IN').format(c.totalSpend.toFixed(0))}</span>
                             <span class="lab">Total Spend</span>
                         </div>
                     </div>
 
-                    <div class="card-footer">
+                    ${historyHtml}
+
+                    <div class="card-footer" style="margin-top: ${historyHtml ? '15px' : '0'}">
                         <div class="last-seen">Last: ${lastDate}</div>
                         <div class="view-link">
                             <span>View Profile</span>
@@ -105,27 +177,32 @@ document.addEventListener("DOMContentLoaded", () => {
 
         customerGrid.innerHTML = html;
 
-        // Animate entrance
         gsap.to(".customer-card", {
             opacity: 1,
             y: 0,
             duration: 0.5,
-            stagger: 0.08,
-            ease: "back.out(1.7)"
+            stagger: 0.05,
+            ease: "back.out(1.4)"
         });
     }
 
-    // 3. SEARCH LOGIC
-    customerSearch.addEventListener("input", (e) => {
-        const val = e.target.value.toLowerCase();
-        const filtered = allCustomers.filter(c => 
-            c.name.toLowerCase().includes(val) || 
-            c.mobile.includes(val)
-        );
-        renderCustomers(filtered);
+    // 4. EVENT LISTENERS
+    customerSearch.addEventListener("input", applyFiltersAndSearch);
+
+    filterTabs.querySelectorAll(".filter-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            filterTabs.querySelector(".active").classList.remove("active");
+            btn.classList.add("active");
+            currentFilter = btn.dataset.filter;
+            applyFiltersAndSearch();
+        });
     });
 
-    // Initial Load
+    directorySort.addEventListener("change", (e) => {
+        currentSort = e.target.value;
+        applyFiltersAndSearch();
+    });
+
     loadCustomers();
 });
 

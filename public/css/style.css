@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
+
 :root {
   --primary-color: #2563eb;
   --bg-color: #f5f7fb;
@@ -170,7 +172,11 @@ body.sakura-mode {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Segoe UI", sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+h1, h2, h3, .app-title, .sidebar-header span, .sidebar-logo {
+  font-family: 'Outfit', sans-serif !important;
 }
 
 body {
@@ -178,6 +184,33 @@ body {
   color: var(--text-main);
   overflow-x: hidden;
   transition: background 0.3s, color 0.3s;
+}
+
+/* GLOBAL MOUSE STYLES - UPDATED FOR PREMIUM SKINS */
+body.ms-default { cursor: default; }
+
+body.ms-macbook, body.ms-macbook * { 
+    cursor: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M5.5 3.21V19.21L8.85 15.86L10.75 20.71L13 19.71L11.1 14.86H15.5L5.5 3.21Z' fill='black' stroke='white' stroke-width='1.5' stroke-linejoin='round'/%3E%3C/svg%3E"), auto; 
+}
+
+body.ms-gaming, body.ms-gaming * { 
+    cursor: url("data:image/svg+xml,%3Csvg width='32' height='32' viewBox='0 0 32 32' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6 4L22 16L6 28V4Z' fill='rgba(0, 255, 255, 0.8)' stroke='%2300ffff' stroke-width='2' stroke-linejoin='round' /%3E%3C/svg%3E"), auto; 
+}
+
+body.ms-stealth, body.ms-stealth * { 
+    cursor: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M3 3V21L6 18L10 22L12 20L8 16H14L3 3Z' fill='%231e293b' fill-opacity='0.9' stroke='%2364748b' stroke-width='1'/%3E%3C/svg%3E"), auto; 
+}
+
+body.ms-minimal, body.ms-minimal * { 
+    cursor: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='12' cy='12' r='4' fill='white' stroke='black' stroke-width='1.5'/%3E%3C/svg%3E"), auto; 
+}
+
+/* Allow inputs to keep their text cursor */
+body[class*="ms-"] input[type="text"], 
+body[class*="ms-"] input[type="password"], 
+body[class*="ms-"] input[type="email"],
+body[class*="ms-"] textarea { 
+    cursor: text !important; 
 }
 
 
@@ -1091,6 +1124,33 @@ body.cyberpunk-mode #reportTable thead th {
   border-left: 4px solid var(--primary-color);
   padding-left: 15px;
   transition: all 0.3s;
+}
+
+.unified-card:hover .section-title {
+  padding-left: 20px;
+  color: #1d4ed8;
+}
+
+/* DARK MODE OVERRIDES FOR PREMIUM */
+body.dark-mode .glass-header {
+  background: rgba(30, 41, 59, 0.8) !important;
+}
+
+body.dark-mode .premium-footer {
+  background: rgba(30, 41, 59, 0.9) !important;
+}
+
+body.dark-mode .unified-card input,
+body.dark-mode .unified-card select {
+  background: #1e293b;
+  border-color: #334155;
+  color: #f8fafc;
+}
+
+/* TODAY REPORT REMAINS UNTOUCHED */
+border-left: 4px solid var(--primary-color);
+padding-left: 15px;
+transition: all 0.3s;
 }
 
 .unified-card:hover .section-title {

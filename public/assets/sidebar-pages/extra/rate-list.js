@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const serviceNameInput = document.getElementById("serviceName");
     const serviceCategoryInput = document.getElementById("serviceCategory");
     const servicePriceInput = document.getElementById("servicePrice");
+    const serviceChargeInput = document.getElementById("serviceCharge");
     const saveRateBtn = document.getElementById("saveRateBtn");
     const cancelRateBtn = document.getElementById("cancelRateBtn");
 
@@ -18,13 +19,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Default Rates to seed
     const defaultRates = [
-        { id: "1", name: "Aadhaar Print (Color)", category: "Govt Services", price: 30 },
-        { id: "2", name: "Aadhaar Download + Print", category: "Govt Services", price: 50 },
-        { id: "3", name: "Passport Photo (8 Copy)", category: "Photography", price: 50 },
-        { id: "4", name: "Scanning (Per Page)", category: "Document", price: 10 },
-        { id: "5", name: "Lamination (A4)", category: "Document", price: 20 },
-        { id: "6", name: "Pan Card Application", category: "Govt Services", price: 250 },
-        { id: "7", name: "Money Transfer (Upto 5k)", category: "Banking", price: 50 }
+        { id: "1", name: "Aadhaar Print (Color)", category: "Govt Services", price: 30, charge: 5 },
+        { id: "2", name: "Aadhaar Download + Print", category: "Govt Services", price: 50, charge: 10 },
+        { id: "3", name: "Passport Photo (8 Copy)", category: "Photography", price: 50, charge: 0 },
+        { id: "4", name: "Scanning (Per Page)", category: "Document", price: 10, charge: 0 },
+        { id: "5", name: "Lamination (A4)", category: "Document", price: 20, charge: 0 },
+        { id: "6", name: "Pan Card Application", category: "Govt Services", price: 250, charge: 50 },
+        { id: "7", name: "Money Transfer (Upto 5k)", category: "Banking", price: 50, charge: 25 }
     ];
 
     // Load Rates
@@ -50,6 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 </td>
                 <td><span class="category-tag">${rate.category}</span></td>
                 <td><span class="price-tag">₹${rate.price}</span></td>
+                <td><span class="charge-tag">₹${rate.charge || 0}</span></td>
                 <td>
                     <div class="action-btns">
                         <button class="action-btn edit" data-id="${rate.id}">✏️</button>
@@ -84,6 +86,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const name = serviceNameInput.value.trim();
         const category = serviceCategoryInput.value.trim();
         const price = Number(servicePriceInput.value);
+        const charge = Number(serviceChargeInput.value);
 
         if (!name || !price) {
             alert("Name and Price are required!");
@@ -95,14 +98,15 @@ document.addEventListener("DOMContentLoaded", () => {
         if (editMode) {
             const index = rates.findIndex(r => r.id === editId);
             if (index !== -1) {
-                rates[index] = { id: editId, name, category, price };
+                rates[index] = { id: editId, name, category, price, charge };
             }
         } else {
             const newRate = {
                 id: Date.now().toString(),
                 name,
                 category,
-                price
+                price,
+                charge
             };
             rates.push(newRate);
         }
@@ -139,6 +143,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     serviceNameInput.value = rate.name;
                     serviceCategoryInput.value = rate.category;
                     servicePriceInput.value = rate.price;
+                    serviceChargeInput.value = rate.charge || 0;
                     rateModal.classList.add("active");
                 }
             });

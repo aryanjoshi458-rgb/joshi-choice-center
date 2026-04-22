@@ -1,0 +1,168 @@
+/* =========================================
+   AURA MODALS - PREMIUM DIALOG SYSTEM
+   ========================================= */
+
+.aura-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    z-index: 20000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+}
+
+.aura-modal-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.aura-modal-card {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 30px;
+    padding: 40px;
+    width: 90%;
+    max-width: 450px;
+    text-align: center;
+    box-shadow: 0 40px 100px rgba(0, 0, 0, 0.2);
+    transform: scale(0.8) translateY(20px);
+    transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+body.dark-mode .aura-modal-card {
+    background: rgba(15, 23, 42, 0.85);
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 40px 100px rgba(0, 0, 0, 0.5);
+}
+
+.aura-modal-overlay.active .aura-modal-card {
+    transform: scale(1) translateY(0);
+}
+
+/* CONTENT PRESETS */
+.aura-modal-icon {
+    width: 70px;
+    height: 70px;
+    margin: 0 auto 25px auto;
+    background: #f3f4f6;
+    border-radius: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+}
+
+body.dark-mode .aura-modal-icon {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.aura-modal-icon.warning { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+.aura-modal-icon.error { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+.aura-modal-icon.success { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+.aura-modal-icon.info { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+
+.aura-modal-card h3 {
+    font-size: 1.6rem;
+    font-weight: 800;
+    margin-bottom: 12px;
+    color: var(--text-main, #1e293b);
+    letter-spacing: -0.5px;
+}
+
+.aura-modal-card p {
+    font-size: 1rem;
+    color: var(--text-soft, #64748b);
+    line-height: 1.6;
+    margin-bottom: 30px;
+}
+
+/* ACTIONS */
+.aura-modal-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.aura-modal-btn {
+    padding: 14px 28px;
+    border-radius: 16px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    border: none;
+    flex: 1;
+}
+
+.aura-modal-btn.cancel {
+    background: var(--aura-bg, #f1f5f9);
+    color: var(--text-main, #1e293b);
+    border: 1px solid var(--aura-border, #e2e8f0);
+}
+
+.aura-modal-btn.confirm {
+    background: #3b82f6;
+    color: white;
+    box-shadow: 0 10px 20px rgba(59, 130, 246, 0.25);
+}
+
+.aura-modal-btn.danger {
+    background: linear-gradient(135deg, #f43f5e, #e11d48);
+    color: white;
+    box-shadow: 0 10px 20px rgba(225, 29, 72, 0.25);
+}
+
+.aura-modal-btn:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+}
+
+/* SPECIAL FOR RESET */
+.aura-modal-input-box {
+    margin-bottom: 25px;
+}
+
+.aura-modal-input-box label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: #ef4444;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+}
+
+.aura-modal-input-box input {
+    width: 100%;
+    padding: 14px;
+    border-radius: 14px;
+    border: 2px solid #e2e8f0;
+    text-align: center;
+    font-weight: 800;
+    font-size: 1.1rem;
+    letter-spacing: 2px;
+    background: var(--aura-bg, #f8fafc);
+    color: var(--text-main);
+    transition: all 0.3s;
+}
+
+body.dark-mode .aura-modal-input-box input {
+    border-color: rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.aura-modal-input-box input:focus {
+    border-color: #ef4444;
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.15);
+}

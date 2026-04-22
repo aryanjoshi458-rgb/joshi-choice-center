@@ -108,6 +108,16 @@ setTimeout(() => {
 
     loadCustomers();
     if(window.AppLoader) window.AppLoader.hide();
+    
+    // Log Notification
+    if (window.parent && window.parent.createAppNotification) {
+        window.parent.createAppNotification(
+            "New Pending Payment",
+            `Customer: ${name}, Service: ${work}, Amount: ₹${charge}`,
+            "reminder"
+        );
+    }
+
     if(typeof showToast === "function") showToast("Record Added! 📝");
 }, 600);
 }
@@ -123,6 +133,16 @@ setTimeout(() => {
     localStorage.setItem("pendingCustomers",JSON.stringify(list));
     loadCustomers();
     if(window.AppLoader) window.AppLoader.hide();
+    
+    // Log Notification
+    if (window.parent && window.parent.createAppNotification) {
+        window.parent.createAppNotification(
+            "Payment Received",
+            `Customer: ${list[i].name} has paid ₹${list[i].charge}`,
+            "transaction"
+        );
+    }
+
     if(typeof showToast === "function") showToast("Status: PAID! ✅");
 }, 500);
 }
@@ -177,35 +197,48 @@ w ? w.charAt(0).toUpperCase() + w.slice(1) : ""
 }
 
 
-// MOBILE +91 FIX
+// MOBILE +91 FIX (SMART FOCUS)
 let mobileField = document.getElementById("mobile");
 
 if(mobileField){
+    // Reset initial value to empty
+    mobileField.value = "";
 
-mobileField.value = "+91 ";
+    mobileField.addEventListener("focus", function(){
+        if(this.value.trim() === "" || this.value === "+91"){
+            this.value = "+91 ";
+            this.dispatchEvent(new Event("input"));
+        }
+    });
 
-mobileField.addEventListener("input", function(){
+    mobileField.addEventListener("blur", function(){
+        if(this.value.trim() === "+91"){
+            this.value = "";
+            this.dispatchEvent(new Event("input"));
+        }
+    });
 
-let digits = this.value.replace(/\D/g,'');
+    mobileField.addEventListener("input", function(){
+        let digits = this.value.replace(/\D/g,'');
+        
+        // If no digits and not focused, keep it empty
+        if (digits.length === 0 && document.activeElement !== this) {
+            this.value = "";
+            return;
+        }
+        
+        if(digits.startsWith("91")){
+            digits = digits.slice(2);
+        }
+        digits = digits.slice(0,10);
+        this.value = "+91 " + digits;
+    });
 
-if(digits.startsWith("91")){
-digits = digits.slice(2);
-}
-
-digits = digits.slice(0,10);
-
-this.value = "+91 " + digits;
-
-});
-
-mobileField.addEventListener("keydown", function(e){
-
-if(this.selectionStart <= 4 && (e.key==="Backspace" || e.key==="Delete")){
-e.preventDefault();
-}
-
-});
-
+    mobileField.addEventListener("keydown", function(e){
+        if(this.selectionStart <= 4 && (e.key==="Backspace" || e.key==="Delete")){
+            e.preventDefault();
+        }
+    });
 }
 
 });

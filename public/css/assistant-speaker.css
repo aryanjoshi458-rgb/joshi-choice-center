@@ -1,67 +1,137 @@
-/* ================================
-   VOICE ASSISTANT SPEAKER BUTTON
-   ================================ */
+/* =========================================
+   AURA PREMIUM VOICE ASSISTANT TRIGGER
+   Glassmorphism + Neon Aura Aesthetics
+   ========================================= */
 
 .assistant-speaker {
   position: fixed;
-  top: 12px;
-  left: 22px;
+  top: 10px;
+  left: 20px;
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 6px 12px;
-  background: #ffffff;
-  border-radius: 20px;
-  border: 1px solid #e0e0e0;
+  gap: 12px;
+  padding: 8px 8px;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-radius: 50px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s ease;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3),
+              inset 0 0 15px rgba(99, 102, 241, 0.1);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   z-index: 9999;
-}
-
-/* Hover */
-.assistant-speaker:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
-}
-
-/* Icon */
-.assistant-speaker .icon {
-  width: 18px;
-  height: 18px;
-  fill: #2563eb;
-  transition: transform 0.3s ease;
-}
-
-/* Text */
-.assistant-speaker span {
-  font-size: 13px;
-  font-weight: 500;
-  color: #333;
   user-select: none;
 }
 
-/* Speaking animation */
-.assistant-speaker.speaking .icon {
-  animation: pulse 1s infinite;
+/* Premium Border Pulse Effect */
+.assistant-speaker::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: 50px;
+  background: linear-gradient(90deg, #6366f1, #a855f7, #6366f1);
+  background-size: 200% 100%;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.4s;
+  animation: borderRotate 3s linear infinite;
 }
 
-@keyframes pulse {
-  0%   { transform: scale(1); }
-  50%  { transform: scale(1.2); }
-  100% { transform: scale(1); }
+@keyframes borderRotate {
+  0% { background-position: 0% 0%; }
+  100% { background-position: 200% 0%; }
 }
 
+/* Hover State */
+.assistant-speaker:hover {
+  transform: translateY(-2px) scale(1.05);
+  background: rgba(30, 41, 59, 0.8);
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 15px 40px rgba(99, 102, 241, 0.4),
+              inset 0 0 20px rgba(99, 102, 241, 0.2);
+}
 
+.assistant-speaker:hover::after {
+  opacity: 0.5;
+}
 
-/* Menu + Speak smooth move */
-#sidebarToggle,
+/* Active / Chat Open State */
+.assistant-speaker.active {
+  background: linear-gradient(135deg, #6366f1, #a855f7);
+  border-color: transparent;
+  box-shadow: 0 10px 30px rgba(168, 85, 247, 0.5);
+}
+
+.assistant-speaker.active span {
+  color: white;
+}
+
+.assistant-speaker.active .icon {
+  fill: white;
+}
+
+/* Premium Icon Styles */
+.assistant-speaker .icon {
+  width: 20px;
+  height: 20px;
+  fill: #818cf8; /* Indigo-400 */
+  filter: drop-shadow(0 0 8px rgba(99, 102, 241, 0.6));
+  transition: all 0.3s ease;
+}
+
+.assistant-speaker:hover .icon {
+  fill: #fff;
+  transform: rotate(-10deg) scale(1.1);
+}
+
+/* Premium Typography (Span) */
+.assistant-speaker span {
+  font-size: 14px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  font-family: 'Poppins', sans-serif;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Sidebar Sync Logic */
 #assistantSpeaker {
-  transition: transform 0.35s ease;
+  transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1);
 }
 
-/* jab sidebar open ho */
-body.sidebar-open #sidebarToggle,
 body.sidebar-open #assistantSpeaker {
-  transform: translateX(260px); /* sidebar width */
+  transform: translateX(280px);
 }
+
+/* =========================================
+   LIGHT MODE OVERRIDES - HD PREMIUM AURA
+   ========================================= */
+body:not(.dark-mode) .assistant-speaker {
+  background: rgba(255, 255, 255, 0.6);
+  border-color: rgba(99, 102, 241, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05),
+              inset 0 0 15px rgba(99, 102, 241, 0.05);
+}
+
+body:not(.dark-mode) .assistant-speaker:hover {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(99, 102, 241, 0.3);
+  box-shadow: 0 15px 40px rgba(99, 102, 241, 0.15);
+}
+
+body:not(.dark-mode) .assistant-speaker span {
+  color: #1e293b;
+  text-shadow: none;
+}
+
+body:not(.dark-mode) .assistant-speaker .icon {
+  fill: #6366f1;
+  filter: drop-shadow(0 0 5px rgba(99, 102, 241, 0.2));
+}
+
+body:not(.dark-mode) .assistant-speaker:hover .icon {
+  fill: #4338ca;
+}
+

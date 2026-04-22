@@ -1,7 +1,7 @@
-(function() {
+(function () {
     // Global AppLoader API
     window.AppLoader = {
-        show: function(message = "Processing...") {
+        show: function (message = "Processing...") {
             let loaderWrapper = document.getElementById('global-loader');
             if (!loaderWrapper) {
                 loaderWrapper = document.createElement('div');
@@ -9,23 +9,12 @@
                 loaderWrapper.className = 'loader-wrapper';
                 loaderWrapper.innerHTML = `
                     <div class="loader-content-wrapper">
-                        <div aria-label="Orange and tan hamster running in a metal wheel" role="img" class="wheel-and-hamster">
-                            <div class="wheel"></div>
-                            <div class="hamster">
-                                <div class="hamster__body">
-                                    <div class="hamster__head">
-                                        <div class="hamster__ear"></div>
-                                        <div class="hamster__eye"></div>
-                                        <div class="hamster__nose"></div>
-                                    </div>
-                                    <div class="hamster__limb hamster__limb--fr"></div>
-                                    <div class="hamster__limb hamster__limb--fl"></div>
-                                    <div class="hamster__limb hamster__limb--br"></div>
-                                    <div class="hamster__limb hamster__limb--bl"></div>
-                                    <div class="hamster__tail"></div>
-                                </div>
+                        <div class="skeleton-loader">
+                            <div class="skeleton-circle"></div>
+                            <div class="skeleton-lines">
+                                <div class="skeleton-line short"></div>
+                                <div class="skeleton-line long"></div>
                             </div>
-                            <div class="spoke"></div>
                         </div>
                         <div class="loader-status-text">${message}</div>
                     </div>
@@ -45,17 +34,19 @@
                 loaderWrapper.classList.remove('loader-hidden');
             }
         },
-        hide: function() {
+        hide: function () {
             const loader = document.getElementById('global-loader');
             if (loader) {
+                // Immediately disable interaction to prevent blocking inputs during fade-out
+                loader.style.pointerEvents = 'none';
                 loader.classList.add('loader-hidden');
-                // We keep it in DOM but hidden to allow quick re-show without re-injecting
-                // or we can remove it. Let's remove it after transition for cleaner DOM.
+
+                // Remove from DOM once transition is done
                 setTimeout(() => {
-                    if (loader.classList.contains('loader-hidden') && loader.parentNode) {
+                    if (loader.parentNode) {
                         loader.parentNode.removeChild(loader);
                     }
-                }, 500);
+                }, 600);
             }
         }
     };
@@ -63,7 +54,10 @@
     // Initial load logic
     function init() {
         // Check if we should skip the auto-loader (e.g., on Login page)
-        if (document.body && document.body.hasAttribute('data-no-auto-loader')) {
+        const skipLoader = document.documentElement.hasAttribute('data-no-auto-loader') ||
+            (document.body && document.body.hasAttribute('data-no-auto-loader'));
+
+        if (skipLoader) {
             return;
         }
 

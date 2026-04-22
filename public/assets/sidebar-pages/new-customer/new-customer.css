@@ -1,49 +1,50 @@
 /* CONTENT */
 .content {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 25px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 25px;
 }
 
 .card {
-    background: #fff;
-    padding: 22px;
-    border-radius: 16px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  background: #fff;
+  padding: 22px;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
 }
 
 .card.full {
-    grid-column: 1 / -1;
+  grid-column: 1 / -1;
 }
 
 .card h2 {
-    margin-bottom: 18px;
-    font-size: 20px;
+  margin-bottom: 18px;
+  font-size: 20px;
 }
 
 /* FORMS */
 .form-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
 }
 
 .form-grid.single {
-    grid-template-columns: 1fr;
+  grid-template-columns: 1fr;
 }
 
 label {
-    font-size: 13px;
-    color: #555;
+  font-size: 13px;
+  color: #555;
 }
 
-input, select {
-    width: 100%;
-    padding: 10px 12px;
-    margin-top: 6px;
-    border-radius: 10px;
-    border: 1px solid #ccc;
-    font-size: 14px;
+input,
+select {
+  width: 100%;
+  padding: 10px 12px;
+  margin-top: 6px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  font-size: 14px;
 }
 
 /* =========================
@@ -55,9 +56,10 @@ input, select {
   background: #ffffff;
   padding: 20px;
   border-radius: 14px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
   box-sizing: border-box;
-  overflow-x: auto;   /* allow horizontal scroll */
+  overflow-x: auto;
+  /* allow horizontal scroll */
 }
 
 /* Title */
@@ -84,7 +86,8 @@ input, select {
 #reportTable {
   width: 100%;
   border-collapse: collapse;
-  table-layout: fixed;   /* 🔥 MOST IMPORTANT */
+  table-layout: fixed;
+  /* 🔥 MOST IMPORTANT */
 }
 
 /* Header */
@@ -171,40 +174,64 @@ input, select {
 
 /* column widths */
 .report-card th:nth-child(1),
-.report-card td:nth-child(1) { width: 50px; }
+.report-card td:nth-child(1) {
+  width: 50px;
+}
 
 .report-card th:nth-child(2),
-.report-card td:nth-child(2) { width: 90px; }
+.report-card td:nth-child(2) {
+  width: 90px;
+}
 
 .report-card th:nth-child(3),
-.report-card td:nth-child(3) { width: 140px; }
+.report-card td:nth-child(3) {
+  width: 140px;
+}
 
 .report-card th:nth-child(4),
-.report-card td:nth-child(4) { width: 120px; }
+.report-card td:nth-child(4) {
+  width: 120px;
+}
 
 .report-card th:nth-child(5),
-.report-card td:nth-child(5) { width: 140px; }
+.report-card td:nth-child(5) {
+  width: 140px;
+}
 
 .report-card th:nth-child(6),
-.report-card td:nth-child(6) { width: 130px; }
+.report-card td:nth-child(6) {
+  width: 130px;
+}
 
 .report-card th:nth-child(7),
-.report-card td:nth-child(7) { width: 130px; }
+.report-card td:nth-child(7) {
+  width: 130px;
+}
 
 .report-card th:nth-child(8),
-.report-card td:nth-child(8) { width: 80px; }
+.report-card td:nth-child(8) {
+  width: 80px;
+}
 
 .report-card th:nth-child(9),
-.report-card td:nth-child(9) { width: 80px; }
+.report-card td:nth-child(9) {
+  width: 80px;
+}
 
 .report-card th:nth-child(10),
-.report-card td:nth-child(10) { width: 110px; }
+.report-card td:nth-child(10) {
+  width: 110px;
+}
 
 .report-card th:nth-child(11),
-.report-card td:nth-child(11) { width: 100px; }
+.report-card td:nth-child(11) {
+  width: 100px;
+}
 
 .report-card th:nth-child(12),
-.report-card td:nth-child(12) { width: 130px; }
+.report-card td:nth-child(12) {
+  width: 130px;
+}
 
 /* action buttons */
 .report-card td:last-child {
@@ -231,6 +258,3 @@ input, select {
 /* =========================
    REPORT CARD – DARK MODE
 ========================= */
-
-
-

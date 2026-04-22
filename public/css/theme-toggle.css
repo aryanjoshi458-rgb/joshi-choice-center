@@ -1,121 +1,200 @@
-/* ===== THEME TOGGLE (SMOOTH & CLEAN) ===== */
+/* ============================================================ */
+/*           AURA CELESTIAL v4 - SEASONAL SYNC ENGINE           */
+/* ============================================================ */
 
-.slider {
+.aura-celestial-v4 {
   position: fixed;
-  top: 14px;
-  right: 18px;
-  width: 88px;
-  height: 34px;
-  border-radius: 20px;
-  background: linear-gradient(135deg, #8fd3ff, #32ace9);
-  transition: background 0.5s ease;
-  z-index: 9999;
-}
-.slider.dark {
-  background: linear-gradient(135deg, #1c1f26, #2f3e46);
-}
-/* TOGGLE */
-.slider-toggle {
-  position: absolute;
-  top: 3px;
-  left: 3px;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: #ffd600;
-  box-shadow: 0 0 8px rgba(255,214,0,0.8);
+  top: 15px;
+  right: 20px;
+  width: 110px;
+  height: 40px;
+  background: transparent;
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-radius: 50px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
   cursor: pointer;
+  z-index: 10001;
+  overflow: hidden;
+  padding: 4px;
+  display: flex;
+  align-items: center;
   transition: all 0.5s ease;
+  pointer-events: auto;
 }
-.slider-toggle.dark {
-  left: 57px;
-  background: #e0e0e0;
-  box-shadow: 0 0 6px rgba(255,255,255,0.6);
-}
-/* CLOUD / STARS */
-.slider-accent {
+
+/* LOCALIZED SKY BACKGROUND */
+.celestial-sky-window {
   position: absolute;
-  top: 13px;
-  left: 38px;
-  transition: all 0.5s ease;
-  opacity: 1;
+  top: 0; left: 0; width: 100%; height: 100%;
+  z-index: 1;
+  transition: background 1s ease;
 }
 
-/* CLOUD */
-.slider-accent.light {
-  width: 18px;
-  height: 10px;
-  background: #fff;
-  border-radius: 6px;
-  box-shadow:
-    7px 0 #fff,
-    14px 0 #fff,
-    7px -5px #fff;
-  transform: scale(1);
-}/* STARS */
-.slider-accent.dark {
-  width: 4px;
-  height: 4px;
-  background: #fff;
+/* CELESTIAL KNOB - SEASONAL SYNC */
+.celestial-knob-v4 {
+  position: relative;
+  width: 30px; height: 30px;
   border-radius: 50%;
+  z-index: 30;
+  transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.8s ease, box-shadow 0.8s ease;
+}
+
+.dark-mode .celestial-knob-v4 {
+  transform: translateX(72px);
+}
+
+/* ============================================================ */
+/*                SEASONAL SKY & KNOB VARIANTS                  */
+/* ============================================================ */
+
+/* --- SUMMER (Bright & Intense) --- */
+.season-summer .celestial-sky-window { background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%); }
+.dark-mode .season-summer .celestial-sky-window { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); }
+
+.season-summer .celestial-knob-v4 { 
+  background: radial-gradient(circle at 30% 30%, #fff7ad 0%, #ffd700 40%, #f59e0b 100%);
+  box-shadow: 
+    0 0 15px #ffd700, 
+    0 0 30px rgba(245, 158, 11, 0.6), 
+    inset 2px 2px 5px rgba(255,255,255,0.8), 
+    inset -2px -2px 5px rgba(0,0,0,0.1); 
+}
+.dark-mode .season-summer .celestial-knob-v4 { 
+  background: #d1d5db; /* Moon Gray Base */
+  background-image: 
+    radial-gradient(circle at 25% 25%, rgba(0,0,0,0.15) 12%, transparent 13%),
+    radial-gradient(circle at 65% 35%, rgba(0,0,0,0.1) 18%, transparent 19%),
+    radial-gradient(circle at 45% 75%, rgba(0,0,0,0.12) 10%, transparent 11%),
+    radial-gradient(circle at 80% 80%, rgba(0,0,0,0.08) 14%, transparent 15%);
+  box-shadow: 
+    inset -4px -4px 6px rgba(0,0,0,0.2), 
+    0 0 15px rgba(255, 255, 255, 0.2); 
+}
+
+
+/* --- MONSOON (Overcast & Stormy) --- */
+.season-monsoon .celestial-sky-window { background: linear-gradient(135deg, #64748b 0%, #475569 100%); }
+.dark-mode .season-monsoon .celestial-sky-window { background: linear-gradient(135deg, #334155 0%, #1e293b 100%); }
+
+.season-monsoon .celestial-knob-v4 { 
+  background: radial-gradient(circle at 30% 30%, #fef08a 0%, #fde047 60%, #eab308 100%);
+  box-shadow: 
+    0 0 10px rgba(253, 224, 71, 0.6), 
+    inset 1px 1px 3px rgba(255,255,255,0.5); 
+}
+.dark-mode .season-monsoon .celestial-knob-v4 { 
+  background: #94a3b8; /* Hazy Mist Moon */
   box-shadow:
-    10px 0 #fff,
-    20px -4px #fff,
-    26px 4px #fff;
-  transform: scale(1.1);
-}
-/* ===============================
-   SMOOTH THEME TRANSITION
-   =============================== */
-
-html, body {
-  transition: background-color 0.45s ease,
-              color 0.45s ease;
+            inset -2px -2px 4px rgba(0,0,0,0.2),
+            inset 6px -2px 0 rgba(0,0,0,0.07),
+            0 0 10px rgba(148, 163, 184, 0.2);
 }
 
-/* cards, panels, sections */
-.card,
-.panel,
-.container,
-.customer-card,
-.transaction-card,
-.report-card {
-  transition: background-color 0.45s ease,
-              box-shadow 0.45s ease,
-              border-color 0.45s ease;
+/* --- WINTER (Cool & Icy) --- */
+.season-winter .celestial-sky-window { background: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%); }
+.dark-mode .season-winter .celestial-sky-window { background: linear-gradient(135deg, #0f172a 0%, #020617 100%); }
+
+.season-winter .celestial-knob-v4 { 
+  background: radial-gradient(circle at 30% 30%, #fff 0%, #fef08a 50%, #facc15 100%);
+  box-shadow: 
+    0 0 20px rgba(254, 240, 138, 0.8), 
+    inset 2px 2px 4px rgba(255,255,255,0.9); 
+}
+.dark-mode .season-winter .celestial-knob-v4 { 
+  background: #e2e8f0; /* Icy Moon Gray */
+  background-image: 
+    radial-gradient(circle at 30% 30%, rgba(0,0,0,0.1) 10%, transparent 11%),
+    radial-gradient(circle at 70% 50%, rgba(0,0,0,0.05) 15%, transparent 16%),
+    radial-gradient(circle at 50% 80%, rgba(0,0,0,0.08) 12%, transparent 13%);
+  box-shadow: 
+    inset -3px -3px 5px rgba(0,0,0,0.15), 
+    0 0 20px rgba(255, 255, 255, 0.3); 
 }
 
-/* inputs & selects */
-input,
-select,
-textarea {
-  transition: background-color 0.35s ease,
-              color 0.35s ease,
-              border-color 0.35s ease;
+
+/* ============================================================ */
+/*                ATMOSPHERIC PARTICLES                         */
+/* ============================================================ */
+
+.celestial-fx-particle {
+  position: absolute;
+  pointer-events: none;
+  z-index: 15;
+  opacity: 0;
 }
 
-/* buttons */
-button {
-  transition: background-color 0.3s ease,
-              color 0.3s ease,
-              box-shadow 0.3s ease,
-              transform 0.15s ease;
+.fx-day-ray {
+  width: 150%; height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+  animation: dayTwinkle 2.5s ease-in-out infinite;
 }
 
-/* table */
-table,
-thead,
-tbody,
-tr,
-th,
-td {
-  transition: background-color 0.35s ease,
-              color 0.35s ease;
+.fx-day-cloud {
+  width: 25px; height: 12px;
+  background: rgba(255,255,255,0.4);
+  border-radius: 20px;
+  filter: blur(4px);
+  animation: dayDrift 15s linear infinite;
 }
 
-/* header / navbar */
-header,
-.top-bar {
-  transition: background-color 0.45s ease,
-              box-shadow 0.45s ease;
+/* HIDE SUNRAYS IN MONSOON */
+.season-monsoon .fx-day-ray { display: none; }
+
+.fx-day-rain {
+  width: 1px; height: 10px;
+  background: rgba(255,255,255,0.3);
+  animation: celestialFall 0.8s linear infinite;
+}
+
+.fx-night-star {
+  width: 2px; height: 2px;
+  background: white;
+  border-radius: 50%;
+  box-shadow: 0 0 5px white;
+  animation: nightTwinkle 2s ease-in-out infinite;
+}
+
+.fx-night-snow {
+  width: 4px; height: 4px;
+  background: white;
+  border-radius: 50%;
+  animation: celestialFall 4s linear infinite;
+}
+
+.fx-night-rain {
+  width: 2px; height: 15px;
+  background: rgba(135, 206, 235, 0.4);
+  animation: celestialFall 0.5s linear infinite;
+}
+
+/* ANIMATIONS */
+@keyframes celestialFall {
+  0% { transform: translateY(-20px) translateX(0); opacity: 0; }
+  15% { opacity: 0.8; }
+  85% { opacity: 0.8; }
+  100% { transform: translateY(50px) translateX(10px); opacity: 0; }
+}
+
+@keyframes dayTwinkle {
+  0%, 100% { opacity: 0.1; transform: scaleX(1); }
+  50% { opacity: 0.6; transform: scaleX(1.4); }
+}
+
+@keyframes dayDrift {
+  0% { transform: translateX(-40px); opacity: 0; }
+  20% { opacity: 0.5; }
+  80% { opacity: 0.5; }
+  100% { transform: translateX(110px); opacity: 0; }
+}
+
+@keyframes nightTwinkle {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.5); }
+}
+
+/* HIDE FALLBACKS */
+#day, #night, #darkmode, #background-sky, .slider-accent, .slider-toggle { 
+  display: none !important; 
 }

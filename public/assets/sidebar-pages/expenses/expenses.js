@@ -42,6 +42,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Handle Form Submission
     if (expenseForm) {
+        expenseForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const newExpense = {
+                id: Date.now().toString(),
+                date: document.getElementById("expDate").value,
+                category: document.getElementById("expCategory").value,
+                description: document.getElementById("expDescription").value,
+                amount: parseFloat(document.getElementById("expAmount").value)
+            };
+
             if (window.AppLoader) window.AppLoader.show("Saving Expense...");
 
             setTimeout(() => {
@@ -82,6 +92,22 @@ document.addEventListener("DOMContentLoaded", () => {
         const expenses = JSON.parse(localStorage.getItem("expenses")) || [];
         expenses.push(expense);
         localStorage.setItem("expenses", JSON.stringify(expenses));
+        
+        // Log Notification
+        if (window.parent && window.parent.createAppNotification) {
+            window.parent.createAppNotification(
+                "Expense Logged",
+                `Category: ${expense.category}, Amount: ₹${expense.amount}, Desc: ${expense.description}`,
+                "system"
+            );
+        } else if (window.createAppNotification) {
+            window.createAppNotification(
+                "Expense Logged",
+                `Category: ${expense.category}, Amount: ₹${expense.amount}, Desc: ${expense.description}`,
+                "system"
+            );
+        }
+
         loadExpenses();
     }
 

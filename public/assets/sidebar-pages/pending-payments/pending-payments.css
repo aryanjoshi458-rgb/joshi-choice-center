@@ -142,12 +142,11 @@ td {
 
 }
 
-.floating-input input:focus+label,
-.floating-input input:valid+label {
+.floating-input input:focus + label,
+.floating-input input:not(:placeholder-shown) + label {
   top: -8px;
   font-size: 11px;
   color: var(--primary-color);
-
 }
 
 .floating-input input:focus {

@@ -5,6 +5,26 @@
  * UPDATED: CONDITIONAL FIELD VALIDATION
  **************************************************/
 
+/* CORE APP LOGIC - JOSHI CHOICE CENTER */
+
+// 0. GLOBAL NOTIFICATION HELPER
+window.createAppNotification = function(title, desc, cat = "system") {
+    const newNotif = {
+        id: Date.now(),
+        title: title,
+        desc: desc,
+        cat: cat,
+        time: new Date().toISOString(),
+        read: false
+    };
+    
+    let allNotifs = JSON.parse(localStorage.getItem("app_notifications") || "[]");
+    allNotifs.unshift(newNotif);
+    localStorage.setItem("app_notifications", JSON.stringify(allNotifs));
+
+    if (window.updateSidebarBadge) window.updateSidebarBadge();
+};
+
 document.addEventListener("DOMContentLoaded", () => {
   // Initial Loads
   loadTransactionsToTable();
@@ -133,6 +153,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const allTxns = JSON.parse(localStorage.getItem("transactions")) || [];
     const transactionId = "TXN" + String(allTxns.length + 1).padStart(3, "0");
 
+    // Helper to strip commas
+    const unformat = (val) => String(val || "0").replace(/,/g, "");
+
     const transaction = {
       date: txnDate.value,
       customerName: customerData.name,
@@ -140,10 +163,10 @@ document.addEventListener("DOMContentLoaded", () => {
       aadharNumber: customerData.aadhar,
       address: customerData.address,
       serviceName: serviceType.options[serviceType.selectedIndex].text.trim() + (document.getElementById("serviceName")?.value ? " - " + document.getElementById("serviceName").value : ""),
-      amount: document.getElementById("amount")?.value || "0",
-      charge: document.getElementById("charge")?.value || "0",
-      totalAmount: document.getElementById("totalAmount")?.value || "0",
-      netPayable: document.getElementById("netPayable")?.value || "0",
+      amount: unformat(document.getElementById("amount")?.value),
+      charge: unformat(document.getElementById("charge")?.value),
+      totalAmount: unformat(document.getElementById("totalAmount")?.value),
+      netPayable: unformat(document.getElementById("netPayable")?.value),
       paymentMode: document.getElementById("paymentMode")?.value || "Cash",
       status: document.getElementById("status")?.value || "Success",
       targetId: document.getElementById("targetId")?.value || "",
@@ -154,6 +177,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
     allTxns.push(transaction);
     localStorage.setItem("transactions", JSON.stringify(allTxns));
+
+    // B. Generate Notification for New Transaction
+    if (window.createAppNotification) {
+        window.createAppNotification(
+            "New Transaction Saved",
+            `Customer: ${transaction.customerName}, Service: ${transaction.serviceName}, Amount: ₹${transaction.totalAmount}`,
+            "transaction"
+        );
+    }
 
     // C. Handle Printing
     if (shouldPrint) {
@@ -211,7 +243,8 @@ document.addEventListener("DOMContentLoaded", () => {
     chargeGroup: document.getElementById("chargeGroup"),
     totalGroup: document.getElementById("totalGroup"),
     netPayableGroup: document.getElementById("netPayableGroup"),
-    paymentModeGroup: document.getElementById("paymentModeGroup")
+    paymentModeGroup: document.getElementById("paymentModeGroup"),
+    denomination: document.getElementById("cashDenominationBlock")
   };
 
   function hideAllBlocks() {
@@ -240,6 +273,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (isBanking) {
         blocks.bank.style.display = "block";
       } else {
+        if (blocks.denomination) blocks.denomination.style.display = "none";
         if (val === "Mobile & Utility Services") {
           blocks.serviceName.style.display = "block";
         } else if (val === "Printing & Document Services") {
@@ -281,6 +315,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // If enquiry, Payment Mode should also be hidden as no payment occurs
         if (isEnquiry) blocks.paymentModeGroup.style.display = "none";
+
+        // 3. Show Denomination Calculator for Cash Withdrawal
+        if (blocks.denomination) {
+          blocks.denomination.style.display = isWithdraw ? "block" : "none";
+          if (isWithdraw && typeof window.refreshDenominations === "function") {
+            window.refreshDenominations();
+          }
+        }
 
       } else {
         blocks.amount.style.display = "none";
@@ -425,9 +467,15 @@ window.loadTransactionsToTable = function () {
     row.insertCell(4).innerText = txn.aadharNumber;
     row.insertCell(5).innerText = txn.address || "N/A";
     row.insertCell(6).innerText = txn.serviceName;
-    row.insertCell(7).innerText = txn.amount;
-    row.insertCell(8).innerText = txn.charge;
-    row.insertCell(9).innerText = txn.totalAmount;
+    // Helper for table display
+    const f = (val) => {
+        const n = parseFloat(String(val || "0").replace(/,/g, ""));
+        return isNaN(n) ? "0" : new Intl.NumberFormat('en-IN').format(n);
+    };
+
+    row.insertCell(7).innerText = f(txn.amount);
+    row.insertCell(8).innerText = f(txn.charge);
+    row.insertCell(9).innerText = f(txn.totalAmount);
     row.insertCell(10).innerText = txn.paymentMode;
 
     const statusClass = (txn.status || "").toLowerCase() === "success" ? "paid" : ((txn.status || "").toLowerCase() === "failed" ? "failed" : "pending");
@@ -477,7 +525,7 @@ window.openEditModal = function (id) {
   // Date conversion for <input type="date">
   let dateVal = t.date;
   const editDateInput = document.getElementById("editDate");
-  
+
   if (dateVal.includes("-") && dateVal.split("-")[0].length === 2) {
     // Already in DD-MM-YYYY
     if (editDateInput.type === "date") {
@@ -493,16 +541,22 @@ window.openEditModal = function (id) {
   }
   editDateInput.value = dateVal;
 
+  // Helper to format modal fields
+  const f = (val) => {
+      const n = parseFloat(String(val || "0").replace(/,/g, ""));
+      return isNaN(n) ? "0" : new Intl.NumberFormat('en-IN').format(n);
+  };
+
   document.getElementById("editName").value = t.customerName || "";
   document.getElementById("editMobile").value = t.mobileNumber || "";
   document.getElementById("editAadhar").value = t.aadharNumber || "";
   document.getElementById("editAddress").value = t.address || "";
   document.getElementById("editService").value = t.serviceName || t.serviceType || "";
-  document.getElementById("editAmount").value = t.amount || 0;
-  document.getElementById("editCharge").value = t.charge || 0;
-  
+  document.getElementById("editAmount").value = f(t.amount);
+  document.getElementById("editCharge").value = f(t.charge);
+
   if (document.getElementById("editNetPayable")) {
-    document.getElementById("editNetPayable").value = t.netPayable || (Number(t.amount || 0) - Number(t.charge || 0));
+    document.getElementById("editNetPayable").value = f(t.netPayable || (Number(t.amount || 0) - Number(t.charge || 0)));
     document.getElementById("editNetPayableGroup").style.display = (t.serviceName || "").includes("Cash Withdrawal") ? "block" : "none";
   }
 
@@ -536,6 +590,8 @@ window.saveTransactionEdit = function () {
     return;
   }
 
+  const unformat = (val) => String(val || "0").replace(/,/g, "");
+
   // Update object
   reports[index].date = document.getElementById("editDate").value;
   reports[index].customerName = document.getElementById("editName").value;
@@ -543,14 +599,19 @@ window.saveTransactionEdit = function () {
   reports[index].aadharNumber = document.getElementById("editAadhar").value;
   reports[index].address = document.getElementById("editAddress").value;
   reports[index].serviceName = document.getElementById("editService").value;
-  reports[index].amount = document.getElementById("editAmount").value;
-  reports[index].charge = document.getElementById("editCharge").value;
+  
+  // Save unformatted values
+  reports[index].amount = unformat(document.getElementById("editAmount").value);
+  reports[index].charge = unformat(document.getElementById("editCharge").value);
 
   const paymentModeEl = document.getElementById("editPaymentMode");
   if (paymentModeEl) reports[index].paymentMode = paymentModeEl.value;
 
-  reports[index].totalAmount = Number(reports[index].amount) + Number(reports[index].charge);
-  reports[index].netPayable = Number(reports[index].amount) - Number(reports[index].charge);
+  const a = parseFloat(reports[index].amount) || 0;
+  const c = parseFloat(reports[index].charge) || 0;
+
+  reports[index].totalAmount = (a + c).toString();
+  reports[index].netPayable = (a - c).toString();
   reports[index].status = document.getElementById("editStatus").value;
 
   // New Fields
@@ -600,12 +661,17 @@ window.resetTransactionForm = function () {
   const txnDate = document.getElementById("txnDate");
   if (txnDate) txnDate.value = new Date().toISOString().split("T")[0];
 
-  // Hide All dynamic blocks
-  const dynamicBlocks = ["bankBlock", "bankServiceBlock", "printServiceBlock", "serviceNameBlock", "operatorBlock", "electricityBlock", "transferBlock", "externalRefBlock", "amountBlock"];
+  // Hide All dynamic blocks (including Denomination)
+  const dynamicBlocks = ["bankBlock", "bankServiceBlock", "printServiceBlock", "serviceNameBlock", "operatorBlock", "electricityBlock", "transferBlock", "externalRefBlock", "amountBlock", "cashDenominationBlock"];
   dynamicBlocks.forEach(id => {
     const el = document.getElementById(id);
     if (el) el.style.display = "none";
   });
+
+  // Reset Denominations
+  if (typeof window.resetDenominations === "function") {
+    window.resetDenominations();
+  }
 
   // Reset Stars
   ["nameReqStar", "aadharReqStar", "addrReqStar"].forEach(id => {

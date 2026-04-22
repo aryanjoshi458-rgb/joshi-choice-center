@@ -1,0 +1,156 @@
+/* =========================================
+   AURA PREMIUM DENOMINATION CALCULATOR
+   Glassmorphism + Neon Aesthetics
+   ========================================= */
+
+.denomination-block {
+    margin-top: 25px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1.5px solid var(--border-color);
+    border-radius: 20px;
+    animation: auraFadeIn 0.5s ease-out;
+}
+
+body.dark-mode .denomination-block {
+    background: rgba(15, 23, 42, 0.2);
+}
+
+.denom-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px dashed var(--border-color);
+}
+
+.denom-header h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-main);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.denom-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 15px;
+}
+
+.denom-row {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 14px;
+    border: 1px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.denom-row:focus-within {
+    border-color: var(--primary-color);
+    background: rgba(37, 99, 235, 0.05);
+    box-shadow: 0 5px 15px rgba(37, 99, 235, 0.1);
+}
+
+.denom-label {
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: var(--text-muted);
+    display: flex;
+    justify-content: space-between;
+}
+
+.denom-input-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.denom-input {
+    width: 100%;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-main);
+    text-align: center;
+}
+
+.denom-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.denom-total {
+    font-size: 0.75rem;
+    font-weight: 900;
+    color: var(--primary-color);
+    text-align: right;
+    margin-top: 4px;
+}
+
+/* Summary Footer */
+.denom-summary {
+    margin-top: 25px;
+    padding: 20px;
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.05), rgba(16, 185, 129, 0.05));
+    border-radius: 16px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.summary-item {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.summary-label {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+.summary-value {
+    font-size: 1.25rem;
+    font-weight: 900;
+    color: var(--text-main);
+}
+
+.summary-value.match {
+    color: #10b981;
+    /* Emerald-500 */
+    text-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+}
+
+.summary-value.mismatch {
+    color: #ef4444;
+    /* Red-500 */
+    text-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
+}
+
+@keyframes auraFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 600px) {
+    .denom-summary {
+        grid-template-columns: 1fr;
+    }
+}

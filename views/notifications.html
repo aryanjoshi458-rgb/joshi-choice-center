@@ -20,6 +20,8 @@
     
     <script src="../public/js/auth.js"></script>
     <script>Auth.protectPage();</script>
+    <link rel="stylesheet" href="../public/css/aura-modals.css">
+    <link rel="stylesheet" href="../public/css/aura-assistant.css">
 </head>
 
 <body>
@@ -29,8 +31,8 @@
     <!-- Sidebar -->
     <div id="proSidebar">
         <div class="sidebar-header">
-            <div class="logo" style="width: 30px; height: 30px; font-size: 0.8rem; margin: 0;">JC</div>
-            <span class="app-title" style="font-size: 1.1rem; padding-bottom: 4px;" data-i18n="app-title">Joshi Choice Center</span>
+            <div class="sidebar-logo">JC</div>
+            <span data-i18n="app-title">Joshi Choice Center</span>
         </div>
 
         <div class="sidebar-menu">
@@ -149,21 +151,61 @@
         </div>
     </div>
 
-    <!-- Toggle Button -->
-    <button id="sidebarToggle">☰</button>
+  <!-- Toggle Button (Speak ke niche) -->
+  <button id="sidebarToggle">
+    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+      stroke-linejoin="round">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </button>
 
-    <!-- VOICE + THEME CONTROLS -->
-    <div class="assistant-speaker" id="assistantSpeaker">
-        <svg class="icon" viewBox="0 0 24 24">
-            <path d="M3 10v4h4l5 5V5L7 10H3z" />
+  <!-- VOICE + THEME CONTROLS -->
+  <div class="assistant-speaker" id="assistantSpeaker">
+    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+      stroke-linejoin="round">
+      <path d="M11 5L6 9H2v6h4l5 4V5z"></path>
+      <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+    </svg>
+    <span>Speak</span>
+  </div>
+
+  <!-- AURA CELESTIAL v4 THEME SLIDER -->
+  <div class="aura-celestial-v4" id="themeToggleV4">
+    <div class="celestial-sky-window"></div>
+    <div class="celestial-knob-v4" id="celestialKnob"></div>
+  </div>
+
+   <!-- AURA SMART CHAT PANEL -->
+  <div id="auraChatPanel" class="aura-chat-panel">
+    <div class="aura-chat-header">
+      <div class="aura-chat-header-left">
+        <div class="aura-chat-logo">AI</div>
+        <div class="aura-chat-header-info">
+          <h3>Aura Assistant</h3>
+          <p>Your Smart Companion</p>
+        </div>
+      </div>
+      <div class="aura-chat-controls">
+        <div class="aura-chat-control min"></div>
+        <div class="aura-chat-control max"></div>
+        <div id="closeAuraChat" class="aura-chat-control close"></div>
+      </div>
+    </div>
+    <div class="aura-chat-history" id="auraChatHistory">
+      <!-- Messages appear here -->
+    </div>
+    <div class="aura-chat-input-area">
+      <input type="text" id="auraChatInput" placeholder="Ask about the software...">
+      <button class="aura-chat-send" id="auraChatSend">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="22" y1="2" x2="11" y2="13" />
+          <polygon points="22 2 15 22 11 13 2 9 22 2" />
         </svg>
-        <span>Speak</span>
+      </button>
     </div>
-
-    <div class="slider light" id="themeToggle">
-        <div class="slider-toggle light"></div>
-        <div class="slider-accent light"></div>
-    </div>
+  </div>
 
     <!-- Main content -->
     <main class="main">
@@ -175,39 +217,75 @@
             </div>
         </header>
 
-        <div class="notifications-premium-wrapper">
-            <div class="interactive-bg" id="particle-container"></div>
-            
-            <div class="glass-card">
-                <div class="animation-viewport">
-                    <!-- Sound Wave Rings -->
-                    <div class="sound-waves">
-                        <div class="wave-ring ring-1"></div>
-                        <div class="wave-ring ring-2"></div>
-                        <div class="wave-ring ring-3"></div>
+        <div class="notification-center-container">
+            <!-- Dashboard Header -->
+            <div class="notification-header premium-shadow">
+                <div class="header-left">
+                    <div class="header-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                        </svg>
+                        <span class="unread-count" id="unreadBadge">0</span>
                     </div>
+                    <div>
+                        <h2 data-i18n="notification-center">Notification Center</h2>
+                        <p id="notifSubtitle">Stay updated with center activity</p>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <button class="btn-action secondary" id="markAllRead">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                        Mark all as read
+                    </button>
+                    <button class="btn-action danger" id="clearAllNotifs">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                        Clear All
+                    </button>
+                </div>
+            </div>
 
-                    <!-- Complex Bell SVG -->
-                    <svg class="premium-bell" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
-                        <!-- Top Hook -->
-                        <path class="bell-hook" d="M45,10 L55,10 L55,20 L45,20 Z" fill="currentColor" />
-                        <!-- Bell Body -->
-                        <g class="bell-body-group">
-                            <path class="bell-body" d="M20,70 C20,40 30,20 50,20 C70,20 80,40 80,70 L85,75 L15,75 Z" />
-                            <circle class="bell-clapper" cx="50" cy="80" r="8" />
-                        </g>
-                    </svg>
+            <div class="notification-main-grid">
+                <!-- Filters Sidebar -->
+                <div class="notif-filters premium-shadow">
+                    <button class="filter-link active" data-filter="all">
+                        <span class="dot all"></span> All Notifications
+                    </button>
+                    <button class="filter-link" data-filter="transaction">
+                        <span class="dot trans"></span> Transactions
+                    </button>
+                    <button class="filter-link" data-filter="system">
+                        <span class="dot sys"></span> System Alerts
+                    </button>
+                    <button class="filter-link" data-filter="security">
+                        <span class="dot sec"></span> Security Logs
+                    </button>
+                    <button class="filter-link" data-filter="reminder">
+                        <span class="dot rem"></span> Reminders
+                    </button>
+
+                    <div class="daily-summary-preview" id="dailySummaryCard">
+                        <h4>Daily Insights</h4>
+                        <div class="summary-stat">
+                            <span>Today's Business</span>
+                            <strong id="sumBusiness">₹0</strong>
+                        </div>
+                        <div class="summary-stat">
+                            <span>Total Txns</span>
+                            <strong id="sumTxns">0</strong>
+                        </div>
+                        <button class="btn-summary" id="generateSummary">View Full Summary</button>
+                    </div>
                 </div>
 
-                <div class="coming-soon-content">
-                    <h2 class="stagger-text" data-i18n="notifications-title">Notifications Coming Soon</h2>
-                    <div class="text-underline"></div>
-                    <p data-i18n="notifications-desc">Experience a next-generation alert system. We are crafting a seamless way to track payments, transaction status, and important updates in real-time.</p>
-                    
-                    <div class="feature-tags">
-                        <span class="tag">Real-time</span>
-                        <span class="tag">Smart Filters</span>
-                        <span class="tag">Voice Alerts</span>
+                <!-- Feed Area -->
+                <div class="notif-feed-container">
+                    <div id="notifFeed" class="notif-feed">
+                        <!-- Notifications injected by JS -->
+                        <div class="empty-state">
+                            <div class="empty-icon">🔔</div>
+                            <h3>All Caught Up!</h3>
+                            <p>No new notifications at the moment.</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -215,16 +293,22 @@
 
     </main>
 
+    <div id="toastBox"></div>
+    <div id="scrollArrow">▲</div>
+
     <!-- JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="../public/js/translations.js"></script>
     <script src="../public/js/language-manager.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="../public/assets/features/sidebar/sidebar.js"></script>
-    <script src="../public/js/assistant-speaker.js"></script>
     <script src="../public/js/theme-toggle.js"></script>
+    <script src="../public/js/assistant-speaker.js"></script>
+    <script src="../public/assets/features/notification/notification.js"></script>
+    <script src="../public/assets/features/notification/toast.js"></script>
+    <script src="../public/js/loader.js"></script>
     <script src="../public/assets/sidebar-pages/global/global-background-animation.js"></script>
     <script src="../public/assets/sidebar-pages/notifications/notifications.js"></script>
-    <script src="../public/js/loader.js"></script>
+    <script src="../public/js/shortcuts.js"></script>
 </body>
 
 </html>

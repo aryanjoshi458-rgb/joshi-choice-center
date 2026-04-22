@@ -15,6 +15,8 @@
     <link rel="stylesheet" href="../public/css/modals-shared.css">
 
     <!-- UPER ME JO TOGGLES LAGA HAI USKA CSS LINK HAI -->
+    <link rel="stylesheet" href="../public/css/aura-modals.css">
+    <link rel="stylesheet" href="../public/css/aura-assistant.css">
     <link rel="stylesheet" href="../public/assets/features/sidebar/sidebar.css">
     <link rel="stylesheet" href="../public/css/theme-toggle.css">
     <link rel="stylesheet" href="../public/css/assistant-speaker.css">
@@ -27,6 +29,7 @@
     <link rel="stylesheet" href="../public/assets/features/modern-datepicker/modern-datepicker.css">
     <link rel="stylesheet" href="../public/assets/sidebar-pages/global/global-background-animation.css">
     <link rel="stylesheet" href="../public/assets/features/notification/toast.css">
+    <link rel="stylesheet" href="../public/css/denomination.css">
     <script src="../public/js/auth.js"></script>
     <script>Auth.protectPage();</script>
 </head>
@@ -38,7 +41,7 @@
     <!-- Sidebar -->
     <div id="proSidebar">
         <div class="sidebar-header">
-            <div class="logo" style="width: 30px; height: 30px; font-size: 0.8rem; margin: 0;">JC</div>
+            <div class="sidebar-logo">JC</div>
             <span data-i18n="app-title">Joshi Choice Center</span>
         </div>
 
@@ -159,19 +162,59 @@
     </div>
 
     <!-- Toggle Button (Speak ke niche) -->
-    <button id="sidebarToggle">☰</button>
+    <button id="sidebarToggle">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+    </button>
 
     <!-- VOICE + THEME CONTROLS -->
     <div class="assistant-speaker" id="assistantSpeaker">
-        <svg class="icon" viewBox="0 0 24 24">
-            <path d="M3 10v4h4l5 5V5L7 10H3z" />
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11 5L6 9H2v6h4l5 4V5z"></path>
+            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
         </svg>
         <span>Speak</span>
     </div>
 
-    <div class="slider light" id="themeToggle">
-        <div class="slider-toggle light"></div>
-        <div class="slider-accent light"></div>
+    <!-- AURA CELESTIAL v4 THEME SLIDER -->
+    <div class="aura-celestial-v4" id="themeToggleV4">
+        <div class="celestial-sky-window"></div>
+        <div class="celestial-knob-v4" id="celestialKnob"></div>
+    </div>
+
+    <!-- AURA SMART CHAT PANEL -->
+    <div id="auraChatPanel" class="aura-chat-panel">
+        <div class="aura-chat-header">
+            <div class="aura-chat-header-left">
+                <div class="aura-chat-logo">AI</div>
+                <div class="aura-chat-header-info">
+                    <h3>Aura Assistant</h3>
+                    <p>Your Smart Companion</p>
+                </div>
+            </div>
+            <div class="aura-chat-controls">
+                <div class="aura-chat-control min"></div>
+                <div class="aura-chat-control max"></div>
+                <div id="closeAuraChat" class="aura-chat-control close"></div>
+            </div>
+        </div>
+        <div class="aura-chat-history" id="auraChatHistory">
+            <!-- Messages appear here -->
+        </div>
+        <div class="aura-chat-input-area">
+            <input type="text" id="auraChatInput" placeholder="Ask about the software...">
+            <button class="aura-chat-send" id="auraChatSend">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="22" y1="2" x2="11" y2="13" />
+                    <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                </svg>
+            </button>
+        </div>
     </div>
 
     <!-- MAIN -->
@@ -360,19 +403,20 @@
                     <div id="amountBlock" class="form-grid mt-20" style="display:none;">
                         <div class="form-group" id="amountGroup">
                             <label>Amount (₹)</label>
-                            <input id="amount" type="number" placeholder="0.00">
+                            <input id="amount" type="text" placeholder="0.00" class="comma-format">
                         </div>
                         <div class="form-group" id="chargeGroup">
                             <label>Charge (₹)</label>
-                            <input id="charge" type="number" placeholder="0.00">
+                            <input id="charge" type="text" placeholder="0.00" class="comma-format">
                         </div>
                         <div class="form-group" id="totalGroup">
                             <label>Total Amount (₹)</label>
-                            <input id="totalAmount" type="number" placeholder="0.00" readonly class="readonly-input">
+                            <input id="totalAmount" type="text" placeholder="0.00" readonly class="readonly-input comma-format">
                         </div>
                         <div class="form-group" id="netPayableGroup" style="display:none;">
                             <label>Cash to Customer (₹)</label>
-                            <input id="netPayable" type="number" placeholder="0.00" readonly class="readonly-input" style="background: rgba(34, 197, 94, 0.1); border-color: #22c55e; color: #22c55e; font-weight: bold;">
+                            <input id="netPayable" type="text" placeholder="0.00" readonly class="readonly-input comma-format"
+                                style="background: rgba(34, 197, 94, 0.1); border-color: #22c55e; color: #22c55e; font-weight: bold;">
                         </div>
                         <div class="form-group" id="paymentModeGroup">
                             <label>Payment Mode</label>
@@ -388,6 +432,101 @@
                                 <option value="Pending">Pending</option>
                                 <option value="Failed">Failed</option>
                             </select>
+                        </div>
+                    </div>
+
+                    <!-- CASH DENOMINATION CALCULATOR (AURA PREMIUM) -->
+                    <div id="cashDenominationBlock" class="denomination-block" style="display:none;">
+                        <div class="denom-header">
+                            <svg class="icon-s" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="2" y="5" width="20" height="14" rx="2" />
+                                <line x1="2" y1="10" x2="22" y2="10" />
+                            </svg>
+                            <h3>Currency Denomination Calculator</h3>
+                        </div>
+
+                        <div class="denom-grid">
+                            <!-- 500 -->
+                            <div class="denom-row">
+                                <div class="denom-label"><span>500 Note</span><span id="total-500">₹0</span></div>
+                                <div class="denom-input-group">
+                                    <input type="number" class="denom-input" data-denom="500" placeholder="0">
+                                </div>
+                            </div>
+                            <!-- 200 -->
+                            <div class="denom-row">
+                                <div class="denom-label"><span>200 Note</span><span id="total-200">₹0</span></div>
+                                <div class="denom-input-group">
+                                    <input type="number" class="denom-input" data-denom="200" placeholder="0">
+                                </div>
+                            </div>
+                            <!-- 100 -->
+                            <div class="denom-row">
+                                <div class="denom-label"><span>100 Note</span><span id="total-100">₹0</span></div>
+                                <div class="denom-input-group">
+                                    <input type="number" class="denom-input" data-denom="100" placeholder="0">
+                                </div>
+                            </div>
+                            <!-- 50 -->
+                            <div class="denom-row">
+                                <div class="denom-label"><span>50 Note</span><span id="total-50">₹0</span></div>
+                                <div class="denom-input-group">
+                                    <input type="number" class="denom-input" data-denom="50" placeholder="0">
+                                </div>
+                            </div>
+                            <!-- 20 -->
+                            <div class="denom-row">
+                                <div class="denom-label"><span>20 Note</span><span id="total-20">₹0</span></div>
+                                <div class="denom-input-group">
+                                    <input type="number" class="denom-input" data-denom="20" placeholder="0">
+                                </div>
+                            </div>
+                            <!-- 10 -->
+                            <div class="denom-row">
+                                <div class="denom-label"><span>10 Note</span><span id="total-10">₹0</span></div>
+                                <div class="denom-input-group">
+                                    <input type="number" class="denom-input" data-denom="10" placeholder="0">
+                                </div>
+                            </div>
+                            <!-- 5 -->
+                            <div class="denom-row">
+                                <div class="denom-label"><span>5 Coin/Note</span><span id="total-5">₹0</span></div>
+                                <div class="denom-input-group">
+                                    <input type="number" class="denom-input" data-denom="5" placeholder="0">
+                                </div>
+                            </div>
+                            <!-- 2 -->
+                            <div class="denom-row">
+                                <div class="denom-label"><span>2 Coin</span><span id="total-2">₹0</span></div>
+                                <div class="denom-input-group">
+                                    <input type="number" class="denom-input" data-denom="2" placeholder="0">
+                                </div>
+                            </div>
+                            <!-- 1 -->
+                            <div class="denom-row">
+                                <div class="denom-label"><span>1 Coin</span><span id="total-1">₹0</span></div>
+                                <div class="denom-input-group">
+                                    <input type="number" class="denom-input" data-denom="1" placeholder="0">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="denom-summary">
+                            <div class="summary-item">
+                                <span class="summary-label">Total Selected</span>
+                                <span class="summary-value" id="totalDenomination">₹0</span>
+                            </div>
+                            <div class="summary-item">
+                                <span class="summary-label">Target (Cash)</span>
+                                <span class="summary-value" id="targetDenomAmount">₹0</span>
+                            </div>
+                            <div class="summary-item">
+                                <span class="summary-label">Difference / Status</span>
+                                <span class="summary-value" id="diffDenomAmount">₹0</span>
+                                <span id="matchStatus"
+                                    style="font-size: 10px; font-weight: 900; letter-spacing: 1px;">WAITING...</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -490,6 +629,7 @@
     <script src="../public/js/today-report.js"></script>
     <script src="../public/js/script-2.js"></script>
     <script src="../public/js/pagination.js"></script>
+    <script src="../public/js/denomination.js"></script>
 
     <div id="scrollArrow">▲</div>
     <script src="../public/assets/features/scroll-toggle.js"></script>
@@ -554,17 +694,18 @@
 
                     <div class="form-group">
                         <label>Amount (₹)</label>
-                        <input type="number" id="editAmount" required>
+                        <input type="text" id="editAmount" required class="comma-format">
                     </div>
 
                     <div class="form-group">
                         <label>Charge (₹)</label>
-                        <input type="number" id="editCharge" required>
+                        <input type="text" id="editCharge" required class="comma-format">
                     </div>
 
                     <div class="form-group" id="editNetPayableGroup">
                         <label>Cash to Customer (₹)</label>
-                        <input type="number" id="editNetPayable" readonly class="readonly-input" style="background: rgba(34, 197, 94, 0.1); border-color: #22c55e; color: #22c55e; font-weight: bold;">
+                        <input type="text" id="editNetPayable" readonly class="readonly-input comma-format"
+                            style="background: rgba(34, 197, 94, 0.1); border-color: #22c55e; color: #22c55e; font-weight: bold;">
                     </div>
 
                     <div class="form-group">

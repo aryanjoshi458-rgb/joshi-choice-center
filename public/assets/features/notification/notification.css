@@ -3,36 +3,117 @@
    =============================== */
 
 .notification-alert {
-  margin-top: -15px; /* 🔼 is value ko adjust kar sakte ho */
   position: fixed;
+  top: 65px;
+  /* Stacks nicely below Speak/Toggle on the right if needed, though dynamically placed */
+  right: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-
-  padding: 6px 14px;
-  border-radius: 999px;
-
-  font-size: 13px;
-  font-weight: 500;
+  gap: 10px;
+  padding: 10px 15px;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-radius: 50px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   cursor: pointer;
+  z-index: 9999;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3),
+    inset 0 0 15px rgba(99, 102, 241, 0.1);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  user-select: none;
 
-  background: #ffffff;
-  color: #111827;
-  border: 1px solid rgba(0,0,0,0.12);
-
-  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
-  transition: all 0.25s ease;
+  font-family: 'Poppins', sans-serif;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
 }
 
 .notification-alert:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+  transform: translateY(-2px) scale(1.05);
+  background: rgba(30, 41, 59, 0.8);
+  border-color: rgba(99, 102, 241, 0.4);
+  box-shadow: 0 15px 40px rgba(99, 102, 241, 0.4),
+    inset 0 0 20px rgba(99, 102, 241, 0.2);
 }
 
-/* 🔔 icon spacing */
-.notification-alert span {
-  font-size: 14px;
+.notification-alert .icon {
+  width: 18px;
+  height: 18px;
+  stroke: #818cf8;
+  filter: drop-shadow(0 0 5px rgba(99, 102, 241, 0.5));
+  transition: all 0.3s ease;
 }
 
+.notification-alert:hover .icon {
+  stroke: #fff;
+  transform: rotate(15deg);
+}
 
+/* =========================================
+   LIGHT MODE OVERRIDES - HD PREMIUM AURA
+   ========================================= */
+body:not(.dark-mode) .notification-alert {
+  background: rgba(255, 255, 255, 0.6);
+  color: #1e293b;
+  border-color: rgba(99, 102, 241, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05),
+    inset 0 0 15px rgba(99, 102, 241, 0.05);
+}
+
+body:not(.dark-mode) .notification-alert:hover {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(99, 102, 241, 0.3);
+  box-shadow: 0 15px 40px rgba(99, 102, 241, 0.15);
+}
+
+body:not(.dark-mode) .notification-alert .icon {
+  stroke: #6366f1;
+  filter: drop-shadow(0 0 5px rgba(99, 102, 241, 0.2));
+}
+
+body:not(.dark-mode) .notification-alert:hover .icon {
+  stroke: #4338ca;
+}
+
+/* ALERTS BUTTON BADGE */
+.alert-badge {
+  position: absolute;
+  top: -8px;
+  right: -5px;
+  background: #ef4444;
+  color: white;
+  font-size: 10px;
+  font-weight: 800;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #1e293b;
+  box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4);
+  animation: alertPulse 2s infinite;
+}
+
+body:not(.dark-mode) .alert-badge {
+  border-color: #ffffff;
+}
+
+@keyframes alertPulse {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.15);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
