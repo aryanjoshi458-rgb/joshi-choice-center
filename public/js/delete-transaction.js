@@ -13,15 +13,16 @@ document.addEventListener("DOMContentLoaded", () => {
      DELETE CUSTOMER LOGIC (FIXED)
   ================================ */
 
-  deleteBtn.addEventListener("click", () => {
+  deleteBtn.addEventListener("click", async () => {
     const selectedCustomerId = customerSelect.value;
 
     if (!selectedCustomerId) {
-      alert("Attention: Please select a customer to delete.");
+      await AuraDialog.warning("Attention: Please select a customer to delete.", "Selection Required");
       return;
     }
 
-    if (confirm("Are you sure you want to delete this customer?")) {
+    const confirmed = await AuraDialog.confirm("Are you sure you want to delete this customer?", "Delete Confirmation", true);
+    if (confirmed) {
       let customers = JSON.parse(localStorage.getItem("customers")) || [];
 
       customers = customers.filter(
@@ -43,7 +44,7 @@ document.addEventListener("DOMContentLoaded", () => {
         loadCustomers();
       }
 
-      alert("Deleted: Customer deleted successfully.");
+      await AuraDialog.success("Deleted: Customer deleted successfully.", "Deleted");
       console.log("✅ Customer deleted");
     }
   });

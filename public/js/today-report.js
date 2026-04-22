@@ -1,9 +1,10 @@
 // DELETE ROW (Refactored to match centralized logic)
-function deleteRow(btn, id) {
+async function deleteRow(btn, id) {
   if (id && typeof window.deleteTransactionById === "function") {
     window.deleteTransactionById(id);
-  } else if (confirm("Remove this row from view?")) {
-    btn.closest("tr").remove();
+  } else {
+    const confirmed = await AuraDialog.confirm("Remove this row from view?", "Remove Row");
+    if (confirmed) btn.closest("tr").remove();
   }
 }
 

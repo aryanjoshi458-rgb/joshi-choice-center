@@ -190,8 +190,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Export delete function to window
-    window.deleteExpense = (id) => {
-        if (!confirm("Are you sure you want to delete this expense?")) return;
+    window.deleteExpense = async (id) => {
+        const confirmed = await AuraDialog.confirm("Are you sure you want to delete this expense?", "Delete Expense", true);
+        if (!confirmed) return;
         
         let expenses = JSON.parse(localStorage.getItem("expenses")) || [];
         expenses = expenses.filter(e => e.id !== id);

@@ -202,9 +202,9 @@ Status : ${status}
   return out;
 }
 
-window.printReceipt = function () {
+window.printReceipt = async function () {
   if (!selectedTxn) {
-    alert("Please select a transaction first!");
+    await AuraDialog.warning("Please select a transaction first!", "Selection Required");
     return;
   }
   const format = document.getElementById("format").value;
@@ -252,9 +252,9 @@ ${logoHtml}
   doc.close();
 }
 
-window.sendWhatsApp = function () {
+window.sendWhatsApp = async function () {
   if (!selectedTxn) {
-    alert("Please select a transaction first!");
+    await AuraDialog.warning("Please select a transaction first!", "Selection Required");
     return;
   }
 
@@ -281,7 +281,7 @@ Thank you for visiting!`;
   
   // Check if mobile is valid
   if (mobile.length < 10) {
-    alert("Invalid mobile number for WhatsApp!");
+    await AuraDialog.error("Invalid mobile number for WhatsApp!", "Invalid Number");
     return;
   }
 

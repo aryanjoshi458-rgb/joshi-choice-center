@@ -104,28 +104,38 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!isBanking) {
       if (!custMobile.value || custMobile.value.length !== 10) {
-        alert("Enter a valid 10-digit mobile number.");
+        if (window.AppLoader) window.AppLoader.hide();
+        await AuraDialog.error("Enter a valid 10-digit mobile number.", "Input Error");
+        custMobile.focus();
         return;
       }
     }
     if (!serviceType.value) {
-      alert("Please select a service type.");
+      if (window.AppLoader) window.AppLoader.hide();
+      await AuraDialog.warning("Please select a service type.", "Selection Required");
+      serviceType.focus();
       return;
     }
 
     // Banking-Specific Validation
     if (isBanking) {
       if (!custName.value.trim()) {
-        alert("Customer Name is MANDATORY for Banking services.");
+        if (window.AppLoader) window.AppLoader.hide();
+        await AuraDialog.error("Customer Name is MANDATORY for Banking services.", "Validation Error");
+        custName.focus();
         return;
       }
       const aadharDigits = custAadhar.value.replace(/-/g, "");
       if (aadharDigits.length !== 12) {
-        alert("Aadhar Card is MANDATORY (12 digits) for Banking services.");
+        if (window.AppLoader) window.AppLoader.hide();
+        await AuraDialog.error("Aadhar Card is MANDATORY (12 digits) for Banking services.", "Validation Error");
+        custAadhar.focus();
         return;
       }
       if (!custAddress.value.trim()) {
-        alert("Address is MANDATORY for Banking services.");
+        if (window.AppLoader) window.AppLoader.hide();
+        await AuraDialog.error("Address is MANDATORY for Banking services.", "Validation Error");
+        custAddress.focus();
         return;
       }
     }
@@ -195,14 +205,14 @@ document.addEventListener("DOMContentLoaded", () => {
     // D. Show Loader for Effect
     if (window.AppLoader) window.AppLoader.show(shouldPrint ? "Generating Receipt..." : "Saving Transaction...");
 
-    setTimeout(() => {
+    setTimeout(async () => {
       // Final Success & Reset
       if (window.AppLoader) window.AppLoader.hide();
 
       if (typeof showToast === "function") {
         showToast(shouldPrint ? "Transaction Saved & Receipt Generated! 🖨️" : "Transaction Saved Successfully! ✅");
       } else {
-        alert("Saved!");
+        await AuraDialog.success("Saved!", "Success");
       }
 
       loadTransactionsToTable();
@@ -494,8 +504,9 @@ window.loadTransactionsToTable = function () {
   if (typeof window.refreshPagination === "function") window.refreshPagination();
 };
 
-window.deleteTransactionById = function (id) {
-  if (!confirm("Are you sure you want to delete this transaction permanently?")) return;
+window.deleteTransactionById = async function (id) {
+  const confirmed = await AuraDialog.confirm("Are you sure you want to delete this transaction permanently?", "Delete Confirmation", true);
+  if (!confirmed) return;
 
   let txns = JSON.parse(localStorage.getItem("transactions")) || [];
   const initialCount = txns.length;
@@ -506,7 +517,7 @@ window.deleteTransactionById = function (id) {
     loadTransactionsToTable(); // Refresh current table
     if (typeof showToast === "function") showToast("Transaction Deleted 🗑️");
   } else {
-    alert("Error: Record not found.");
+    AuraDialog.error("Record not found!", "Error");
   }
 };
 
@@ -515,7 +526,7 @@ window.openEditModal = function (id) {
   const t = reports.find(r => (r.transactionId || r.txnId || r.id).toString() === id.toString());
 
   if (!t) {
-    alert("Transaction not found!");
+    AuraDialog.error("Transaction not found!", "Error");
     return;
   }
 
@@ -586,7 +597,7 @@ window.saveTransactionEdit = function () {
   const index = reports.findIndex(r => (r.transactionId || r.txnId || r.id).toString() === id.toString());
 
   if (index === -1) {
-    alert("Error: Transaction not found in database.");
+    AuraDialog.error("Error: Transaction not found in database.", "Error");
     return;
   }
 

@@ -56,13 +56,13 @@ let work=document.getElementById("work").value.trim();
 let charge=document.getElementById("charge").value.trim();
 
 if(!date || !rawName || !mobileRaw || !work || !charge){
-alert("Please fill all fields");
-return;
+    AuraDialog.error("Please fill all fields", "Validation Error");
+    return;
 }
 
 if(window.AppLoader) window.AppLoader.show("Adding Payment Record...");
 
-setTimeout(() => {
+setTimeout(async () => {
     let name = rawName
     .toLowerCase()
     .split(" ")
@@ -79,9 +79,9 @@ setTimeout(() => {
     digits = digits.slice(0,10);
 
     if(digits.length !== 10){
-    if(window.AppLoader) window.AppLoader.hide();
-    alert("Enter valid 10 digit mobile number");
-    return;
+        if(window.AppLoader) window.AppLoader.hide();
+        await AuraDialog.error("Enter valid 10 digit mobile number", "Invalid Mobile");
+        return;
     }
 
     let mobile = "+91 " + digits;
@@ -162,18 +162,19 @@ setTimeout(() => {
 
 
 // ===== DELETE =====
-function deleteCustomer(i){
-if(!confirm("Are you sure you want to delete this expense?")) return;
+async function deleteCustomer(i){
+    const confirmed = await AuraDialog.confirm("Are you sure you want to delete this payment record?", "Delete Confirmation", true);
+    if(!confirmed) return;
 
-if(window.AppLoader) window.AppLoader.show("Deleting Record...");
-setTimeout(() => {
-    let list = JSON.parse(localStorage.getItem("pendingCustomers"));
-    list.splice(i,1);
-    localStorage.setItem("pendingCustomers",JSON.stringify(list));
-    loadCustomers();
-    if(window.AppLoader) window.AppLoader.hide();
-    if(typeof showToast === "function") showToast("Record Deleted! 🗑️");
-}, 500);
+    if(window.AppLoader) window.AppLoader.show("Deleting Record...");
+    setTimeout(() => {
+        let list = JSON.parse(localStorage.getItem("pendingCustomers"));
+        list.splice(i,1);
+        localStorage.setItem("pendingCustomers",JSON.stringify(list));
+        loadCustomers();
+        if(window.AppLoader) window.AppLoader.hide();
+        if(typeof showToast === "function") showToast("Record Deleted! 🗑️");
+    }, 500);
 }
 
 

@@ -42,11 +42,17 @@
                 loader.classList.add('loader-hidden');
 
                 // Remove from DOM once transition is done
-                setTimeout(() => {
-                    if (loader.parentNode) {
+                const removeLoader = () => {
+                    if (loader && loader.parentNode) {
                         loader.parentNode.removeChild(loader);
                     }
-                }, 600);
+                };
+                
+                // Safety: Remove after 600ms (matches CSS transition)
+                setTimeout(removeLoader, 600);
+                
+                // Extra Safety: If still in DOM after 1s, force remove
+                setTimeout(removeLoader, 1000);
             }
         }
     };

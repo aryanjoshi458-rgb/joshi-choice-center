@@ -105,8 +105,9 @@ function loadReports() {
 /* =========================
    DELETE TRANSACTION
 ========================= */
-function deleteReport(id) {
-  if (!confirm("Are you sure you want to delete this report?")) return;
+async function deleteReport(id) {
+  const confirmed = await AuraDialog.confirm("Are you sure you want to delete this report?", "Delete Confirmation", true);
+  if (!confirmed) return;
 
   let reports = JSON.parse(localStorage.getItem("transactions")) || [];
   const initialCount = reports.length;
@@ -120,7 +121,7 @@ function deleteReport(id) {
     loadReports();
     if (typeof showToast === "function") showToast("Record Deleted 🗑️");
   } else {
-    alert("Record not found.");
+    await AuraDialog.error("Record not found.", "Error");
   }
 }
 
@@ -304,7 +305,6 @@ function updateSummaryMetrics() {
       totalCommission += charge;
       totalBusiness += total;
       transactionCount++;
-    }
   });
 
   document.getElementById("commissionValue").innerText = "₹" + totalCommission.toLocaleString();
@@ -321,12 +321,12 @@ function updateSummaryMetrics() {
 ========================= */
 let currentModalTxn = null;
 
-window.printReportRow = function (id) {
+window.printReportRow = async function (id) {
   const reports = JSON.parse(localStorage.getItem("transactions")) || [];
   currentModalTxn = reports.find(r => (r.transactionId || r.txnId || r.id).toString() === id.toString());
 
   if (!currentModalTxn) {
-    alert("Transaction not found!");
+    await AuraDialog.error("Transaction not found!", "Error");
     return;
   }
 
@@ -617,9 +617,9 @@ ${logoHtml}
   doc.close();
 }
 
-window.openPdfModal = function () {
+window.openPdfModal = async function () {
   if (filteredReportsData.length === 0) {
-    alert("No records to export!");
+    await AuraDialog.warning("No records to export!", "Empty Report");
     return;
   }
 
@@ -695,11 +695,11 @@ window.closePdfModal = function () {
   });
 };
 
-window.downloadPdfFromModal = function () {
+window.downloadPdfFromModal = async function () {
   const element = document.getElementById("pdfPreviewArea");
 
   if (typeof html2pdf === 'undefined') {
-    alert("PDF library not loaded properly. Please refresh the page.");
+    await AuraDialog.error("PDF library not loaded properly. Please refresh the page.", "System Error");
     return;
   }
 
@@ -740,25 +740,25 @@ window.downloadPdfFromModal = function () {
       }
     }, 10000);
 
-  }).catch(err => {
+  }).catch(async err => {
 
 
     console.error("PDF Download Error:", err);
     btn.innerText = originalText;
     btn.disabled = false;
-    alert("Failed to download PDF. Please try again.");
+    await AuraDialog.error("Failed to download PDF. Please try again.", "Download Error");
   });
 };
 
 /* =========================
    EDIT TRANSACTION LOGIC
 ========================= */
-window.openEditModal = function (id) {
+window.openEditModal = async function (id) {
   const reports = JSON.parse(localStorage.getItem("transactions")) || [];
   const t = reports.find(r => (r.transactionId || r.txnId || r.id).toString() === id.toString());
 
   if (!t) {
-    alert("Transaction not found!");
+    await AuraDialog.error("Transaction not found!", "Error");
     return;
   }
 

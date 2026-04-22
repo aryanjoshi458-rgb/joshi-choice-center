@@ -89,7 +89,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const charge = Number(serviceChargeInput.value);
 
         if (!name || !price) {
-            alert("Name and Price are required!");
+            AuraDialog.error("Name and Price are required!", "Input Error");
             return;
         }
 
@@ -119,9 +119,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function attachActionListeners() {
         document.querySelectorAll(".action-btn.delete").forEach(btn => {
-            btn.addEventListener("click", () => {
+            btn.addEventListener("click", async () => {
                 const id = btn.dataset.id;
-                if (confirm("Are you sure you want to delete this service?")) {
+                const confirmed = await AuraDialog.confirm("Are you sure you want to delete this service?", "Delete Service", true);
+                if (confirmed) {
                     let rates = JSON.parse(localStorage.getItem("serviceRates")) || [];
                     rates = rates.filter(r => r.id !== id);
                     localStorage.setItem("serviceRates", JSON.stringify(rates));

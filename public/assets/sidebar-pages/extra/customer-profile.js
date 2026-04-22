@@ -1,12 +1,12 @@
 /* TRENDY CUSTOMER PROFILE & TRACK TREE LOGIC */
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
     // 1. Get Mobile Number from URL
     const urlParams = new URLSearchParams(window.location.search);
     const mobile = urlParams.get('mobile');
 
     if (!mobile) {
-        alert("No customer specified!");
+        await AuraDialog.error("No customer specified!", "Access Error");
         window.location.href = "customer-directory.html";
         return;
     }
@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const customerTxns = txns.filter(t => t.mobileNumber.toString() === mobile.toString());
 
     if (customerTxns.length === 0) {
-        alert("No transaction records found for this mobile number!");
+        await AuraDialog.warning("No transaction records found for this mobile number!", "No Records");
         window.location.href = "customer-directory.html";
         return;
     }

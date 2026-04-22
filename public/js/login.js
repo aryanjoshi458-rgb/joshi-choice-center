@@ -174,14 +174,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function showError(message) {
+    async function showError(message) {
         if (errorMessage) {
             errorMessage.textContent = message;
             errorMessage.classList.add('show');
             gsap.to(".login-card", { x: 10, repeat: 3, yoyo: true, duration: 0.05, ease: "none" });
             setTimeout(() => errorMessage.classList.remove('show'), 3000);
         } else {
-            alert(message);
+            await AuraDialog.error(message, "Login Failed");
         }
     }
 
