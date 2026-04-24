@@ -61,7 +61,7 @@ document.addEventListener("DOMContentLoaded", function () {
   };
 
   // ===== EXCEL (Refined for Design) =====
-  document.querySelector(".btn-excel").onclick = function () {
+  document.querySelector(".btn-excel").onclick = async function () {
     const table = document.querySelector("table");
     if (!table) return;
 
@@ -71,15 +71,43 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const headers = [...headerRow.querySelectorAll("th")].map(th => th.innerText).slice(0, -1);
     
-    // Filter rows that are actually visible (not hidden by filters)
-    const rows = [...table.querySelectorAll("tbody tr")]
-      .filter(tr => tr.style.display !== "none")
-      .map(tr => {
-        return [...tr.querySelectorAll("td")].map(td => td.innerText).slice(0, -1);
+    // ✅ Fix: Use filteredReportsData instead of DOM rows to capture all pages
+    let dataToExport = [];
+    if (window.filteredReportsData && window.filteredReportsData.length > 0) {
+      dataToExport = window.filteredReportsData.map((r, idx) => {
+        const amount = Number(r.amount) || 0;
+        const charge = Number(r.charge) || 0;
+        const total = Number(r.totalAmount) || (amount + charge);
+        const date = typeof formatDate === "function" ? formatDate(r.date) : (r.date || "-");
+        
+        return [
+          window.filteredReportsData.length - idx, // SN
+          date,
+          r.customerName || "-",
+          r.mobileNumber || "-",
+          r.aadharNumber || "-",
+          r.address || "N/A",
+          r.serviceName || r.serviceType || "-",
+          amount,
+          charge,
+          total,
+          r.paymentMode || "Cash",
+          (r.status || "Pending").toUpperCase(),
+          r.transactionId || r.txnId || r.id || "-"
+        ];
       });
+    } else {
+      // Fallback to DOM if filteredReportsData is not available
+      dataToExport = [...table.querySelectorAll("tbody tr")]
+        .filter(tr => tr.style.display !== "none")
+        .map(tr => [...tr.querySelectorAll("td")].map(td => td.innerText).slice(0, -1));
+    }
+
+    const rows = dataToExport;
 
     if (rows.length === 0) {
-      alert("No records to export!");
+      if (window.AuraDialog) await AuraDialog.warning("No records to export!", "Empty Data");
+      else alert("No records to export!");
       return;
     }
 
@@ -120,7 +148,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     tableHtml += `</table>`;
 
-    // Wrap in standard XMLSS format that Excel understands for better CSS rendering
     const template = `
       <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
       <head>
@@ -145,28 +172,39 @@ document.addEventListener("DOMContentLoaded", function () {
     `;
 
     const blob = new Blob([template], { type: "application/vnd.ms-excel" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `Joshi_Choice_Center_Report_${new Date().toISOString().split('T')[0]}.xls`;
-    a.click();
-    
-    // Show Success Popup (matching Pending Payments)
-    // ✅ Fix: Delay popup until Save Dialog is closed
-    const showSuccessToast = () => {
-      if (typeof showToast === "function") {
-        showToast("Excel Saved Successfully ✅");
+
+    // USE MODERN FILE SYSTEM ACCESS API FOR BETTER CONTROL
+    if (window.showSaveFilePicker) {
+      try {
+        const handle = await window.showSaveFilePicker({
+          suggestedName: `Joshi_Choice_Center_Report_${new Date().toISOString().split('T')[0]}.xls`,
+          types: [{
+            description: 'Excel File',
+            accept: { 'application/vnd.ms-excel': ['.xls'] },
+          }],
+        });
+        const writable = await handle.createWritable();
+        await writable.write(blob);
+        await writable.close();
+        if (typeof showToast === "function") showToast("Excel Saved Successfully ✅");
+      } catch (err) {
+        if (err.name === 'AbortError') {
+          if (typeof showToast === "function") showToast("Export Cancelled ⚠️", "warning");
+        } else {
+          console.error("Excel Export Error:", err);
+          if (typeof showToast === "function") showToast("Export Failed ❌", "error");
+        }
       }
-      window.removeEventListener('focus', showSuccessToast);
-    };
-
-    window.addEventListener('focus', showSuccessToast);
-
-    // Cleanup
-    setTimeout(() => {
-      URL.revokeObjectURL(url);
-      window.removeEventListener('focus', showSuccessToast);
-    }, 10000); 
+    } else {
+      // Fallback for older browsers
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `Joshi_Choice_Center_Report_${new Date().toISOString().split('T')[0]}.xls`;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      if (typeof showToast === "function") showToast("Export Initiated ✅");
+    }
   };
 
 

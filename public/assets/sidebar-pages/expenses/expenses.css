@@ -410,3 +410,49 @@ tr.expense-row:hover td {
     opacity: 1;
     transform: translate(10%, 10%);
 }
+/* --- Dark Mode Overrides (Strict) --- */
+body.dark-mode .stat-box {
+    background: #1e293b !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3) !important;
+}
+
+body.dark-mode .stat-info h2,
+body.dark-mode .stat-info h4 {
+    color: #f8fafc !important;
+}
+
+body.dark-mode .expense-card,
+body.dark-mode .expense-list-card {
+    background: #1e293b !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+body.dark-mode .card-header-minimal,
+body.dark-mode .list-header {
+    background: rgba(15, 23, 42, 0.4) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+body.dark-mode th {
+    background: rgba(15, 23, 42, 0.6) !important;
+    color: #94a3b8 !important;
+}
+
+body.dark-mode td {
+    background: #1e293b !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    color: #f8fafc !important;
+}
+
+body.dark-mode input,
+body.dark-mode select {
+    background: #0f172a !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+    color: #f8fafc !important;
+}
+
+body.dark-mode .stat-icon {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+

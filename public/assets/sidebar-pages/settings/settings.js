@@ -12,6 +12,18 @@ document.addEventListener("DOMContentLoaded", () => {
         gsap.from(".settings-aura-body", { y: 30, opacity: 0, duration: 1, ease: "power4.out", delay: 0.2 });
     }
 
+    // --- IMMEDIATE SECURITY LOAD ---
+    // We do this early to ensure values are visible even if other scripts fail
+    function initSecurityNow() {
+        const u = document.getElementById("adminUsername");
+        const k = document.getElementById("adminMasterKey");
+        const t = document.getElementById("sessionTimeout");
+        if (u) u.value = localStorage.getItem("jc_username") || "admin";
+        if (k) k.value = localStorage.getItem("jc_master_key") || "8080";
+        if (t) t.value = localStorage.getItem("jc_session_timeout") || "0";
+    }
+    initSecurityNow();
+
     // 2. TOP NAV & TAB NAVIGATION LOGIC
     const navBtns = document.querySelectorAll(".aura-nav-btn, .tab-btn");
     const indicator = document.querySelector(".aura-nav-indicator");
@@ -455,41 +467,86 @@ document.addEventListener("DOMContentLoaded", () => {
         showToast("Print Settings Saved! 🖨️", "success");
     });
 
-    // 6. BACKUP & RESTORE LOGIC
+    // 6. BACKUP & RESTORE LOGIC (FOCUS: CUSTOMER DATA ONLY)
     const exportBtn = document.getElementById("exportBackup");
     const importBtn = document.getElementById("importBackup");
     const importFileInput = document.getElementById("importFile");
 
-    exportBtn?.addEventListener("click", () => {
+    // Keys that represent "Business/Customer Data" vs "System Settings"
+    const CUSTOMER_DATA_KEYS = ["customers", "transactions", "expenses", "pendingCustomers", "app_notifications"];
+
+    exportBtn?.addEventListener("click", async () => {
         const backupData = {};
-        for (let i = 0; i < localStorage.length; i++) {
-            const k = localStorage.key(i);
-            backupData[k] = localStorage.getItem(k);
+        let dataFound = false;
+
+        CUSTOMER_DATA_KEYS.forEach(key => {
+            const val = localStorage.getItem(key);
+            if (val) {
+                backupData[key] = val;
+                dataFound = true;
+            }
+        });
+
+        if (!dataFound) {
+            showToast("No Customer Data found to export! 📭", "info");
+            return;
         }
+
         const dataStr = JSON.stringify(backupData, null, 2);
-        const blob = new Blob([dataStr], { type: "application/json" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `joshi_backup_${new Date().toISOString().split('T')[0]}.json`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        showToast("System Backup Exported Successfully! 📁", "success");
+
+        // Modern File System Access API
+        if (window.showSaveFilePicker) {
+            try {
+                const handle = await window.showSaveFilePicker({
+                    suggestedName: `joshi_customer_data_${new Date().toISOString().split('T')[0]}.json`,
+                    types: [{
+                        description: 'Joshi Choice Center Backup',
+                        accept: { 'application/json': ['.json'] },
+                    }],
+                });
+
+                const writable = await handle.createWritable();
+                await writable.write(dataStr);
+                await writable.close();
+
+                showToast("Customer Data Exported Successfully! 📁", "success");
+            } catch (err) {
+                if (err.name === 'AbortError') {
+                    showToast("Export Cancelled. No data saved. ❌", "info");
+                } else {
+                    console.error("Export Error:", err);
+                    showToast("Export failed!", "error");
+                }
+            }
+        } else {
+            // Fallback
+            const blob = new Blob([dataStr], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `joshi_customer_data_${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast("Backup initiated. Check your downloads.", "success");
+        }
     });
 
-    if (importBtn && importFileInput) {
-        importBtn.addEventListener("click", () => importFileInput.click());
-        importFileInput.addEventListener("change", async (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-
+    if (importBtn) {
+        // Shared Process Logic
+        const startImport = async (file) => {
             let forceProceed = false;
             if (window.AuraDialog) {
-                forceProceed = await window.AuraDialog.prompt("WARNING: Importing a backup will overwrite all your current data. Type 'CONFIRM' to proceed.", "Confirm Import", "CONFIRM");
+                // Generate random 4-digit code for professional security
+                const randomCode = Math.floor(1000 + Math.random() * 9000).toString();
+                forceProceed = await window.AuraDialog.prompt(
+                    "WARNING: Importing a backup will permanently overwrite your current Customers, Transactions, and Expenses. This action cannot be undone.",
+                    "Confirm Data Restore",
+                    randomCode
+                );
             } else {
-                forceProceed = confirm("WARNING: Importing a backup will overwrite all your current data. Proceed?");
+                forceProceed = "CONFIRM";
             }
 
             if (forceProceed === true || forceProceed === "CONFIRM") {
@@ -497,16 +554,59 @@ document.addEventListener("DOMContentLoaded", () => {
                 reader.onload = (event) => {
                     try {
                         const data = JSON.parse(event.target.result);
-                        Object.keys(data).forEach(key => localStorage.setItem(key, data[key]));
-                        showToast("System Restored successfully! Reloading...", "success");
-                        setTimeout(() => location.reload(), 1500);
+                        let importedCount = 0;
+
+                        CUSTOMER_DATA_KEYS.forEach(key => {
+                            if (data[key]) {
+                                localStorage.setItem(key, data[key]);
+                                importedCount++;
+                            }
+                        });
+
+                        if (importedCount > 0) {
+                            showToast("Customer Data Restored successfully! 🔄", "success");
+                            setTimeout(() => location.reload(), 1500);
+                        } else {
+                            showToast("No valid customer data found in file! ❌", "error");
+                        }
                     } catch (err) {
                         showToast("Invalid backup file format!", "error");
                     }
                 };
                 reader.readAsText(file);
+            } else {
+                showToast("Restore Point Cancelled. No changes made. ❌", "info");
             }
-            importFileInput.value = "";
+        };
+
+        // Modern File Picker
+        importBtn.addEventListener("click", async () => {
+            if (window.showOpenFilePicker) {
+                try {
+                    const [handle] = await window.showOpenFilePicker({
+                        types: [{
+                            description: 'Joshi Choice Center Backup',
+                            accept: { 'application/json': ['.json'] },
+                        }],
+                    });
+                    const file = await handle.getFile();
+                    startImport(file);
+                } catch (err) {
+                    if (err.name === 'AbortError') {
+                        showToast("Restore Point Cancelled. No file selected. ❌", "info");
+                    }
+                }
+            } else {
+                importFileInput?.click();
+            }
+        });
+
+        // Fallback for hidden input
+        importFileInput?.addEventListener("change", (e) => {
+            const file = e.target.files[0];
+            if (file) startImport(file);
+            else showToast("Restore Cancelled. No file selected. ❌", "info");
+            e.target.value = ""; // Reset
         });
     }
 
@@ -540,8 +640,8 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         } else {
             // Fallback to AuraDialog system
-            let p = window.AuraDialog ? await window.AuraDialog.prompt("Permanently delete all customer records, transactions, and settings?", "Are you sure?", activeResetCode) : confirm("Permanently delete data?");
-            if (p === true || p === activeResetCode) startWipeSequence();
+            let p = await window.AuraDialog.prompt("Permanently delete all customer records, transactions, and settings?", "Are you sure?", activeResetCode);
+            if (p) startWipeSequence();
         }
     });
 
@@ -692,18 +792,55 @@ document.addEventListener("DOMContentLoaded", () => {
     let latestReleaseInfo = null;
 
     async function initVersion() {
+        let currentVer = "1.3.3";
         if (window.electronAPI) {
-            const currentVer = await window.electronAPI.getAppVersion();
+            currentVer = await window.electronAPI.getAppVersion();
             if (currentVDisplay) currentVDisplay.innerText = `v${currentVer}`;
-            if (latestVDisplay) latestVDisplay.innerText = `v${currentVer}`; // Default
         }
 
         const lastChecked = localStorage.getItem("lastUpdateCheck");
         if (lastChecked && lastCheckedText) {
             lastCheckedText.innerText = `Last checked: ${lastChecked}`;
         }
+
+        // Check for cached update info
+        const cachedUpdate = JSON.parse(localStorage.getItem("latestReleaseInfo"));
+        if (cachedUpdate && isNewerVersion(currentVer, cachedUpdate.version)) {
+            latestReleaseInfo = cachedUpdate;
+            applyUpdateUI(cachedUpdate);
+        } else {
+            // Default: Up to date or No update found yet
+            if (latestVDisplay) latestVDisplay.innerText = `v${currentVer}`;
+            if (vStatusPill) vStatusPill.className = "aura-status-pill success";
+            if (vStatusText) vStatusText.innerText = "SOFTWARE UP TO DATE";
+            localStorage.removeItem("latestReleaseInfo"); // Clean up if no longer relevant
+        }
     }
     initVersion();
+
+    function applyUpdateUI(release) {
+        if (!release) return;
+        if (latestVDisplay) latestVDisplay.innerText = `v${release.version}`;
+
+        // Update Status UI (Permanent until update)
+        if (vStatusPill) vStatusPill.className = "aura-status-pill warning";
+        if (vStatusText) vStatusText.innerText = "UPDATE AVAILABLE";
+
+        // Update Modal Badge
+        const badge = document.getElementById("newVersionBadge");
+        if (badge) badge.innerText = `Version v${release.version} Ready (${release.size || '?'} MB)`;
+
+        // Update Modal Changelog
+        if (updateModalEl) {
+            const clUl = updateModalEl.querySelector(".changelog-box ul");
+            if (clUl && release.changelog) {
+                clUl.innerHTML = release.changelog.split('\n')
+                    .filter(l => l.trim())
+                    .map(line => `<li>${line.replace(/[*#-]/g, '').trim()}</li>`)
+                    .join('');
+            }
+        }
+    }
 
     function isNewerVersion(current, latest) {
         if (!latest || !current) return false;
@@ -724,37 +861,22 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             // Log local check time
             const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            localStorage.setItem("lastUpdateCheck", now);
-            if (lastCheckedText) lastCheckedText.innerText = `Last checked: Today at ${now}`;
+            const checkDate = new Date().toLocaleDateString();
+            const lastCheckStr = `${checkDate} at ${now}`;
+            localStorage.setItem("lastUpdateCheck", lastCheckStr);
+            if (lastCheckedText) lastCheckedText.innerText = `Last checked: ${lastCheckStr}`;
 
             if (!window.electronAPI) {
-                // Simulation Mode - "Find" an update for testing
+                // Simulation Mode
                 await new Promise(r => setTimeout(r, 2000));
-
-                const simRelease = {
-                    version: "2.0.0",
-                    changelog: "Simulation update found!\n🚀 Faster report generation\n✨ New UI polish\n🛡️ Extra security patches",
-                    size: "15"
-                };
-
-                if (latestVDisplay) latestVDisplay.innerText = `v${simRelease.version}`;
+                const simRelease = { version: "2.5.0", changelog: "Simulated Update Found!", size: "15" };
                 latestReleaseInfo = simRelease;
-
-                // Update UI Pill & Cards
-                if (vStatusPill) vStatusPill.className = "aura-status-pill warning";
-                if (vStatusText) vStatusText.innerText = "UPDATE AVAILABLE";
-
-                // Update Modal Info
-                const badge = document.getElementById("newVersionBadge");
-                if (badge) badge.innerText = `Version v${simRelease.version} Ready (15 MB)`;
-
+                localStorage.setItem("latestReleaseInfo", JSON.stringify(simRelease));
+                applyUpdateUI(simRelease);
                 if (updateModalEl) {
-                    const clUl = updateModalEl.querySelector(".changelog-box ul");
-                    if (clUl) clUl.innerHTML = simRelease.changelog.split('\n').filter(l => l.trim()).map(line => `<li>${line.replace(/[*#-]/g, '').trim()}</li>`).join('');
                     updateModalEl.classList.add("active");
                     updateModalEl.style.display = "flex";
                 }
-
                 showStatusChip("NEW VERSION FOUND!", "success");
             } else {
                 const currentVer = await window.electronAPI.getAppVersion();
@@ -763,30 +885,19 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (release.error) {
                     showStatusChip(release.error.toUpperCase(), "error");
                 } else {
-                    if (latestVDisplay) latestVDisplay.innerText = `v${release.version}`;
-
                     if (isNewerVersion(currentVer, release.version)) {
                         latestReleaseInfo = release;
-
-                        // Update Modal Info
-                        const badge = document.getElementById("newVersionBadge");
-                        if (badge) badge.innerText = `Version v${release.version} Ready (${release.size || '?'} MB)`;
-
-                        // Update Status UI (Permanent until update)
-                        if (vStatusPill) vStatusPill.className = "aura-status-pill warning";
-                        if (vStatusText) vStatusText.innerText = "UPDATE AVAILABLE";
+                        localStorage.setItem("latestReleaseInfo", JSON.stringify(release));
+                        applyUpdateUI(release);
 
                         if (updateModalEl) {
-                            const clUl = updateModalEl.querySelector(".changelog-box ul");
-                            if (clUl && release.changelog) clUl.innerHTML = release.changelog.split('\n').filter(l => l.trim()).map(line => `<li>${line.replace(/[*#-]/g, '').trim()}</li>`).join('');
                             updateModalEl.classList.add("active");
                             updateModalEl.style.display = "flex";
                         }
                     } else {
-                        // Software is up up to date
-                        if (latestVDisplay) latestVDisplay.innerText = `v${currentVer}`;
-                        if (vStatusPill) vStatusPill.className = "aura-status-pill success";
-                        if (vStatusText) vStatusText.innerText = "SOFTWARE UP TO DATE";
+                        // Up to date
+                        localStorage.removeItem("latestReleaseInfo");
+                        initVersion(); // Reset UI to up-to-date
                         showStatusChip("SYSTEM IS UP TO DATE", "success");
                     }
                 }
@@ -794,7 +905,6 @@ document.addEventListener("DOMContentLoaded", () => {
         } catch (err) {
             showStatusChip("UPDATE CHECK FAILED", "error");
         } finally {
-            // ALWAYS RESET BUTTON
             setTimeout(() => {
                 updateBtn.disabled = false;
                 if (btnTextSpan) btnTextSpan.innerText = "Check for Updates";
@@ -867,7 +977,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function loadLangSettings() {
         const savedLang = localStorage.getItem("appLanguage") || "en";
-        langRadios.forEach(r => r.checked = (r.value === savedLang));
+        langRadios.forEach(r => {
+            r.checked = (r.value === savedLang);
+        });
     }
 
     saveLangBtn?.addEventListener("click", () => {
@@ -944,8 +1056,9 @@ document.addEventListener("DOMContentLoaded", () => {
         showToast("Shortcuts saved successfully! ⌨️", "success");
     });
 
-    resetShortcutsBtn?.addEventListener("click", () => {
-        if (confirm("Reset all shortcuts to defaults?")) {
+    resetShortcutsBtn?.addEventListener("click", async () => {
+        const confirmed = await AuraDialog.confirm("Reset all shortcuts to defaults?", "Reset Shortcuts", true);
+        if (confirmed) {
             localStorage.removeItem("customShortcuts");
             loadShortcuts();
             showToast("Shortcuts reset to defaults.", "info");
@@ -984,9 +1097,22 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     function loadSecuritySettings() {
-        if (securityInputs.username) securityInputs.username.value = localStorage.getItem("jc_username") || "admin";
-        if (securityInputs.masterKey) securityInputs.masterKey.value = localStorage.getItem("jc_master_key") || "8080";
-        if (securityInputs.timeout) securityInputs.timeout.value = localStorage.getItem("jc_session_timeout") || "0";
+        const usernameInput = document.getElementById("adminUsername");
+        const masterKeyInput = document.getElementById("adminMasterKey");
+        const timeoutSelect = document.getElementById("sessionTimeout");
+
+        if (usernameInput) {
+            const savedUser = localStorage.getItem("jc_username") || "admin";
+            usernameInput.value = savedUser;
+        }
+        if (masterKeyInput) {
+            const savedKey = localStorage.getItem("jc_master_key") || "8080";
+            masterKeyInput.value = savedKey;
+        }
+        if (timeoutSelect) {
+            const savedTimeout = localStorage.getItem("jc_session_timeout") || "0";
+            timeoutSelect.value = savedTimeout;
+        }
     }
 
     document.getElementById("saveSecuritySettings")?.addEventListener("click", () => {
@@ -1042,7 +1168,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 </svg>
                 ${type === 'success' ? `
                     <svg class="checkmark-svg" viewBox="0 0 24 24">
-                        <path d="M20 6L9 17L4 12" />
+                        <path d="M4 12L9 17L20 6" />
                     </svg>
                 ` : `
                     <svg class="cross-svg" viewBox="0 0 24 24">
@@ -1057,10 +1183,33 @@ document.addEventListener("DOMContentLoaded", () => {
         overlay.classList.add("active");
 
         const tl = gsap.timeline();
-        tl.fromTo(overlay.querySelector(".shield-success-box"),
-            { scale: 0.5, opacity: 0 },
-            { scale: 1, opacity: 1, duration: 0.8, ease: "back.out(2)" }
-        );
+        const box = overlay.querySelector(".shield-success-box");
+        const shield = overlay.querySelector(".shield-success-bg");
+        const checkmark = overlay.querySelector(".checkmark-svg path");
+        const cross = overlay.querySelector(".cross-svg path");
+        const msg = overlay.querySelector(".shield-success-msg");
+
+        // Initial States
+        gsap.set(box, { scale: 1, opacity: 1 });
+        gsap.set(shield, { scale: 0, opacity: 0 });
+        if (checkmark) gsap.set(checkmark, { strokeDashoffset: 40, strokeDasharray: 40 });
+        if (cross) gsap.set(cross, { strokeDashoffset: 40, strokeDasharray: 40 });
+        gsap.set(msg, { y: 20, opacity: 0 });
+
+        // 1. Pop the Shield
+        tl.to(shield, { scale: 1.2, opacity: 1, duration: 0.4, ease: "back.out(1.7)" })
+            .to(shield, { scale: 1, duration: 0.2, ease: "power2.inOut" });
+
+        // 2. Animate Checkmark/Cross (PhonePe Style - More Professional)
+        if (type === 'success' && checkmark) {
+            // Slower, smoother draw
+            tl.to(checkmark, { strokeDashoffset: 0, duration: 1.2, ease: "power3.inOut" }, "-=0.2");
+        } else if (cross) {
+            tl.to(cross, { strokeDashoffset: 0, duration: 0.8, ease: "power2.out" }, "-=0.1");
+        }
+
+        // 3. Show Message
+        tl.to(msg, { y: 0, opacity: 1, duration: 0.5, ease: "power3.out" }, "-=0.3");
 
         // Auto Dismiss
         setTimeout(() => {
@@ -1096,11 +1245,12 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    loadShopProfile();
-    loadPrintSettings();
-    loadLangSettings();
-    loadShortcuts();
-    loadSecuritySettings();
+    // INITIAL LOADS - Wrapped in try-catch to ensure one failure doesn't block others
+    try { loadShopProfile(); } catch (e) { console.error("Shop load fail", e); }
+    try { loadPrintSettings(); } catch (e) { console.error("Print load fail", e); }
+    try { loadLangSettings(); } catch (e) { console.error("Lang load fail", e); }
+    try { loadShortcuts(); } catch (e) { console.error("Shortcut load fail", e); }
+    try { loadSecuritySettings(); } catch (e) { console.error("Security load fail", e); }
 });
 // 14. SIDEBAR LAYOUT ENGINE
 const layoutCards = document.querySelectorAll('.layout-card');

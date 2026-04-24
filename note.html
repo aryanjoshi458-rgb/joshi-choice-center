@@ -1,119 +1,68 @@
-jo old loader hai usko puri tarah se hata do and ye jo code hai vo lagao aur dark mode light mode
-me adjust ho vaisa banana
-
+jitna bhi buttons hai sab me ye button code laga do sab me
 
 html -
-<div class="container">
-	<div class="loader"></div>
-	<div class="loader"></div>
-	<div class="loader"></div>
-</div>
+<button>
+    <span class="circle1"></span>
+    <span class="circle2"></span>
+    <span class="circle3"></span>
+    <span class="circle4"></span>
+    <span class="circle5"></span>
+    <span class="text">Submit</span>
+</button>
 
 
-css - 
-.loader {
+css -
+button {
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: bold;
+  color: white;
+  background-color: #171717;
+  padding: 1em 2em;
+  border: none;
+  border-radius: .6rem;
+  position: relative;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+button span:not(:nth-child(6)) {
   position: absolute;
-  top: 50%;
   left: 50%;
-  z-index: 10;
-  width: 160px;
-  height: 100px;
-  margin-left: -80px;
-  margin-top: -50px;
-  border-radius: 5px;
-  background: #1e3f57;
-  animation: dot1_ 3s cubic-bezier(0.55,0.3,0.24,0.99) infinite;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  height: 30px;
+  width: 30px;
+  background-color: #0c66ed;
+  border-radius: 50%;
+  transition: .6s ease;
 }
 
-.loader:nth-child(2) {
-  z-index: 11;
-  width: 150px;
-  height: 90px;
-  margin-top: -45px;
-  margin-left: -75px;
-  border-radius: 3px;
-  background: #3c517d;
-  animation-name: dot2_;
+button span:nth-child(6) {
+  position: relative;
 }
 
-.loader:nth-child(3) {
-  z-index: 12;
-  width: 40px;
-  height: 20px;
-  margin-top: 50px;
-  margin-left: -20px;
-  border-radius: 0 0 5px 5px;
-  background: #6bb2cd;
-  animation-name: dot3_;
+button span:nth-child(1) {
+  transform: translate(-3.3em, -4em);
 }
 
-@keyframes dot1_ {
-  3%,97% {
-    width: 160px;
-    height: 100px;
-    margin-top: -50px;
-    margin-left: -80px;
-  }
-
-  30%,36% {
-    width: 80px;
-    height: 120px;
-    margin-top: -60px;
-    margin-left: -40px;
-  }
-
-  63%,69% {
-    width: 40px;
-    height: 80px;
-    margin-top: -40px;
-    margin-left: -20px;
-  }
+button span:nth-child(2) {
+  transform: translate(-6em, 1.3em);
 }
 
-@keyframes dot2_ {
-  3%,97% {
-    height: 90px;
-    width: 150px;
-    margin-left: -75px;
-    margin-top: -45px;
-  }
-
-  30%,36% {
-    width: 70px;
-    height: 96px;
-    margin-left: -35px;
-    margin-top: -48px;
-  }
-
-  63%,69% {
-    width: 32px;
-    height: 60px;
-    margin-left: -16px;
-    margin-top: -30px;
-  }
+button span:nth-child(3) {
+  transform: translate(-.2em, 1.8em);
 }
 
-@keyframes dot3_ {
-  3%,97% {
-    height: 20px;
-    width: 40px;
-    margin-left: -20px;
-    margin-top: 50px;
-  }
-
-  30%,36% {
-    width: 8px;
-    height: 8px;
-    margin-left: -5px;
-    margin-top: 49px;
-    border-radius: 8px;
-  }
-
-  63%,69% {
-    width: 16px;
-    height: 4px;
-    margin-left: -8px;
-    margin-top: -37px;
-    border-radius: 10px;
-  }
+button span:nth-child(4) {
+  transform: translate(3.5em, 1.4em);
 }
+
+button span:nth-child(5) {
+  transform: translate(3.5em, -3.8em);
+}
+
+button:hover span:not(:nth-child(6)) {
+  transform: translate(-50%, -50%) scale(4);
+  transition: 1.5s ease;
+}
+  

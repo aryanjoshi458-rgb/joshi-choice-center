@@ -19,8 +19,6 @@
     <link rel="stylesheet" href="../public/assets/features/scroll-toggle.css">
 
     <script src="../public/js/loader.js"></script>
-    <script src="../public/js/translations.js"></script>
-    <script src="../public/js/language-manager.js"></script>
     <script src="../public/js/auth.js"></script>
     <script>Auth.protectPage();</script>
 </head>
@@ -210,6 +208,12 @@
                                 </svg>
                                 <span id="profileAddress">-</span>
                             </div>
+                            <div class="info-chip bank-chip" id="profileBankChip" style="display:none;">
+                                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v3M12 14v3M16 14v3"/>
+                                </svg>
+                                <span id="profileBank">No Bank Linked</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -262,13 +266,13 @@
     <script src="../public/js/translations.js"></script>
     <script src="../public/js/language-manager.js"></script>
     <script src="../public/assets/sidebar-pages/global/global-background-animation.js"></script>
+    <script src="../public/js/aura-modals.js"></script><script src="../public/js/liquid-buttons.js"></script>
     <script src="../public/assets/sidebar-pages/extra/customer-profile.js"></script>
     <script src="../public/assets/features/sidebar/sidebar.js"></script>
     <script src="../public/js/theme-toggle.js"></script>
     <script src="../public/js/assistant-speaker.js"></script>
     <div id="scrollArrow">▲</div>
     <script src="../public/assets/features/scroll-toggle.js"></script>
-    <script src="../public/js/aura-modals.js"></script>
     <script src="../public/js/shortcuts.js"></script>
 </body>
 

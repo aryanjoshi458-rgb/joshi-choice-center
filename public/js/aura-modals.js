@@ -130,6 +130,7 @@ window.AuraDialog = (() => {
         }),
         success: (msg, title = "Success") => show({ msg, title, type: "success", icon: "✅", confirmText: "Great" }),
         error: (msg, title = "Error") => show({ msg, title, type: "error", icon: "❌", confirmText: "Got it" }),
+        warning: (msg, title = "Warning") => show({ msg, title, type: "warning", icon: "⚠️", confirmText: "Okay" }),
         prompt: (msg, title = "Verification", verifyText = "CONFIRM") => show({
             msg, title, type: "error", icon: "⚠️", showCancel: true, isDanger: true,
             confirmText: "Execute Action",
@@ -137,3 +138,17 @@ window.AuraDialog = (() => {
         })
     };
 })();
+
+// Global Electron Close Intercept Listener
+if (window.electronAPI && window.electronAPI.onAttemptClose) {
+    window.electronAPI.onAttemptClose(async () => {
+        const confirmed = await window.AuraDialog.confirm(
+            "Are you sure you want to close Joshi Choice Center? Any unsaved changes may be lost.",
+            "Confirm Exit",
+            true // isDanger
+        );
+        if (confirmed) {
+            window.electronAPI.confirmQuit();
+        }
+    });
+}

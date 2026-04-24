@@ -102,10 +102,13 @@ document.addEventListener("DOMContentLoaded", () => {
     // Shared Validation
     const isBanking = serviceType.value === "Banking & Financial Services";
 
-    if (!isBanking) {
+    const isMobileRecharge = serviceType.value === "Mobile & Utility Services" && 
+                             document.getElementById("serviceName")?.value === "Mobile Recharge";
+
+    if (isMobileRecharge) {
       if (!custMobile.value || custMobile.value.length !== 10) {
         if (window.AppLoader) window.AppLoader.hide();
-        await AuraDialog.error("Enter a valid 10-digit mobile number.", "Input Error");
+        await AuraDialog.error("Mobile Number is MANDATORY for Mobile Recharge.", "Input Error");
         custMobile.focus();
         return;
       }
@@ -166,13 +169,35 @@ document.addEventListener("DOMContentLoaded", () => {
     // Helper to strip commas
     const unformat = (val) => String(val || "0").replace(/,/g, "");
 
+    // Determine the full service name based on category
+    const category = serviceType.options[serviceType.selectedIndex].text.trim();
+    let subService = "";
+
+    if (category === "Banking & Financial Services") {
+      const bank = document.getElementById("bankSelect")?.value;
+      const bService = document.getElementById("bankService")?.value;
+      if (bank && bank !== "-- Select Bank --") subService = bank;
+      if (bService && bService !== "-- Select Service --") {
+        subService = subService ? `${subService} - ${bService}` : bService;
+      }
+    } else if (category === "Mobile & Utility Services") {
+      const uService = document.getElementById("serviceName")?.value;
+      if (uService && uService !== "-- Select --") subService = uService;
+    } else if (category === "Printing & Document Services") {
+      const pService = document.getElementById("printService")?.value;
+      if (pService && pService !== "-- Select --") subService = pService;
+    }
+
+    const fullServiceName = subService ? `${category} - ${subService}` : category;
+
+    const currentTime = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
     const transaction = {
-      date: txnDate.value,
+      date: `${txnDate.value} ${currentTime}`,
       customerName: customerData.name,
       mobileNumber: customerData.mobile,
       aadharNumber: customerData.aadhar,
       address: customerData.address,
-      serviceName: serviceType.options[serviceType.selectedIndex].text.trim() + (document.getElementById("serviceName")?.value ? " - " + document.getElementById("serviceName").value : ""),
+      serviceName: fullServiceName,
       amount: unformat(document.getElementById("amount")?.value),
       charge: unformat(document.getElementById("charge")?.value),
       totalAmount: unformat(document.getElementById("totalAmount")?.value),
@@ -278,7 +303,7 @@ document.addEventListener("DOMContentLoaded", () => {
       nameStar.style.display = isBanking ? "inline" : "none";
       aadharStar.style.display = isBanking ? "inline" : "none";
       addrStar.style.display = isBanking ? "inline" : "none";
-      if (mobileStar) mobileStar.style.display = isBanking ? "none" : "inline";
+      if (mobileStar) mobileStar.style.display = "none"; // Hide by default
 
       if (isBanking) {
         blocks.bank.style.display = "block";
@@ -286,8 +311,12 @@ document.addEventListener("DOMContentLoaded", () => {
         if (blocks.denomination) blocks.denomination.style.display = "none";
         if (val === "Mobile & Utility Services") {
           blocks.serviceName.style.display = "block";
+          // Check if already set to Mobile Recharge
+          const sName = document.getElementById("serviceName")?.value;
+          if (sName === "Mobile Recharge" && mobileStar) mobileStar.style.display = "inline";
         } else if (val === "Printing & Document Services") {
           blocks.print.style.display = "block";
+          if (blocks.chargeGroup) blocks.chargeGroup.style.display = "none"; // Hide Charge for Printing
         }
       }
     });
@@ -361,6 +390,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const isGooglePlay = val === "Google Play Recharge";
 
       blocks.operator.style.display = needsOperator.includes(val) ? "block" : "none";
+      if (mobileStar) mobileStar.style.display = (val === "Mobile Recharge") ? "inline" : "none";
       blocks.electricity.style.display = (val === "Electricity Bill Payment") ? "block" : "none";
       blocks.transfer.style.display = isTransfer ? "grid" : "none";
       blocks.externalRef.style.display = (isTransfer || isGooglePlay) ? "block" : "none";
@@ -461,8 +491,8 @@ window.loadTransactionsToTable = function () {
 
   const todayTxns = txns.filter(t => {
     if (!t.date) return false;
-    // Check if date matches either YYYY-MM-DD or DD-MM-YYYY
-    return t.date === todayStr || t.date === todayStrAlt;
+    // Check if date matches today (using startsWith to handle time part)
+    return t.date.startsWith(todayStr) || t.date.startsWith(todayStrAlt);
   });
 
   // Display newest first
@@ -470,7 +500,7 @@ window.loadTransactionsToTable = function () {
 
   displayTxns.forEach((txn, index) => {
     const row = tbody.insertRow();
-    row.insertCell(0).innerText = index + 1;
+    row.insertCell(0).innerText = displayTxns.length - index;
     row.insertCell(1).innerText = txn.date;
     row.insertCell(2).innerText = txn.customerName;
     row.insertCell(3).innerText = txn.mobileNumber;
@@ -689,7 +719,7 @@ window.resetTransactionForm = function () {
     const star = document.getElementById(id);
     if (star) star.style.display = "none";
   });
-  if (mobileStar) mobileStar.style.display = "inline";
+  if (mobileStar) mobileStar.style.display = "none";
 
   // Reset Sub-groups visibility
   const subGroups = ["amountGroup", "chargeGroup", "totalGroup", "paymentModeGroup"];

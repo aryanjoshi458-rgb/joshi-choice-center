@@ -9,5 +9,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
     // Listeners
     onDownloadProgress: (callback) => ipcRenderer.on('download-progress', (event, value) => callback(value)),
     onDownloadComplete: (callback) => ipcRenderer.on('download-complete', (event, path) => callback(path)),
-    onDownloadError: (callback) => ipcRenderer.on('download-error', (event, error) => callback(error))
+    onDownloadError: (callback) => ipcRenderer.on('download-error', (event, error) => callback(error)),
+    
+    // Close Handling
+    onAttemptClose: (callback) => ipcRenderer.on('attempt-close', () => callback()),
+    confirmQuit: () => ipcRenderer.send('confirm-app-quit')
 });

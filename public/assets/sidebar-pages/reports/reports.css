@@ -178,11 +178,6 @@
 
 
 /* ===== BEST SEARCH ===== */
-#bestSearchRow th {
-  background: #fff !important;
-  /* 👈 बस यही main fix */
-}
-
 .best-search {
   position: relative;
   width: 38px;
@@ -195,15 +190,15 @@
   transition: all 0.4s ease;
   cursor: pointer;
   margin-top: -13px;
+  border: 1px solid var(--border-color);
 }
 
 .best-search.active {
   width: 260px;
-  background: #fff;
+  background: var(--card-bg);
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
-/* ICON */
 .best-search .icon {
   min-width: 38px;
   display: flex;
@@ -214,18 +209,17 @@
 .best-search svg {
   width: 18px;
   height: 18px;
-  stroke: #555;
+  stroke: var(--text-main);
   stroke-width: 2;
   fill: none;
   transition: 0.3s;
 }
 
 .best-search.active .icon svg {
-  stroke: #007bff;
+  stroke: #10b981;
   transform: rotate(10deg) scale(1.1);
 }
 
-/* INPUT */
 .best-search input {
   border: none;
   outline: none;
@@ -233,29 +227,25 @@
   font-size: 14px;
   opacity: 0;
   transition: 0.3s;
-  /* background: transparent; */
+  background: transparent;
+  color: var(--text-main);
 }
 
 .best-search.active input {
   opacity: 1;
 }
 
-/* CLEAR */
 .best-search .clear-btn {
   font-size: 14px;
   padding: 0 10px;
   cursor: pointer;
-  color: #888;
+  color: var(--text-muted);
   opacity: 0;
   transition: 0.3s;
 }
 
 .best-search.active .clear-btn {
   opacity: 1;
-}
-
-.best-search .clear-btn:hover svg {
-  stroke: red;
 }
 
 /* ===== SEARCH ROW ===== */
@@ -266,7 +256,6 @@
   border-bottom: 1px solid var(--border-color);
 }
 
-/* 🔥 MAIN FIX */
 #searchFilterWrapper {
   display: flex;
   align-items: center;
@@ -275,36 +264,6 @@
   justify-content: space-between;
 }
 
-/* ===== SEARCH ===== */
-.best-search {
-  width: 38px;
-  height: 38px;
-  border-radius: 50px;
-  background: #f1f3f6;
-  display: flex;
-  align-items: center;
-  overflow: hidden;
-  transition: all 0.35s ease;
-  cursor: pointer;
-}
-
-.best-search.active {
-  width: 240px;
-  background: #fff;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-}
-
-.best-search input {
-  border: none;
-  outline: none;
-  flex: 1;
-  font-size: 13px;
-  opacity: 0;
-}
-
-.best-search.active input {
-  opacity: 1;
-}
 
 /* ===== FILTER ===== */
 #reportStatusFilter {
@@ -360,139 +319,347 @@
   transform: translateX(0px);
 }
 
-/* ===== PDF MODAL (Refinement) ===== */
-.pdf-modal-content {
-  width: 100% !important;
-  height: 100vh !important;
-  max-width: none !important;
-  margin: 0 !important;
-  border-radius: 0 !important;
-  display: flex;
-  flex-direction: column;
-  background: #f8fafc;
-  /* Even lighter background */
-  animation: modalFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+/* ===== PDF MODAL (FORCE FULL SCREEN OVERRIDE) ===== */
+#pdfModal {
+  padding: 0 !important;
+  background: #0f172a !important;
+  display: none;
+  /* Controlled by JS */
+  align-items: flex-start !important;
+  justify-content: center !important;
 }
 
-@keyframes modalFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+#pdfModal .pdf-modal-content {
+  position: relative !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  max-width: none !important;
+  max-height: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  display: flex !important;
+  flex-direction: column;
+  background: #0f172a;
+  z-index: 10000;
+  box-shadow: none !important;
+  transform: none !important;
 }
 
 .pdf-modal-content .modal-header {
-  padding: 18px 30px;
-  background: #ffffff;
-  border-bottom: 1px solid #e2e8f0;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  padding: 15px 30px;
+  background: rgba(15, 23, 42, 0.95);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
   z-index: 10;
 }
 
 .pdf-modal-content .modal-header h2 {
-  font-size: 18px;
+  font-size: 1.2rem;
   font-weight: 700;
-  color: #0f172a;
+  color: #fff;
 }
 
 .pdf-modal-content .modal-body {
   flex: 1;
-  overflow: hidden;
-  background: #f1f5f9;
-  /* Subtle "workspace" grey */
-  padding: 15px;
-  /* DRASTICALLY REDUCED from 40px to fix "big border" */
+  overflow-y: auto;
+  background: transparent;
+  padding: 0;
+  /* Zero padding for edge-to-edge look */
   display: flex;
   justify-content: center;
+  align-items: flex-start;
 }
 
 .pdf-preview-area {
   background: white;
-  padding: 40px 60px;
-  /* Professional but compact padding */
-  width: 98%;
-  /* Occupies most of the horizontal space */
-  max-width: 1350px;
-  /* Better for landscape tables */
-  height: 100%;
+  padding: 40px;
+  /* Consistent padding */
+  width: 297mm;
+  /* Default Landscape Width */
+  min-height: 210mm;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  margin: 20px auto;
+  border-radius: 4px;
+  color: #1e293b !important;
+  transition: all 0.3s ease;
+}
+
+.pdf-preview-area.portrait {
+  width: 210mm;
+  /* Portrait Width */
+  min-height: 297mm;
+}
+
+/* Ensure the modal body centers the preview */
+.pdf-modal-content .modal-body {
+  flex: 1;
   overflow-y: auto;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05), 0 10px 25px rgba(0, 0, 0, 0.05);
-  /* Soft, professional shadow */
-  margin: 0 auto;
-  border-radius: 12px;
-  /* Smooth software-like corners */
-  border: 1px solid #e2e8f0;
+  background: #0f172a;
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
 }
 
 .pdf-report-header {
   text-align: center;
-  margin-bottom: 30px;
-  border-bottom: 4px solid #10b981;
-  padding-bottom: 20px;
+  margin-bottom: 40px;
+  border-bottom: 3px solid #10b981;
+  padding-bottom: 25px;
 }
 
 .pdf-report-header h1 {
   margin: 0;
-  font-size: 28px;
-  letter-spacing: -0.8px;
-  color: #1e293b;
+  font-size: 32px;
+  letter-spacing: -1px;
+  color: #0f172a !important;
   font-weight: 800;
 }
 
 .pdf-report-header p {
-  margin: 6px 0 0;
-  color: #64748b;
+  margin: 8px 0 0;
+  color: #64748b !important;
   font-size: 14px;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 2px;
 }
 
 .pdf-report-meta {
   display: flex;
   justify-content: space-between;
-  margin-top: 20px;
-  font-size: 13px;
-  color: #475569;
+  margin: 30px 0 20px 0;
+  font-size: 14px;
+  color: #334155 !important;
   font-weight: 600;
-  padding: 0 5px;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 15px;
 }
 
 .pdf-report-table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 10px;
-  font-size: 10px;
-  /* Original size */
+  font-size: 9px;
+  /* Reduced base font size further */
+  background: white;
+  table-layout: fixed;
 }
 
 .pdf-report-table th,
 .pdf-report-table td {
-  border: 1px solid #ddd;
-  padding: 10px 8px;
+  border: 1px solid #e2e8f0;
+  padding: 6px 3px;
+  /* Minimal padding for maximum space */
   text-align: left;
+  color: #0f172a !important;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
 }
+
+/* Default Landscape Widths (Approx 1000px total) */
+.pdf-report-table th:nth-child(1),
+.pdf-report-table td:nth-child(1) {
+  width: 3%;
+  text-align: center;
+}
+
+/* SN */
+.pdf-report-table th:nth-child(2),
+.pdf-report-table td:nth-child(2) {
+  width: 8%;
+}
+
+/* Date */
+.pdf-report-table th:nth-child(3),
+.pdf-report-table td:nth-child(3) {
+  width: 10%;
+}
+
+/* Customer */
+.pdf-report-table th:nth-child(4),
+.pdf-report-table td:nth-child(4) {
+  width: 9%;
+}
+
+/* Mobile */
+.pdf-report-table th:nth-child(5),
+.pdf-report-table td:nth-child(5) {
+  width: 10%;
+}
+
+/* Aadhar */
+.pdf-report-table th:nth-child(6),
+.pdf-report-table td:nth-child(6) {
+  width: 12%;
+}
+
+/* Address */
+.pdf-report-table th:nth-child(7),
+.pdf-report-table td:nth-child(7) {
+  width: 12%;
+}
+
+/* Service */
+.pdf-report-table th:nth-child(8),
+.pdf-report-table td:nth-child(8) {
+  width: 6%;
+  text-align: right;
+}
+
+/* Amount */
+.pdf-report-table th:nth-child(9),
+.pdf-report-table td:nth-child(9) {
+  width: 5%;
+  text-align: right;
+}
+
+/* Charge */
+.pdf-report-table th:nth-child(10),
+.pdf-report-table td:nth-child(10) {
+  width: 6%;
+  text-align: right;
+}
+
+/* Total */
+.pdf-report-table th:nth-child(11),
+.pdf-report-table td:nth-child(11) {
+  width: 5%;
+}
+
+/* Mode */
+.pdf-report-table th:nth-child(12),
+.pdf-report-table td:nth-child(12) {
+  width: 6%;
+  text-align: center;
+}
+
+/* Status */
+.pdf-report-table th:nth-child(13),
+.pdf-report-table td:nth-child(13) {
+  width: 8%;
+}
+
+/* TXN ID */
+
+/* Portrait Overrides (Even tighter) */
+.pdf-preview-area.portrait .pdf-report-table {
+  font-size: 7px;
+  /* Ultra small for portrait */
+}
+
+.pdf-preview-area.portrait .pdf-report-table th,
+.pdf-preview-area.portrait .pdf-report-table td {
+  padding: 4px 2px;
+}
+
+/* Portrait specific column distribution to avoid vertical text */
+.pdf-preview-area.portrait .pdf-report-table th:nth-child(1),
+.pdf-preview-area.portrait .pdf-report-table td:nth-child(1) {
+  width: 25px;
+}
+
+/* SN */
+.pdf-preview-area.portrait .pdf-report-table th:nth-child(2),
+.pdf-preview-area.portrait .pdf-report-table td:nth-child(2) {
+  width: 50px;
+}
+
+/* Date */
+.pdf-preview-area.portrait .pdf-report-table th:nth-child(3),
+.pdf-preview-area.portrait .pdf-report-table td:nth-child(3) {
+  width: 60px;
+}
+
+/* Customer */
+.pdf-preview-area.portrait .pdf-report-table th:nth-child(4),
+.pdf-preview-area.portrait .pdf-report-table td:nth-child(4) {
+  width: 60px;
+}
+
+/* Mobile */
+.pdf-preview-area.portrait .pdf-report-table th:nth-child(5),
+.pdf-preview-area.portrait .pdf-report-table td:nth-child(5) {
+  width: 70px;
+}
+
+/* Aadhar */
+.pdf-preview-area.portrait .pdf-report-table th:nth-child(6),
+.pdf-preview-area.portrait .pdf-report-table td:nth-child(6) {
+  width: 80px;
+}
+
+/* Address */
+.pdf-preview-area.portrait .pdf-report-table th:nth-child(7),
+.pdf-preview-area.portrait .pdf-report-table td:nth-child(7) {
+  width: 80px;
+}
+
+/* Service */
+.pdf-preview-area.portrait .pdf-report-table th:nth-child(8),
+.pdf-preview-area.portrait .pdf-report-table td:nth-child(8) {
+  width: 35px;
+}
+
+/* Amount */
+.pdf-preview-area.portrait .pdf-report-table th:nth-child(9),
+.pdf-preview-area.portrait .pdf-report-table td:nth-child(9) {
+  width: 35px;
+}
+
+/* Charge */
+.pdf-preview-area.portrait .pdf-report-table th:nth-child(10),
+.pdf-preview-area.portrait .pdf-report-table td:nth-child(10) {
+  width: 40px;
+}
+
+/* Total */
+.pdf-preview-area.portrait .pdf-report-table th:nth-child(11),
+.pdf-preview-area.portrait .pdf-report-table td:nth-child(11) {
+  width: 30px;
+}
+
+/* Mode */
+.pdf-preview-area.portrait .pdf-report-table th:nth-child(12),
+.pdf-preview-area.portrait .pdf-report-table td:nth-child(12) {
+  width: 40px;
+}
+
+/* Status */
+.pdf-preview-area.portrait .pdf-report-table th:nth-child(13),
+.pdf-preview-area.portrait .pdf-report-table td:nth-child(13) {
+  width: 60px;
+}
+
+/* TXN ID */
 
 .pdf-report-table th {
   background: #f8fafc;
-  font-weight: 601;
-  color: #334155;
+  font-weight: 700;
+  color: #334155 !important;
+  text-transform: uppercase;
+  font-size: 8px;
+  letter-spacing: -0.2px;
+}
+
+.pdf-preview-area.portrait .pdf-report-table th {
+  font-size: 6.5px;
 }
 
 .pdf-report-table tr:nth-child(even) {
-  background: #fdfdfd;
+  background: #fbfcfe;
 }
 
 .pdf-report-footer {
-  margin-top: 20px;
-  text-align: right;
+  margin-top: 40px;
+  text-align: center;
   font-size: 12px;
-  color: #666;
+  color: #94a3b8 !important;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 20px;
 }
 
 /* ===== PREMIUM SUMMARY CARDS (Business, Transactions, Commission) ===== */
@@ -577,307 +744,8 @@ body.dark-mode #totalTransactionsValue {
   color: #fb923c;
 }
 
-/* ===== MODAL STYLES (NEW) ===== */
-.modal {
-  display: none;
-  position: fixed;
-  z-index: 1000;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
-}
+/* Modal styles removed in favor of modals-shared.css */
 
-.modal-content {
-  background-color: #fff;
-  margin: 5% auto;
-  padding: 0;
-  border-radius: 12px;
-  width: 90%;
-  max-width: 500px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-  position: relative;
-  overflow: hidden;
-  animation: modalSlide 0.3s ease-out;
-}
-
-@keyframes modalSlide {
-  from {
-    transform: translateY(-30px);
-    opacity: 0;
-  }
-
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-.modal-header {
-  padding: 15px 20px;
-  background: #f8f9fa;
-  border-bottom: 1px solid #eee;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.modal-header h2,
-.modal-header h3 {
-  margin: 0;
-  display: flex;
-  align-items: center;
-  font-size: 1.25rem;
-  color: #1f2937;
-}
-
-.title-icon {
-  width: 22px;
-  height: 22px;
-  margin-right: 10px;
-  color: #10b981;
-}
-
-.close-modal {
-  font-size: 24px;
-  cursor: pointer;
-  color: #888;
-  transition: 0.2s;
-}
-
-.close-modal:hover {
-  color: #e74c3c;
-}
-
-.modal-body {
-  padding: 20px;
-  max-height: 70vh;
-  overflow-y: auto;
-}
-
-.modal-controls {
-  display: flex;
-  gap: 15px;
-  margin-bottom: 15px;
-}
-
-.control-group {
-  flex: 1;
-}
-
-.control-group label {
-  display: block;
-  font-size: 12px;
-  color: #666;
-  margin-bottom: 5px;
-}
-
-.control-group select {
-  width: 100%;
-  padding: 8px;
-  border-radius: 6px;
-  border: 1px solid #ddd;
-  font-size: 13px;
-}
-
-.receipt-preview {
-  background: #fdfdfd;
-  border: 1px dashed #ccc;
-  padding: 15px;
-  font-family: monospace;
-  white-space: pre-line;
-  font-size: 11px;
-  /* Slightly smaller for better fitting */
-  color: #333;
-  min-height: 200px;
-  border-radius: 6px;
-  margin: 0 auto;
-  transition: all 0.3s ease;
-  overflow-x: hidden;
-}
-
-/* SIZES */
-.receipt-preview.size-58 {
-  width: 220px;
-  font-size: 10px;
-}
-
-.receipt-preview.size-80 {
-  width: 320px;
-}
-
-.receipt-preview.size-a4-p {
-  width: 100%;
-  max-width: 440px;
-  min-height: 600px;
-  background: white;
-  border: 1px solid #ddd;
-}
-
-.receipt-preview.size-a4-l {
-  width: 100%;
-  max-width: 640px;
-  /* Better aspect ratio for landscape */
-  min-height: 450px;
-  background: white;
-  border: 1px solid #ddd;
-  padding: 40px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-}
-
-.modal-footer {
-  padding: 15px 20px;
-  background: #f8f9fa;
-  border-top: 1px solid #eee;
-  text-align: right;
-}
-
-.btn-print-final {
-  background: #10b981;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 6px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.btn-print-final:hover {
-  background: #059669;
-}
-
-.btn-cancel {
-  background: #f3f4f6;
-  color: #4b5563;
-  border: 1px solid #d1d5db;
-  padding: 10px 20px;
-  border-radius: 6px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  margin-right: 10px;
-}
-
-.btn-cancel:hover {
-  background: #e5e7eb;
-  color: #1f2937;
-  border-color: #9ca3af;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-}
-
-
-/* SEARCH MODAL SPECIFIC */
-.search-modal {
-  max-width: 600px;
-}
-
-.search-box-wrap {
-  margin-bottom: 20px;
-}
-
-.search-box-wrap input {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-size: 14px;
-  outline: none;
-  transition: 0.2s;
-}
-
-.search-box-wrap input:focus {
-  border-color: #3498db;
-  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
-}
-
-.search-list {
-  margin-top: 10px;
-  max-height: 200px;
-  overflow-y: auto;
-}
-
-.search-item {
-  padding: 12px;
-  border-bottom: 1px solid #f0f0f0;
-  cursor: pointer;
-  transition: 0.2s;
-  font-size: 14px;
-  display: flex;
-  justify-content: space-between;
-}
-
-.search-item:hover {
-  background: #f8f9fa;
-  color: #007bff;
-}
-
-.search-item .txn {
-  font-size: 11px;
-  color: #888;
-}
-
-.search-item:last-child {
-  border-bottom: none;
-}
-
-/* ===== EDIT MODAL SPECIFIC ===== */
-.edit-modal-content {
-  max-width: 650px;
-  width: 95%;
-  max-height: 90vh;
-  display: flex;
-  flex-direction: column;
-}
-
-.edit-modal-content .modal-body {
-  flex: 1;
-  overflow-y: auto;
-  padding: 25px;
-}
-
-
-.edit-form-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.form-group.full-width {
-  grid-column: span 2;
-}
-
-.form-group label {
-  font-size: 13px;
-  font-weight: 600;
-  color: #374151;
-}
-
-.form-group input,
-.form-group select {
-  padding: 10px 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  font-size: 14px;
-  outline: none;
-  transition: all 0.2s ease;
-  background: #fdfdfd;
-}
-
-.form-group input:focus,
-.form-group select:focus {
-  border-color: #10b981;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
-  background: #fff;
-}
 
 .btn-edit {
   background: #2196F3;
@@ -892,4 +760,7 @@ body.dark-mode #totalTransactionsValue {
   /* Darker blue for hover */
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(33, 150, 243, 0.2);
+}
+
+box-shadow: 0 4px 12px rgba(33, 150, 243, 0.2);
 }

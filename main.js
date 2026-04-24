@@ -26,6 +26,14 @@ function createWindow() {
   });
 
   win.loadFile(path.join(__dirname, 'views/login.html'));
+
+  // Close Intercept for Confirmation
+  win.on('close', (e) => {
+    if (!app.isQuiting) {
+      e.preventDefault();
+      win.webContents.send('attempt-close');
+    }
+  });
   
   // Open external links in browser
   win.webContents.setWindowOpenHandler(({ url }) => {
@@ -33,6 +41,12 @@ function createWindow() {
     return { action: 'deny' };
   });
 }
+
+// Actual Quit Handler
+ipcMain.on('confirm-app-quit', () => {
+  app.isQuiting = true;
+  app.quit();
+});
 
 app.whenReady().then(createWindow);
 

@@ -441,3 +441,42 @@ body.dark-mode .card-stats { background: #0f172a; }
 body.dark-mode .stat-item .val { color: #cbd5e1; }
 body.dark-mode .view-link { background: #334155; }
 body.dark-mode .view-link:hover { background: var(--elite-accent); }
+
+/* TOP SECTION SPECIFIC */
+.top-customers-wrap {
+    margin-bottom: 50px;
+    animation: fadeInDown 0.8s ease-out;
+}
+
+.section-subtitle {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+body.dark-mode .section-subtitle { color: #f1f5f9; }
+
+.section-subtitle svg { color: var(--elite-gold); }
+
+.top-grid {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+@media (max-width: 1100px) {
+    .top-grid { grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+}
+
+.section-divider {
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.2), transparent);
+    margin-top: 40px;
+}
+
+@keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}

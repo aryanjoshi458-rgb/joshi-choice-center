@@ -1,7 +1,7 @@
 console.log("📄 Reports page loaded");
 
-let allReportsData = [];
-let filteredReportsData = [];
+window.allReportsData = [];
+window.filteredReportsData = [];
 
 document.addEventListener("DOMContentLoaded", () => {
   loadReports();
@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
 function loadReports() {
   // latest data first
   const reports = (JSON.parse(localStorage.getItem("transactions")) || []).reverse();
-  allReportsData = reports; // ✅ Store globally
+  window.allReportsData = reports; // ✅ Store globally
   const tbody = document.getElementById("reportsTableBody");
 
   if (!tbody) {
@@ -147,6 +147,14 @@ function formatDate(dateStr) {
   const mm = String(d.getMonth() + 1).padStart(2, "0");
   const yyyy = d.getFullYear();
 
+  // Show time if available
+  const hasTime = dateStr.includes(" ") || dateStr.includes("T");
+  if (hasTime) {
+    const hh = String(d.getHours()).padStart(2, "0");
+    const min = String(d.getMinutes()).padStart(2, "0");
+    return `${dd}-${mm}-${yyyy} ${hh}:${min}`;
+  }
+
   return `${dd}-${mm}-${yyyy}`;
 }
 
@@ -208,9 +216,9 @@ function applyFilter() {
   const selectedMonth = document.getElementById("monthFilter")?.value || "";
 
   const rows = document.querySelectorAll("#reportsTable tbody tr");
-  filteredReportsData = []; // ✅ Reset before re-populating
+  window.filteredReportsData = []; // ✅ Reset before re-populating
 
-  allReportsData.forEach((r, idx) => {
+  window.allReportsData.forEach((r, idx) => {
     // We match against the same logic used in the loop below
     const customer = (r.customerName || "").toLowerCase();
     const mobile = (r.mobileNumber || "").toLowerCase();
@@ -219,17 +227,17 @@ function applyFilter() {
     const statusText = (r.status || "Pending").toLowerCase();
 
     // Search matches
-    const matchSearch = !searchValue || 
-                       customer.includes(searchValue) || 
-                       mobile.includes(searchValue) || 
-                       service.includes(searchValue) || 
-                       txnId.includes(searchValue);
+    const matchSearch = !searchValue ||
+      customer.includes(searchValue) ||
+      mobile.includes(searchValue) ||
+      service.includes(searchValue) ||
+      txnId.includes(searchValue);
 
     // Status matches
     const matchStatus = statusValue === "all" || statusText.includes(statusValue);
 
     // Month matches
-    const dateStr = r.date || ""; 
+    const dateStr = r.date || "";
     let rowMonth = "";
     if (dateStr.includes("-")) {
       const parts = dateStr.split("-");
@@ -239,14 +247,14 @@ function applyFilter() {
     const matchMonth = !selectedMonth || rowMonth === selectedMonth;
 
     if (matchSearch && matchStatus && matchMonth) {
-      filteredReportsData.push(r);
+      window.filteredReportsData.push(r);
     }
   });
 
   // Now hide/show the DOM rows based on index
   // (Note: allReportsData is already reversed to match table order)
   rows.forEach((row, idx) => {
-    const r = allReportsData[idx];
+    const r = window.allReportsData[idx];
     if (!r) return;
 
     const customer = (r.customerName || "").toLowerCase();
@@ -255,14 +263,14 @@ function applyFilter() {
     const txnId = (r.transactionId || r.txnId || r.id || "").toString().toLowerCase();
     const statusText = (r.status || "Pending").toLowerCase();
 
-    const matchSearch = !searchValue || 
-                       customer.includes(searchValue) || 
-                       mobile.includes(searchValue) || 
-                       service.includes(searchValue) || 
-                       txnId.includes(searchValue);
+    const matchSearch = !searchValue ||
+      customer.includes(searchValue) ||
+      mobile.includes(searchValue) ||
+      service.includes(searchValue) ||
+      txnId.includes(searchValue);
     const matchStatus = statusValue === "all" || statusText.includes(statusValue);
 
-    const dateStr = r.date || ""; 
+    const dateStr = r.date || "";
     let rowMonth = "";
     if (dateStr.includes("-")) {
       const parts = dateStr.split("-");
@@ -297,14 +305,14 @@ function updateSummaryMetrics() {
     if (row.classList.contains("no-data-row") || row.style.display === "none") return;
 
     const chargeCell = row.querySelector("td:nth-child(9)");
-      const totalCell = row.querySelector("td:nth-child(10)");
+    const totalCell = row.querySelector("td:nth-child(10)");
 
-      const charge = parseFloat(chargeCell?.textContent.replace(/[^\d.]/g, "")) || 0;
-      const total = parseFloat(totalCell?.textContent.replace(/[^\d.]/g, "")) || 0;
+    const charge = parseFloat(chargeCell?.textContent.replace(/[^\d.]/g, "")) || 0;
+    const total = parseFloat(totalCell?.textContent.replace(/[^\d.]/g, "")) || 0;
 
-      totalCommission += charge;
-      totalBusiness += total;
-      transactionCount++;
+    totalCommission += charge;
+    totalBusiness += total;
+    transactionCount++;
   });
 
   document.getElementById("commissionValue").innerText = "₹" + totalCommission.toLocaleString();
@@ -330,7 +338,7 @@ window.printReportRow = async function (id) {
     return;
   }
 
-  document.getElementById("printModal").style.display = "block";
+  document.getElementById("printModal").style.display = "flex";
   updateModalPreview();
 }
 
@@ -359,7 +367,7 @@ window.printFromModal = function () {
    FULL SEARCH PRINT MODAL
 ========================= */
 window.openFullPrintModal = function () {
-  document.getElementById("searchPrintModal").style.display = "block";
+  document.getElementById("searchPrintModal").style.display = "flex";
   document.getElementById("modalSearchInput").value = "";
   document.getElementById("modalSearchList").innerHTML = "";
   document.getElementById("searchModalControls").style.display = "none";
@@ -673,26 +681,36 @@ window.openPdfModal = async function () {
     </div>
   `;
 
+  const orientation = document.getElementById("pdfOrientation")?.value || "landscape";
+  const isPortrait = orientation === "portrait";
+
   document.getElementById("pdfPreviewArea").innerHTML = reportContent;
+  document.getElementById("pdfPreviewArea").className = `pdf-preview-area ${orientation}`;
   document.getElementById("pdfModal").style.display = "flex";
 
   // ✅ Hide Top Elements for Immersive Preview
-  const elementsToHide = ["sidebarToggle", "assistantSpeaker", "themeToggle"];
+  const elementsToHide = ["sidebarToggle", "assistantSpeaker", "themeToggleV4", "assistantSpeaker"];
   elementsToHide.forEach(id => {
     const el = document.getElementById(id);
     if (el) el.style.visibility = "hidden";
   });
+
+  // ✅ Prevent Body Scroll
+  document.body.style.overflow = "hidden";
 };
 
 window.closePdfModal = function () {
   document.getElementById("pdfModal").style.display = "none";
 
   // ✅ Restore Top Elements
-  const elementsToShow = ["sidebarToggle", "assistantSpeaker", "themeToggle"];
+  const elementsToShow = ["sidebarToggle", "assistantSpeaker", "themeToggleV4"];
   elementsToShow.forEach(id => {
     const el = document.getElementById(id);
     if (el) el.style.visibility = "visible";
   });
+
+  // ✅ Restore Body Scroll
+  document.body.style.overflow = "";
 };
 
 window.downloadPdfFromModal = async function () {
@@ -713,36 +731,37 @@ window.downloadPdfFromModal = async function () {
     filename: `Joshi_Choice_Center_Report_${new Date().toISOString().split('T')[0]}.pdf`,
     image: { type: 'jpeg', quality: 0.98 },
     html2canvas: { scale: 2, useCORS: true, logging: false },
-    jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+    jsPDF: { unit: 'mm', format: 'a4', orientation: document.getElementById("pdfOrientation")?.value || 'landscape' },
+    pagebreak: { mode: 'css', avoid: 'tr' }
   };
 
   html2pdf().set(opt).from(element).save().then(() => {
     btn.innerText = originalText;
     btn.disabled = false;
 
-    // ✅ Fix: Delay popup until Save Dialog is closed
-    // We detect this by waiting for the window to regain focus
-    const showSuccessToast = () => {
+    // ✅ Wait for the user to finish with the Save Dialog
+    const handleCompletion = () => {
+      // 1. Close the modal only AFTER they are done saving/cancelling
+      closePdfModal();
+
+      // 2. Show the professional success toast
       if (typeof showToast === "function") {
-        showToast("PDF Saved Successfully ✅");
+        showToast("PDF Export Process Finished ✅");
       }
-      window.removeEventListener('focus', showSuccessToast);
+
+      window.removeEventListener('focus', handleCompletion);
     };
 
-    window.addEventListener('focus', showSuccessToast);
+    // Add listener to detect when focus returns to the app
+    window.addEventListener('focus', handleCompletion);
 
-    // Fallback in case focus event doesn't fire (e.g. non-blocking dialogs)
+    // Fallback: If for some reason focus doesn't fire, we still want to re-enable things
     setTimeout(() => {
-      if (typeof showToast === "function") {
-        window.removeEventListener('focus', showSuccessToast);
-        // We only show it if the listener is still there (meaning focus hasn't fired yet)
-        // But actually, it's safer to just let focus handle it if possible.
-      }
-    }, 10000);
+      btn.disabled = false;
+      btn.innerText = originalText;
+    }, 500);
 
   }).catch(async err => {
-
-
     console.error("PDF Download Error:", err);
     btn.innerText = originalText;
     btn.disabled = false;

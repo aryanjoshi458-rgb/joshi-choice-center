@@ -29,8 +29,8 @@ function renderTransactions() {
       <td>${index + 1}</td>
       <td>${txn.date || ""}</td>
       <td>${txn.customerName || ""}</td>
-      <td>${txn.mobile || ""}</td>
-      <td>${txn.aadhar || ""}</td>
+      <td>${txn.mobileNumber || txn.mobile || ""}</td>
+      <td>${txn.aadharNumber || txn.aadhar || ""}</td>
       <td>${txn.serviceType || ""}</td>
       <td>${txn.amount || ""}</td>
       <td>${txn.charge || ""}</td>
@@ -83,10 +83,13 @@ function formatDateDDMMYYYY() {
     if (!dateCell) return;
 
     const v = dateCell.innerText.trim();
-    if (!v.match(/^\d{4}-\d{2}-\d{2}$/)) return;
+    // Match YYYY-MM-DD or YYYY-MM-DD HH:mm:ss
+    const match = v.match(/^(\d{4})-(\d{2})-(\d{2})(.*)$/);
+    if (!match) return;
 
-    const [y, m, d] = v.split("-");
-    dateCell.innerText = `${d}-${m}-${y}`;
+    const [_, y, m, d, timePart] = match;
+    const timeShort = timePart ? timePart.trim().split(':').slice(0, 2).join(':') : "";
+    dateCell.innerText = `${d}-${m}-${y}${timeShort ? ' ' + timeShort : ''}`;
   });
 }
 window.addEventListener("load", () => {
@@ -103,25 +106,7 @@ function openPage(pageId) {
 
 // Printing flow logic removed, now managed in script.js
 
-// IS CODE SE TODAYS REPORTS ME JAB DATA BAAD ME AYEGA VO DATA LIST ME PAHLE UPER AYEGA
-window.addEventListener("load", () => {
-  setTimeout(() => {
-    const tables = document.querySelectorAll("table");
 
-    tables.forEach(table => {
-      const heading = table.closest("div")?.innerText || "";
-
-      if (heading.toLowerCase().includes("today")) {
-        const tbody = table.querySelector("tbody");
-        if (!tbody) return;
-
-        const rows = Array.from(tbody.querySelectorAll("tr"));
-        tbody.innerHTML = "";
-        rows.reverse().forEach(r => tbody.appendChild(r));
-      }
-    });
-  }, 0);
-});
 
 // IS CODE SE TODAYS REPORTS ME DATA SIRF AAJ KA HOGA 24 HOUR KA BAS
 // ✅ FIXED - ONLY TODAY DATA FILTER (PRO VERSION)

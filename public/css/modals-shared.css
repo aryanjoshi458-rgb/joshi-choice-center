@@ -136,7 +136,7 @@
 .form-group select:focus {
   border-color: #10b981;
   box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
-  background: #fff;
+  background: var(--card-bg);
 }
 
 /* MODAL FOOTER */
@@ -164,21 +164,71 @@
   background: #e5e7eb;
 }
 
+.receipt-preview {
+  background: #fff;
+  color: #1a1a1a !important;
+  border: 1.5px dashed #ccc;
+  padding: 25px;
+  font-family: 'Courier New', Courier, monospace;
+  white-space: pre-line;
+  font-size: 13px;
+  margin: 20px auto;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 380px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  transition: all 0.3s ease;
+  text-align: left;
+}
+
+/* Dark Mode Receipt Appearance */
+body.dark-mode .receipt-preview {
+  background: rgba(30, 41, 59, 0.5);
+  color: #e2e8f0 !important;
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+/* Premium Print Button Update */
 .btn-print-final {
   background: linear-gradient(135deg, #10b981, #059669);
   color: white;
   border: none;
-  padding: 12px 25px;
-  border-radius: 12px;
-  font-weight: 600;
+  padding: 12px 28px;
+  border-radius: 14px;
+  font-weight: 700;
+  font-size: 0.95rem;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.25);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+  overflow: hidden;
 }
 
 .btn-print-final:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 15px rgba(16, 185, 129, 0.3);
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 12px 25px rgba(16, 185, 129, 0.4);
+  background: linear-gradient(135deg, #34d399, #10b981);
+}
+
+.btn-print-final::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+  transform: rotate(45deg);
+  transition: 0.8s;
+}
+
+.btn-print-final:hover::after {
+  left: 120%;
 }
 
 /* SEARCH MODAL SPECIFIC (Shared logic) */
@@ -192,35 +242,57 @@
 }
 
 .search-list {
-  max-height: 250px;
+  max-height: 300px;
   overflow-y: auto;
-  background: #f9fafb;
+  background: var(--bg-color, #f9fafb);
   border-radius: 12px;
-  border: 1px solid #eee;
+  border: 1px solid var(--border-color, #eee);
+  margin-top: 10px;
 }
 
 .search-item {
   padding: 15px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--border-color, #eee);
   cursor: pointer;
   transition: 0.2s;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  color: var(--text-main);
+}
+
+.search-item:last-child {
+  border-bottom: none;
 }
 
 .search-item:hover {
-  background: #fff;
+  background: var(--hover-bg, #fff);
   color: #10b981;
 }
 
-.receipt-preview {
-  background: #fff;
-  border: 1px dashed #ccc;
-  padding: 20px;
-  font-family: monospace;
-  white-space: pre-line;
-  font-size: 12px;
-  margin-top: 15px;
-  border-radius: 8px;
+#modalSearchInput {
+  width: 100%;
+  padding: 14px 20px;
+  border-radius: 14px;
+  border: 2px solid var(--border-color);
+  background: var(--card-bg);
+  color: var(--text-main);
+  font-size: 1rem;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+#modalSearchInput:focus {
+  border-color: #10b981;
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+}
+
+/* Dark Mode specific overrides if variables are not enough */
+body.dark-mode .search-list {
+  background: rgba(30, 41, 59, 0.5);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .search-item:hover {
+  background: rgba(255, 255, 255, 0.05);
 }
