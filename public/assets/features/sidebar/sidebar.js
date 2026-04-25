@@ -283,7 +283,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const restoreState = () => {
         const savedState = localStorage.getItem("sidebarState");
         const layout = localStorage.getItem("sidebarLayout") || "classic";
-        
+
         // Ensure default style is 'simple'
         if (!localStorage.getItem("sidebarStyle")) {
             localStorage.setItem("sidebarStyle", "simple");
@@ -332,14 +332,14 @@ document.addEventListener("DOMContentLoaded", () => {
     function updateNotificationBadge() {
         const notifs = JSON.parse(localStorage.getItem("app_notifications") || "[]");
         const unreadCount = notifs.filter(n => !n.read).length;
-        
+
         // Find Notification link
         const notifLink = Array.from(menuItems).find(a => a.getAttribute("href") === "notifications.html");
-        
+
         if (!notifLink) return;
 
         let badge = notifLink.querySelector(".sidebar-badge");
-        
+
         if (unreadCount > 0) {
             if (!badge) {
                 badge = document.createElement("span");
@@ -354,7 +354,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Run on load
     updateNotificationBadge();
-    
+
     // Listen for storage changes (cross-tab sync)
     window.addEventListener("storage", (e) => {
         if (e.key === "app_notifications") updateNotificationBadge();

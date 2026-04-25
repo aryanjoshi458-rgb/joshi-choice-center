@@ -262,6 +262,7 @@
   gap: 10px;
   width: 100%;
   justify-content: space-between;
+  flex-wrap: wrap;
 }
 
 
@@ -762,5 +763,159 @@ body.dark-mode #totalTransactionsValue {
   box-shadow: 0 4px 12px rgba(33, 150, 243, 0.2);
 }
 
-box-shadow: 0 4px 12px rgba(33, 150, 243, 0.2);
+/* ===== PROFESSIONAL CATEGORY UI ===== */
+.header-main {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  margin-bottom: 20px;
+  width: 100%;
+  flex-wrap: wrap;
+  gap: 50px;
+}
+
+.report-pockets {
+  display: flex !important;
+  flex-direction: row !important;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.pocket {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 12px;
+  padding: 12px 18px;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  min-width: 160px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.pocket:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  border-color: #4f46e5;
+}
+
+.p-icon {
+  font-size: 24px;
+  width: 40px;
+  height: 40px;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: rgba(79, 70, 229, 0.1);
+  border-radius: 10px;
+}
+
+.p-info label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 2px;
+}
+
+.p-info span {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+/* 🏷️ TABS */
+.report-category-tabs {
+  display: flex !important;
+  flex-direction: row !important;
+  gap: 8px;
+  margin-bottom: 25px;
+  padding: 6px;
+  background: rgba(0, 0, 0, 0.04);
+  border-radius: 14px;
+  width: fit-content;
+  border: 1px solid var(--border-color);
+}
+
+body.dark-mode .report-category-tabs {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.cat-tab {
+  padding: 10px 20px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.cat-tab:hover {
+  color: var(--text-main);
+  background: rgba(0, 0, 0, 0.05);
+}
+
+body.dark-mode .cat-tab:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.cat-tab.active {
+  background: #4f46e5 !important;
+  color: white !important;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+}
+
+/* 🏷️ SERVICE BADGE */
+.service-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--text-main);
+}
+
+body.dark-mode .service-badge {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.service-badge.banking {
+  background: rgba(79, 70, 229, 0.15);
+  color: #4f46e5;
+}
+
+.service-badge.recharge {
+  background: rgba(16, 185, 129, 0.15);
+  color: #059669;
+}
+
+.service-badge.printing {
+  background: rgba(245, 158, 11, 0.15);
+  color: #d97706;
+}
+
+body.dark-mode .service-badge.banking {
+  color: #818cf8;
+}
+
+body.dark-mode .service-badge.recharge {
+  color: #34d399;
+}
+
+body.dark-mode .service-badge.printing {
+  color: #fbbf24;
 }

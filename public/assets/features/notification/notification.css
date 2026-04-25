@@ -117,3 +117,16 @@ body:not(.dark-mode) .alert-badge {
     transform: scale(1);
   }
 }
+
+/* WELCOME MODE STYLING */
+.notification-alert.welcome-mode {
+  border-color: rgba(99, 102, 241, 0.5);
+  box-shadow: 0 10px 30px rgba(99, 102, 241, 0.2),
+    inset 0 0 15px rgba(99, 102, 241, 0.2);
+  color: #a5b4fc;
+}
+
+.notification-alert.welcome-mode .icon {
+  stroke: #a5b4fc;
+  filter: drop-shadow(0 0 8px rgba(165, 180, 252, 0.6));
+}

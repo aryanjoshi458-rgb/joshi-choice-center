@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
     /**
      * Re-renders the animation based on localStorage settings.
      */
-    window.refreshAnimation = function() {
+    window.refreshAnimation = function () {
         const bgContainer = document.querySelector(".animated-bg");
         if (!bgContainer) return;
 
@@ -39,15 +39,20 @@ document.addEventListener("DOMContentLoaded", () => {
             cancelAnimationFrame(requestFrameId);
             requestFrameId = null;
         }
-        
+
         // Clear GSAP tweens on old elements
         if (typeof gsap !== 'undefined') {
             gsap.killTweensOf(".animated-bg *");
         }
-        bgContainer.innerHTML = ""; 
+        bgContainer.innerHTML = "";
+
+        // PERFORMANCE MODE CHECK
+        if (localStorage.getItem("jc_performance_mode") === "true") {
+            return;
+        }
 
         const animType = localStorage.getItem("bgAnimation") || "none";
-        
+
         if (animType === "auto") {
             startAutoCycle(bgContainer);
             return;
@@ -63,7 +68,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function renderSingleAnimation(type, container) {
         container.innerHTML = "";
-        switch(type) {
+        switch (type) {
             case "squares": renderFloatingSquares(container); break;
             case "grid": renderSquareGrid(container); break;
             case "particles": renderQuantumParticles(container); break;
@@ -122,17 +127,17 @@ document.addEventListener("DOMContentLoaded", () => {
             });
             container.appendChild(ray);
             if (typeof gsap !== 'undefined') {
-                gsap.to(ray, { 
-                    opacity: Math.random() * 0.4 + 0.1, 
-                    x: `+=${Math.random() * 60 - 30}`, 
-                    duration: 6 + i, 
-                    repeat: -1, 
-                    yoyo: true, 
-                    ease: "sine.inOut" 
+                gsap.to(ray, {
+                    opacity: Math.random() * 0.4 + 0.1,
+                    x: `+=${Math.random() * 60 - 30}`,
+                    duration: 6 + i,
+                    repeat: -1,
+                    yoyo: true,
+                    ease: "sine.inOut"
                 });
             }
         }
-        
+
         // Add Golden Dust Particles
         for (let i = 0; i < 30; i++) {
             const dust = document.createElement("div");
@@ -255,7 +260,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const square = document.createElement("div");
             square.className = "gs-square";
             const size = Math.random() * 60 + 20;
-            
+
             Object.assign(square.style, {
                 position: "absolute",
                 width: `${size}px`,
@@ -328,7 +333,7 @@ document.addEventListener("DOMContentLoaded", () => {
         function draw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             const primaryColor = getComputedStyle(document.body).getPropertyValue('--primary-color') || '#2563eb';
-            
+
             ctx.strokeStyle = primaryColor;
             ctx.fillStyle = primaryColor;
 
@@ -491,7 +496,7 @@ document.addEventListener("DOMContentLoaded", () => {
             <div class="cyber-lines"></div>
         `;
         const lines = container.querySelector(".cyber-lines");
-        for(let i=0; i<15; i++) {
+        for (let i = 0; i < 15; i++) {
             const line = document.createElement("div");
             line.className = "cyber-line";
             Object.assign(line.style, {
@@ -499,7 +504,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 height: `${Math.random() * 40 + 20}%`
             });
             lines.appendChild(line);
-            
+
             if (typeof gsap !== 'undefined') {
                 gsap.to(line, {
                     top: "110%",
@@ -573,7 +578,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Handle Window Resize
     window.addEventListener("resize", () => {
-        if(localStorage.getItem("bgAnimation") !== "none") {
+        if (localStorage.getItem("bgAnimation") !== "none") {
             window.refreshAnimation();
         }
     });

@@ -28,6 +28,90 @@
   <script src="../public/js/auth.js"></script>
   <script>Auth.protectPage();</script>
 
+  <style>
+    /* CUSTOM ANIMATED CHECKBOX (WRAPPER-46) */
+    .checkbox-wrapper-46 input[type="checkbox"] {
+      display: none;
+      visibility: hidden;
+    }
+
+    .checkbox-wrapper-46 .cbx {
+      margin: auto;
+      -webkit-user-select: none;
+      user-select: none;
+      cursor: pointer;
+    }
+
+    .checkbox-wrapper-46 .cbx span {
+      display: inline-block;
+      vertical-align: middle;
+      transform: translate3d(0, 0, 0);
+    }
+
+    .checkbox-wrapper-46 .cbx span:first-child {
+      position: relative;
+      width: 18px;
+      height: 18px;
+      border-radius: 3px;
+      transform: scale(1);
+      vertical-align: middle;
+      border: 1px solid #9098a9;
+      transition: all 0.2s ease;
+    }
+
+    .checkbox-wrapper-46 .cbx span:first-child svg {
+      position: absolute;
+      top: 3px;
+      left: 2px;
+      fill: none;
+      stroke: #ffffff;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-dasharray: 16px;
+      stroke-dashoffset: 16px;
+      transition: all 0.3s ease;
+      transition-delay: 0.1s;
+      transform: translate3d(0, 0, 0);
+    }
+
+    .checkbox-wrapper-46 .cbx span:first-child:before {
+      content: "";
+      width: 100%;
+      height: 100%;
+      background: #506eec;
+      display: block;
+      transform: scale(0);
+      opacity: 1;
+      border-radius: 50%;
+    }
+
+    .checkbox-wrapper-46 .cbx:hover span:first-child {
+      border-color: #506eec;
+    }
+
+    .checkbox-wrapper-46 .inp-cbx:checked+.cbx span:first-child {
+      background: #506eec;
+      border-color: #506eec;
+      animation: wave-46 0.4s ease;
+    }
+
+    .checkbox-wrapper-46 .inp-cbx:checked+.cbx span:first-child svg {
+      stroke-dashoffset: 0;
+    }
+
+    .checkbox-wrapper-46 .inp-cbx:checked+.cbx span:first-child:before {
+      transform: scale(3.5);
+      opacity: 0;
+      transition: all 0.6s ease;
+    }
+
+    @keyframes wave-46 {
+      50% {
+        transform: scale(0.9);
+      }
+    }
+  </style>
 </head>
 
 <body>
@@ -225,6 +309,16 @@
             </svg>
             <span data-i18n="tab-shop-profile">Shop</span>
           </button>
+          <button class="aura-nav-btn" data-tab="receipt">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+              <line x1="16" y1="13" x2="8" y2="13" />
+              <line x1="16" y1="17" x2="8" y2="17" />
+              <polyline points="10 9 9 9 8 9" />
+            </svg>
+            <span>Receipt</span>
+          </button>
           <button class="aura-nav-btn" data-tab="theme">
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
               <circle cx="12" cy="12" r="10" />
@@ -286,6 +380,12 @@
               <path d="m9 12 2 2 4-4" />
             </svg>
             <span data-i18n="tab-security">Security</span>
+          </button>
+          <button class="aura-nav-btn" data-tab="advanced">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+            </svg>
+            <span>Advanced</span>
           </button>
           <button class="aura-nav-btn" data-tab="reset">
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -663,7 +763,7 @@
               </div>
             </div>
           </div>
-          
+
           <!-- NEW: SIDEBAR STYLE SELECTION -->
           <div class="aura-section-card" style="margin-top: 30px;">
             <div class="aura-card-header">
@@ -1088,6 +1188,152 @@
         </div>
       </div>
 
+      <div class="tab-content" id="receipt">
+        <div class="aura-section-card">
+          <div class="aura-card-header">
+            <div class="aura-icon-box blue">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+              </svg>
+            </div>
+            <div class="aura-title-stack">
+              <h2>Receipt Studio Pro</h2>
+              <p>Select design and customize your billing experience</p>
+            </div>
+          </div>
+
+          <div class="receipt-studio-layout"
+            style="display: grid; grid-template-columns: 1fr 380px; gap: 30px; margin-top: 20px;">
+            <!-- Left: Settings -->
+            <div class="studio-settings-pane">
+              <div class="aura-field" style="margin-bottom: 25px;">
+                <label>Select Receipt Style (Format)</label>
+                <select id="receiptDefaultFormat"
+                  style="width: 100%; padding: 12px; border-radius: 12px; background: var(--card-bg); border: 1.5px solid var(--border-color); color: var(--text-main); font-weight: 600;">
+                  <option value="1">Format 1: Classic Simple</option>
+                  <option value="2">Format 2: Boxed Professional</option>
+                  <option value="3">Format 3: Elegant Divider</option>
+                  <option value="4">Format 4: Minimal Ticket</option>
+                  <option value="5">Format 5: Detailed Ledger</option>
+                  <option value="6">Format 6: Modern Colorful (Premium)</option>
+                  <option value="7">Format 7: Business Pro (Table Style)</option>
+                </select>
+              </div>
+
+              <div class="aura-input-grid">
+                <div class="aura-field">
+                  <label>Bill Title</label>
+                  <input type="text" id="receiptTitle" placeholder="TAX INVOICE">
+                </div>
+                <div class="aura-field">
+                  <label>Header Text</label>
+                  <input type="text" id="receiptHeader" placeholder="OFFICIAL RECEIPT">
+                </div>
+              </div>
+
+              <div class="aura-toggle-list"
+                style="margin-top: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <!-- SHOW LOGO -->
+                <div class="aura-toggle-item"
+                  style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); padding: 10px 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                  <span style="font-size: 0.9em; font-weight: 600; color: var(--text-main);">Show Logo</span>
+                  <div class="checkbox-wrapper-46">
+                    <input type="checkbox" id="showLogo" class="inp-cbx" />
+                    <label for="showLogo" class="cbx">
+                      <span>
+                        <svg viewBox="0 0 12 10" height="10px" width="12px">
+                          <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
+                        </svg>
+                      </span>
+                      <span></span>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- SHOW ADDRESS -->
+                <div class="aura-toggle-item"
+                  style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); padding: 10px 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                  <span style="font-size: 0.9em; font-weight: 600; color: var(--text-main);">Show Address</span>
+                  <div class="checkbox-wrapper-46">
+                    <input type="checkbox" id="showAddress" class="inp-cbx" />
+                    <label for="showAddress" class="cbx">
+                      <span>
+                        <svg viewBox="0 0 12 10" height="10px" width="12px">
+                          <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
+                        </svg>
+                      </span>
+                      <span></span>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- SHOW CONTACT -->
+                <div class="aura-toggle-item"
+                  style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); padding: 10px 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                  <span style="font-size: 0.9em; font-weight: 600; color: var(--text-main);">Show Contact</span>
+                  <div class="checkbox-wrapper-46">
+                    <input type="checkbox" id="showContact" class="inp-cbx" />
+                    <label for="showContact" class="cbx">
+                      <span>
+                        <svg viewBox="0 0 12 10" height="10px" width="12px">
+                          <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
+                        </svg>
+                      </span>
+                      <span></span>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- SHOW PAYMENT MODE -->
+                <div class="aura-toggle-item"
+                  style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); padding: 10px 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                  <span style="font-size: 0.9em; font-weight: 600; color: var(--text-main);">Show Mode</span>
+                  <div class="checkbox-wrapper-46">
+                    <input type="checkbox" id="showPaymentMode" class="inp-cbx" />
+                    <label for="showPaymentMode" class="cbx">
+                      <span>
+                        <svg viewBox="0 0 12 10" height="10px" width="12px">
+                          <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
+                        </svg>
+                      </span>
+                      <span></span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="aura-field" style="margin-top: 20px;">
+                <label>Professional Terms & Conditions (T&C)</label>
+                <textarea id="receiptTerms"
+                  style="width: 100%; height: 80px; padding: 12px; border-radius: 12px; background: var(--card-bg); border: 1.5px solid var(--border-color); color: var(--text-main); font-family: inherit; resize: none;"
+                  placeholder="e.g. 1. Goods once sold will not be returned. 2. Please keep this receipt for future reference."></textarea>
+              </div>
+
+              <div class="aura-form-footer" style="margin-top: 25px;">
+                <button class="aura-premium-btn" id="saveReceiptSettings" style="width: 100%;">Apply Globally & Save
+                  Design</button>
+              </div>
+            </div>
+
+            <!-- Right: Live Preview -->
+            <div class="studio-preview-pane">
+              <div
+                style="background: rgba(0,0,0,0.2); border-radius: 20px; padding: 20px; border: 2px dashed rgba(255,255,255,0.1); height: 100%; position: relative;">
+                <div
+                  style="position: absolute; top: -10px; left: 20px; background: #4f46e5; color: white; padding: 2px 10px; border-radius: 10px; font-size: 0.7em; font-weight: 800; letter-spacing: 1px;">
+                  LIVE PREVIEW</div>
+
+                <div id="receiptStudioPreview"
+                  style="background: white; border-radius: 5px; min-height: 400px; padding: 15px; color: #334155; font-size: 11px; font-family: monospace; overflow-y: auto; max-height: 500px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
+                  <!-- Dynamic Receipt Content -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="tab-content" id="reset">
         <div class="aura-section-card danger">
           <h2 data-i18n="sidebar-reset">Advanced Maintenance</h2>
@@ -1124,6 +1370,148 @@
           </div>
         </div>
       </div>
+
+        <div class="tab-content" id="advanced">
+          <!-- 1. PRIVACY & BOSS MODE -->
+          <div class="aura-section-card" style="margin-bottom: 25px;">
+            <div class="aura-card-header">
+              <div class="aura-icon-box blue">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+              </div>
+              <div class="aura-title-stack">
+                <h2>Privacy & Security</h2>
+                <p>Protect your dashboard and lock your session</p>
+              </div>
+            </div>
+
+            <div class="aura-toggle-list" style="margin-top: 20px; display: grid; grid-template-columns: 1fr; gap: 15px;">
+              <div class="aura-toggle-item" style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); padding: 15px 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                <div>
+                  <div style="font-weight: 700; color: var(--text-main);">Aura Privacy Blur</div>
+                  <div style="font-size: 0.8em; color: var(--text-muted);">Blur sensitive data with hover-to-peek. (Alt + Q)</div>
+                </div>
+                <div class="checkbox-wrapper-46">
+                  <input type="checkbox" id="privacyBlurToggle" class="inp-cbx" />
+                  <label for="privacyBlurToggle" class="cbx">
+                    <span><svg viewBox="0 0 12 10" height="10px" width="12px"><polyline points="1.5 6 4.5 9 10.5 1"></polyline></svg></span>
+                    <span></span>
+                  </label>
+                </div>
+              </div>
+
+              <div style="display: flex; gap: 15px; background: rgba(255,255,255,0.03); padding: 15px 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); align-items: center;">
+                <div style="flex: 1;">
+                  <div style="font-weight: 700; color: var(--text-main);">Quick Lock System</div>
+                  <div style="font-size: 0.8em; color: var(--text-muted);">Instantly lock software with glassmorphism. (Alt + L)</div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                  <input type="password" id="lockScreenPassword" placeholder="Set Password" style="width: 120px; padding: 8px 12px; border-radius: 8px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); color: white; font-size: 0.85em;">
+                  <button class="aura-mini-btn" id="triggerQuickLock" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); padding: 8px 15px; border-radius: 8px; color: white; cursor: pointer;">
+                    Lock Now
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. PERFORMANCE & SYSTEM -->
+          <div class="aura-section-card" style="margin-bottom: 25px;">
+            <div class="aura-card-header">
+              <div class="aura-icon-box orange">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+                </svg>
+              </div>
+              <div class="aura-title-stack">
+                <h2>Performance & Optimization</h2>
+                <p>Speed up the application on low-end hardware</p>
+              </div>
+            </div>
+
+            <div class="aura-toggle-list" style="margin-top: 20px;">
+              <div class="aura-toggle-item" style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); padding: 15px 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                <div>
+                  <div style="font-weight: 700; color: var(--text-main);">Low-End PC Mode</div>
+                  <div style="font-size: 0.8em; color: var(--text-muted);">Disable heavy GSAP animations & background effects.</div>
+                </div>
+                <div class="checkbox-wrapper-46">
+                  <input type="checkbox" id="performanceModeToggle" class="inp-cbx" />
+                  <label for="performanceModeToggle" class="cbx">
+                    <span><svg viewBox="0 0 12 10" height="10px" width="12px"><polyline points="1.5 6 4.5 9 10.5 1"></polyline></svg></span>
+                    <span></span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. DASHBOARD WIDGET MANAGER -->
+          <div class="aura-section-card">
+            <div class="aura-card-header">
+              <div class="aura-icon-box green">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z"></path>
+                </svg>
+              </div>
+              <div class="aura-title-stack">
+                <h2>Dashboard Widget Manager</h2>
+                <p>Toggle modular dashboard sections</p>
+              </div>
+            </div>
+
+            <div class="aura-toggle-list" style="margin-top: 20px;">
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="aura-toggle-item" style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); padding: 10px 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                  <span style="font-size: 0.85em; font-weight: 600;">Today's Overview</span>
+                  <div class="checkbox-wrapper-46">
+                    <input type="checkbox" id="widgetToday" class="inp-cbx" checked />
+                    <label for="widgetToday" class="cbx">
+                      <span><svg viewBox="0 0 12 10" height="10px" width="12px"><polyline points="1.5 6 4.5 9 10.5 1"></polyline></svg></span>
+                      <span></span>
+                    </label>
+                  </div>
+                </div>
+                <div class="aura-toggle-item" style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); padding: 10px 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                  <span style="font-size: 0.85em; font-weight: 600;">Earnings Analysis</span>
+                  <div class="checkbox-wrapper-46">
+                    <input type="checkbox" id="widgetEarnings" class="inp-cbx" checked />
+                    <label for="widgetEarnings" class="cbx">
+                      <span><svg viewBox="0 0 12 10" height="10px" width="12px"><polyline points="1.5 6 4.5 9 10.5 1"></polyline></svg></span>
+                      <span></span>
+                    </label>
+                  </div>
+                </div>
+                <div class="aura-toggle-item" style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); padding: 10px 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                  <span style="font-size: 0.85em; font-weight: 600;">Recent Expenses</span>
+                  <div class="checkbox-wrapper-46">
+                    <input type="checkbox" id="widgetExpenses" class="inp-cbx" checked />
+                    <label for="widgetExpenses" class="cbx">
+                      <span><svg viewBox="0 0 12 10" height="10px" width="12px"><polyline points="1.5 6 4.5 9 10.5 1"></polyline></svg></span>
+                      <span></span>
+                    </label>
+                  </div>
+                </div>
+                <div class="aura-toggle-item" style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); padding: 10px 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                  <span style="font-size: 0.85em; font-weight: 600;">Pending List</span>
+                  <div class="checkbox-wrapper-46">
+                    <input type="checkbox" id="widgetPending" class="inp-cbx" checked />
+                    <label for="widgetPending" class="cbx">
+                      <span><svg viewBox="0 0 12 10" height="10px" width="12px"><polyline points="1.5 6 4.5 9 10.5 1"></polyline></svg></span>
+                      <span></span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="aura-form-footer" style="margin-top: 20px;">
+                <button class="aura-premium-btn" id="saveAdvancedSettings" style="width: 100%;">Save All Advanced Preferences</button>
+              </div>
+            </div>
+          </div>
+        </div>
 
       <div class="tab-content" id="about">
         <div class="aura-about-hero">
@@ -1272,7 +1660,8 @@
   <script src="../public/assets/features/notification/toast.js"></script>
 
   <script src="../public/assets/sidebar-pages/global/global-background-animation.js"></script>
-  <script src="../public/js/aura-modals.js"></script><script src="../public/js/liquid-buttons.js"></script>
+  <script src="../public/js/aura-modals.js"></script>
+  <script src="../public/js/button-animations.js"></script>
 
   <script src="../public/assets/sidebar-pages/settings/settings.js"></script>
   <script src="../public/assets/features/scroll-toggle.js"></script>

@@ -152,24 +152,24 @@
     </div>
 
     <!-- Toggle Button (Speak ke niche) -->
-  <button id="sidebarToggle">
-    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-      stroke-linejoin="round">
-      <line x1="3" y1="12" x2="21" y2="12"></line>
-      <line x1="3" y1="6" x2="21" y2="6"></line>
-      <line x1="3" y1="18" x2="21" y2="18"></line>
-    </svg>
-  </button>
+    <button id="sidebarToggle">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+    </button>
 
-  <!-- VOICE + THEME CONTROLS -->
-  <div class="assistant-speaker" id="assistantSpeaker">
-    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-      stroke-linejoin="round">
-      <path d="M11 5L6 9H2v6h4l5 4V5z"></path>
-      <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-    </svg>
-    <span>Speak</span>
-  </div>
+    <!-- VOICE + THEME CONTROLS -->
+    <div class="assistant-speaker" id="assistantSpeaker">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11 5L6 9H2v6h4l5 4V5z"></path>
+            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+        </svg>
+        <span>Speak</span>
+    </div>
 
     <!-- AURA CELESTIAL v4 THEME SLIDER -->
     <div class="aura-celestial-v4" id="themeToggleV4">
@@ -177,35 +177,35 @@
         <div class="celestial-knob-v4" id="celestialKnob"></div>
     </div>
 
-      <!-- AURA SMART CHAT PANEL -->
-  <div id="auraChatPanel" class="aura-chat-panel">
-    <div class="aura-chat-header">
-      <div class="aura-chat-header-left">
-        <div class="aura-chat-logo">AI</div>
-        <div class="aura-chat-header-info">
-          <h3>Aura Assistant</h3>
-          <p>Your Smart Companion</p>
+    <!-- AURA SMART CHAT PANEL -->
+    <div id="auraChatPanel" class="aura-chat-panel">
+        <div class="aura-chat-header">
+            <div class="aura-chat-header-left">
+                <div class="aura-chat-logo">AI</div>
+                <div class="aura-chat-header-info">
+                    <h3>Aura Assistant</h3>
+                    <p>Your Smart Companion</p>
+                </div>
+            </div>
+            <div class="aura-chat-controls">
+                <div class="aura-chat-control min"></div>
+                <div class="aura-chat-control max"></div>
+                <div id="closeAuraChat" class="aura-chat-control close"></div>
+            </div>
         </div>
-      </div>
-      <div class="aura-chat-controls">
-        <div class="aura-chat-control min"></div>
-        <div class="aura-chat-control max"></div>
-        <div id="closeAuraChat" class="aura-chat-control close"></div>
-      </div>
+        <div class="aura-chat-history" id="auraChatHistory">
+            <!-- Messages appear here -->
+        </div>
+        <div class="aura-chat-input-area">
+            <input type="text" id="auraChatInput" placeholder="Ask about the software...">
+            <button class="aura-chat-send" id="auraChatSend">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="22" y1="2" x2="11" y2="13" />
+                    <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                </svg>
+            </button>
+        </div>
     </div>
-    <div class="aura-chat-history" id="auraChatHistory">
-      <!-- Messages appear here -->
-    </div>
-    <div class="aura-chat-input-area">
-      <input type="text" id="auraChatInput" placeholder="Ask about the software...">
-      <button class="aura-chat-send" id="auraChatSend">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5">
-          <line x1="22" y1="2" x2="11" y2="13" />
-          <polygon points="22 2 15 22 11 13 2 9 22 2" />
-        </svg>
-      </button>
-    </div>
-  </div>
 
     <!-- Main content -->
     <main class="main">
@@ -237,8 +237,17 @@
     <div id="scrollArrow">▲</div>
     <script src="../public/assets/features/scroll-toggle.js"></script>
     <script src="../public/js/shortcuts.js"></script>
-    <script src="../public/js/aura-modals.js"></script><script src="../public/js/liquid-buttons.js"></script>
-    
+    <script src="../public/js/aura-modals.js"></script>
+    <script src="../public/js/button-animations.js"></script>
+
+</body>
+
+</html>
+<script src="../public/assets/features/scroll-toggle.js"></script>
+<script src="../public/js/shortcuts.js"></script>
+<script src="../public/js/aura-modals.js"></script>
+<script src="../public/js/button-animations.js"></script>
+
 </body>
 
 </html>

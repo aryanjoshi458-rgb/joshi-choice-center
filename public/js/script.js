@@ -8,22 +8,25 @@
 /* CORE APP LOGIC - JOSHI CHOICE CENTER */
 
 // 0. GLOBAL NOTIFICATION HELPER
-window.createAppNotification = function(title, desc, cat = "system") {
-    const newNotif = {
-        id: Date.now(),
-        title: title,
-        desc: desc,
-        cat: cat,
-        time: new Date().toISOString(),
-        read: false
-    };
-    
-    let allNotifs = JSON.parse(localStorage.getItem("app_notifications") || "[]");
-    allNotifs.unshift(newNotif);
-    localStorage.setItem("app_notifications", JSON.stringify(allNotifs));
+window.createAppNotification = function (title, desc, cat = "system") {
+  const newNotif = {
+    id: Date.now(),
+    title: title,
+    desc: desc,
+    cat: cat,
+    time: new Date().toISOString(),
+    read: false
+  };
 
-    if (window.updateSidebarBadge) window.updateSidebarBadge();
+  let allNotifs = JSON.parse(localStorage.getItem("app_notifications") || "[]");
+  allNotifs.unshift(newNotif);
+  localStorage.setItem("app_notifications", JSON.stringify(allNotifs));
+
+  if (window.updateSidebarBadge) window.updateSidebarBadge();
 };
+
+/* --- GLOBAL ADVANCED SYSTEMS --- */
+// Logic moved to shortcuts.js to ensure global availability on all pages.
 
 document.addEventListener("DOMContentLoaded", () => {
   // Initial Loads
@@ -42,6 +45,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const mobileStar = document.getElementById("mobileReqStar");
 
   const txnDate = document.getElementById("txnDate");
+  // Set default date to today
+  if (txnDate && !txnDate.value) {
+    txnDate.value = new Date().toISOString().split('T')[0];
+  }
   const serviceType = document.getElementById("txnService");
   const saveTransactionBtn = document.getElementById("saveTransaction");
   const saveAndPrintBtn = document.getElementById("saveAndPrint");
@@ -51,14 +58,39 @@ document.addEventListener("DOMContentLoaded", () => {
   // 1. INPUT FORMATTING & LOOKUP
   // ================================
 
-  // Mobile Formatting & Auto-Lookup
+  // 1. Mobile Formatting & Auto-Lookup (Smart +91 Prefix)
   if (custMobile) {
-    custMobile.addEventListener("input", () => {
-      custMobile.value = custMobile.value.replace(/\D/g, "");
+    custMobile.addEventListener("focus", () => {
+      if (custMobile.value.length === 0) custMobile.value = "+91 ";
+    });
 
-      if (custMobile.value.length === 10) {
+    custMobile.addEventListener("blur", () => {
+      if (custMobile.value === "+91 " || custMobile.value.trim() === "+91") {
+        custMobile.value = "";
+      }
+    });
+
+    custMobile.addEventListener("input", (e) => {
+      let val = e.target.value;
+      
+      // Ensure +91 remains
+      if (!val.startsWith("+91 ")) {
+        val = "+91 " + val.replace(/^\+91\s?/, "");
+      }
+
+      // Extract digits only after prefix
+      const digits = val.slice(4).replace(/\D/g, "");
+      const finalVal = "+91 " + digits.slice(0, 10);
+      e.target.value = finalVal;
+
+      // Auto-Lookup when 10 digits are reached
+      if (digits.length === 10) {
         const customers = JSON.parse(localStorage.getItem("customers")) || [];
-        const existingCust = customers.find(c => c.mobile === custMobile.value);
+        // Lookup using raw digits or formatted value
+        const existingCust = customers.find(c => {
+            const clean = c.mobile.replace(/^\+91\s?/, "").replace(/\D/g, "");
+            return clean === digits;
+        });
 
         if (existingCust) {
           custName.value = existingCust.name || "";
@@ -73,13 +105,20 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Name Capitalization
-  if (custName) {
-    custName.addEventListener("input", function () {
+  // 2. Name & Address Capitalization (Title Case)
+  const applyTitleCase = (input) => {
+    if (!input) return;
+    input.addEventListener("input", function () {
+      const start = this.selectionStart;
+      const end = this.selectionEnd;
       let val = this.value.replace(/\s+/g, " ").trimStart();
       this.value = val.split(" ").map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(" ");
+      this.setSelectionRange(start, end);
     });
-  }
+  };
+
+  if (custName) applyTitleCase(custName);
+  if (custAddress) applyTitleCase(custAddress);
 
   // Aadhar Formatting
   if (custAadhar) {
@@ -99,16 +138,18 @@ document.addEventListener("DOMContentLoaded", () => {
   // ================================
 
   async function performSave(shouldPrint = false) {
+    const category = serviceType.value;
     // Shared Validation
-    const isBanking = serviceType.value === "Banking & Financial Services";
+    const isBanking = category === "Banking & Financial Services";
 
-    const isMobileRecharge = serviceType.value === "Mobile & Utility Services" && 
-                             document.getElementById("serviceName")?.value === "Mobile Recharge";
+    const isMobileRecharge = serviceType.value === "Mobile & Utility Services" &&
+      document.getElementById("serviceName")?.value === "Mobile Recharge";
 
     if (isMobileRecharge) {
-      if (!custMobile.value || custMobile.value.length !== 10) {
+      const cleanMobile = custMobile.value.replace(/^\+91\s?/, "").replace(/\D/g, "");
+      if (!custMobile.value || cleanMobile.length !== 10) {
         if (window.AppLoader) window.AppLoader.hide();
-        await AuraDialog.error("Mobile Number is MANDATORY for Mobile Recharge.", "Input Error");
+        await AuraDialog.error("Mobile Number is MANDATORY for Mobile Recharge (10 Digits Required).", "Input Error");
         custMobile.focus();
         return;
       }
@@ -169,26 +210,48 @@ document.addEventListener("DOMContentLoaded", () => {
     // Helper to strip commas
     const unformat = (val) => String(val || "0").replace(/,/g, "");
 
-    // Determine the full service name based on category
-    const category = serviceType.options[serviceType.selectedIndex].text.trim();
+    // Determine the full service name based on category (Shortened for readability)
+    const shortNames = {
+      "Banking & Financial Services": "Banking",
+      "Mobile & Utility Services": "Mobile/Util",
+      "Printing & Document Services": "Printing",
+      "Cash Withdrawal": "Withdrawal",
+      "Cash Deposit": "Deposit",
+      "Balance Enquiry": "Enquiry",
+      "Mini Statement": "Statement",
+      "Account Opening": "A/c Opening",
+      "Fund Transfer": "Transfer",
+      "Mobile Recharge": "Recharge",
+      "Google Play Recharge": "G-Play",
+      "Money Transfer (PhonePe/UPI)": "Money Transfer",
+      "Electricity Bill Payment": "Electricity",
+      "Black & White Photocopy": "B&W Copy",
+      "PDF Print Out": "PDF Print",
+      "Document Lamination": "Lamination"
+    };
+
+    const shortCat = shortNames[category] || category;
     let subService = "";
 
     if (category === "Banking & Financial Services") {
       const bank = document.getElementById("bankSelect")?.value;
       const bService = document.getElementById("bankService")?.value;
+      const shortBS = shortNames[bService] || bService;
       if (bank && bank !== "-- Select Bank --") subService = bank;
       if (bService && bService !== "-- Select Service --") {
-        subService = subService ? `${subService} - ${bService}` : bService;
+        subService = subService ? `${subService} (${shortBS})` : shortBS;
       }
     } else if (category === "Mobile & Utility Services") {
       const uService = document.getElementById("serviceName")?.value;
-      if (uService && uService !== "-- Select --") subService = uService;
+      const shortUS = shortNames[uService] || uService;
+      if (uService && uService !== "-- Select --") subService = shortUS;
     } else if (category === "Printing & Document Services") {
       const pService = document.getElementById("printService")?.value;
-      if (pService && pService !== "-- Select --") subService = pService;
+      const shortPS = shortNames[pService] || pService;
+      if (pService && pService !== "-- Select --") subService = shortPS;
     }
 
-    const fullServiceName = subService ? `${category} - ${subService}` : category;
+    const fullServiceName = subService ? `${shortCat} - ${subService}` : shortCat;
 
     const currentTime = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
     const transaction = {
@@ -207,19 +270,37 @@ document.addEventListener("DOMContentLoaded", () => {
       targetId: document.getElementById("targetId")?.value || "",
       receiverName: document.getElementById("receiverName")?.value || "",
       externalRefNo: document.getElementById("externalRefNo")?.value || "",
+      receivedCharge: unformat(document.getElementById("receivedCharge")?.value),
+      pendingCharge: unformat(document.getElementById("pendingCharge")?.value),
       transactionId
     };
 
     allTxns.push(transaction);
     localStorage.setItem("transactions", JSON.stringify(allTxns));
 
+    // C. Auto-handle Pending Payment Record
+    const pendingVal = parseFloat(transaction.pendingCharge) || 0;
+    if (pendingVal > 0) {
+        const pendingCustomers = JSON.parse(localStorage.getItem("pendingCustomers") || "[]");
+        pendingCustomers.push({
+            id: Date.now().toString(),
+            date: transaction.date.split(' ')[0],
+            name: transaction.customerName,
+            mobile: transaction.mobileNumber.includes("+91") ? transaction.mobileNumber : "+91 " + transaction.mobileNumber,
+            work: `Bal: ${transaction.serviceName} (${transaction.transactionId})`,
+            charge: pendingVal.toString(),
+            status: "Pending"
+        });
+        localStorage.setItem("pendingCustomers", JSON.stringify(pendingCustomers));
+    }
+
     // B. Generate Notification for New Transaction
     if (window.createAppNotification) {
-        window.createAppNotification(
-            "New Transaction Saved",
-            `Customer: ${transaction.customerName}, Service: ${transaction.serviceName}, Amount: ₹${transaction.totalAmount}`,
-            "transaction"
-        );
+      window.createAppNotification(
+        "New Transaction Saved",
+        `Customer: ${transaction.customerName}, Service: ${transaction.serviceName}, Amount: ₹${transaction.totalAmount}`,
+        "transaction"
+      );
     }
 
     // C. Handle Printing
@@ -485,9 +566,12 @@ window.loadTransactionsToTable = function () {
   const txns = JSON.parse(localStorage.getItem("transactions")) || [];
 
   // Robust Today string check
-  const todayDate = new Date();
-  const todayStr = todayDate.toISOString().split("T")[0];
-  const todayStrAlt = `${String(todayDate.getDate()).padStart(2, "0")}-${String(todayDate.getMonth() + 1).padStart(2, "0")}-${todayDate.getFullYear()}`;
+  const today = new Date();
+  const y = today.getFullYear();
+  const m = String(today.getMonth() + 1).padStart(2, '0');
+  const d = String(today.getDate()).padStart(2, '0');
+  const todayStr = `${y}-${m}-${d}`;
+  const todayStrAlt = `${d}-${m}-${y}`;
 
   const todayTxns = txns.filter(t => {
     if (!t.date) return false;
@@ -501,7 +585,23 @@ window.loadTransactionsToTable = function () {
   displayTxns.forEach((txn, index) => {
     const row = tbody.insertRow();
     row.insertCell(0).innerText = displayTxns.length - index;
-    row.insertCell(1).innerText = txn.date;
+    // Format date for display (remove time)
+    let displayDate = txn.date || "";
+    if (displayDate.includes(" ")) {
+      const [datePart] = displayDate.split(" ");
+      const parts = datePart.split("-");
+      if (parts.length === 3) {
+        // If YYYY-MM-DD -> DD-MM-YYYY
+        if (parts[0].length === 4) displayDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+        else displayDate = datePart; // Already DD-MM-YYYY or other
+      }
+    } else if (displayDate.includes("-")) {
+      const parts = displayDate.split("-");
+      if (parts.length === 3 && parts[0].length === 4) {
+        displayDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+      }
+    }
+    row.insertCell(1).innerText = displayDate;
     row.insertCell(2).innerText = txn.customerName;
     row.insertCell(3).innerText = txn.mobileNumber;
     row.insertCell(4).innerText = txn.aadharNumber;
@@ -509,8 +609,8 @@ window.loadTransactionsToTable = function () {
     row.insertCell(6).innerText = txn.serviceName;
     // Helper for table display
     const f = (val) => {
-        const n = parseFloat(String(val || "0").replace(/,/g, ""));
-        return isNaN(n) ? "0" : new Intl.NumberFormat('en-IN').format(n);
+      const n = parseFloat(String(val || "0").replace(/,/g, ""));
+      return isNaN(n) ? "0" : new Intl.NumberFormat('en-IN').format(n);
     };
 
     row.insertCell(7).innerText = f(txn.amount);
@@ -584,8 +684,8 @@ window.openEditModal = function (id) {
 
   // Helper to format modal fields
   const f = (val) => {
-      const n = parseFloat(String(val || "0").replace(/,/g, ""));
-      return isNaN(n) ? "0" : new Intl.NumberFormat('en-IN').format(n);
+    const n = parseFloat(String(val || "0").replace(/,/g, ""));
+    return isNaN(n) ? "0" : new Intl.NumberFormat('en-IN').format(n);
   };
 
   document.getElementById("editName").value = t.customerName || "";
@@ -640,7 +740,7 @@ window.saveTransactionEdit = function () {
   reports[index].aadharNumber = document.getElementById("editAadhar").value;
   reports[index].address = document.getElementById("editAddress").value;
   reports[index].serviceName = document.getElementById("editService").value;
-  
+
   // Save unformatted values
   reports[index].amount = unformat(document.getElementById("editAmount").value);
   reports[index].charge = unformat(document.getElementById("editCharge").value);

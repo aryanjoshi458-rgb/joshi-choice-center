@@ -1,25 +1,28 @@
-const { app, BrowserWindow, ipcMain, shell } = require('electron');
+const { app, BrowserWindow, ipcMain, shell, Menu } = require('electron');
 const path = require('path');
 const https = require('https');
 const fs = require('fs');
 const { exec } = require('child_process');
 
+let windows = new Set();
+
 function createWindow() {
-  const win = new BrowserWindow({
+  let win = new BrowserWindow({
     width: 1200,
     height: 800,
-    show: false, // Prevent white flash
-    backgroundColor: '#0c0e14', // Match app theme
-    autoHideMenuBar: false, // Cleaner UI
+    show: false,
+    backgroundColor: '#0c0e14',
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
       nodeIntegration: false,
-      sandbox: true
+      sandbox: true,
+      devTools: false // Hard disable devtools
     }
   });
 
-  // Smoothly show window when content is ready
+  windows.add(win);
+
   win.once('ready-to-show', () => {
     win.show();
     win.focus();
@@ -27,12 +30,17 @@ function createWindow() {
 
   win.loadFile(path.join(__dirname, 'views/login.html'));
 
-  // Close Intercept for Confirmation
-  win.on('close', (e) => {
-    if (!app.isQuiting) {
-      e.preventDefault();
-      win.webContents.send('attempt-close');
+  // Block Developer Tools Shortcuts
+  win.webContents.on('before-input-event', (event, input) => {
+    if ((input.control && input.shift && input.key.toLowerCase() === 'i') || 
+        (input.control && input.shift && input.key.toLowerCase() === 'j') ||
+        input.key === 'F12') {
+      event.preventDefault();
     }
+  });
+
+  win.on('closed', () => {
+    windows.delete(win);
   });
   
   // Open external links in browser
@@ -40,15 +48,92 @@ function createWindow() {
     shell.openExternal(url);
     return { action: 'deny' };
   });
+
+  return win;
 }
 
-// Actual Quit Handler
-ipcMain.on('confirm-app-quit', () => {
-  app.isQuiting = true;
-  app.quit();
-});
+// Custom Professional Menu Template
+const template = [
+  {
+    label: 'File',
+    submenu: [
+      {
+        label: 'New Window',
+        accelerator: 'CmdOrCtrl+N',
+        click: () => {
+          createWindow();
+        }
+      },
+      { type: 'separator' },
+      {
+        label: 'Exit',
+        accelerator: 'Alt+F4',
+        click: () => {
+          app.quit();
+        }
+      }
+    ]
+  },
+  {
+    label: 'Edit',
+    submenu: [
+      { role: 'undo' },
+      { role: 'redo' },
+      { type: 'separator' },
+      { role: 'cut' },
+      { role: 'copy' },
+      { role: 'paste' },
+      { role: 'delete' },
+      { type: 'separator' },
+      { role: 'selectAll' }
+    ]
+  },
+  {
+    label: 'View',
+    submenu: [
+      { role: 'reload' },
+      { role: 'forcereload' },
+      { type: 'separator' },
+      { role: 'resetzoom' },
+      { role: 'zoomin' },
+      { role: 'zoomout' },
+      { type: 'separator' },
+      { role: 'togglefullscreen' }
+    ]
+  },
+  {
+    label: 'Window',
+    submenu: [
+      { role: 'minimize' },
+      { role: 'zoom' },
+      { type: 'separator' },
+      { role: 'front' }
+    ]
+  },
+  {
+    role: 'help',
+    submenu: [
+      {
+        label: 'Learn More',
+        click: async () => {
+          await shell.openExternal('https://github.com/aryanjoshi458-rgb/joshi-choice-center');
+        }
+      },
+      {
+        label: 'Contact Support',
+        click: async () => {
+          await shell.openExternal('mailto:support@joshichoice.com');
+        }
+      }
+    ]
+  }
+];
 
-app.whenReady().then(createWindow);
+app.whenReady().then(() => {
+  const menu = Menu.buildFromTemplate(template);
+  Menu.setApplicationMenu(menu);
+  createWindow();
+});
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();

@@ -3093,3 +3093,33 @@ body.dark-mode .aura-control-panel {
     color: white;
     text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
 }
+
+/* ADVANCED SETTINGS ENHANCEMENTS */
+.aura-toggle-item {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.aura-toggle-item:hover {
+    background: rgba(255, 255, 255, 0.06) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    transform: translateX(5px);
+}
+
+.aura-mini-btn {
+    transition: all 0.3s ease;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.aura-mini-btn:hover {
+    background: var(--aura-accent) !important;
+    border-color: var(--aura-accent) !important;
+    box-shadow: 0 5px 15px var(--aura-accent-glow);
+    transform: translateY(-2px);
+}
+
+body.dark-mode .aura-toggle-item:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+}

@@ -134,9 +134,28 @@
 
 .form-group input:focus,
 .form-group select:focus {
-  border-color: #10b981;
-  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
   background: var(--card-bg);
+}
+
+/* DARK MODE SELECT FIX */
+body.dark-mode .form-group select,
+body.dark-mode .modal-controls-side select,
+body.dark-mode .control-group select {
+  background-color: #1e293b !important;
+  color: #f8fafc !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+body.dark-mode .form-group label,
+body.dark-mode .modal-controls-side label,
+body.dark-mode .control-group label {
+  color: #94a3b8 !important;
+}
+
+body.dark-mode .modal-header h3 {
+  color: #f8fafc !important;
 }
 
 /* MODAL FOOTER */
@@ -190,31 +209,109 @@ body.dark-mode .receipt-preview {
   backdrop-filter: blur(10px);
 }
 
-/* Premium Print Button Update */
+/* SIDE-BY-SIDE PRINT MODAL */
+.print-modal-body {
+  display: flex !important;
+  flex-direction: row !important;
+  gap: 30px;
+  align-items: flex-start;
+  padding: 25px 35px !important;
+  background: var(--bg-color);
+}
+
+.modal-controls-side {
+  flex: 0 0 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding-top: 20px;
+}
+
+.modal-preview-side {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  background: rgba(0,0,0,0.03);
+  padding: 20px;
+  border-radius: 16px;
+  min-height: 400px;
+}
+
+body.dark-mode .modal-preview-side {
+  background: rgba(0,0,0,0.2);
+}
+
+/* Updated Receipt Preview Positioning & Sizes */
+.receipt-preview {
+  margin: 0 !important;
+  width: 100% !important;
+  max-width: 380px;
+  background: #fff;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* LIVE PREVIEW SIZES */
+.receipt-preview.size-58 {
+  max-width: 220px !important;
+  font-size: 11px !important;
+}
+
+.receipt-preview.size-80 {
+  max-width: 320px !important;
+  font-size: 13px !important;
+}
+
+.receipt-preview.size-a4-p {
+  max-width: 480px !important;
+  aspect-ratio: 1 / 1.414;
+  font-size: 14px !important;
+  overflow-y: auto;
+}
+
+.receipt-preview.size-a4-l {
+  max-width: 650px !important;
+  aspect-ratio: 1.414 / 1;
+  font-size: 14px !important;
+  overflow-y: auto;
+}
+
+/* PREMIUM PRINT BUTTON UPDATE */
 .btn-print-final {
-  background: linear-gradient(135deg, #10b981, #059669);
+  background: linear-gradient(135deg, #4f46e5, #3730a3);
   color: white;
   border: none;
-  padding: 12px 28px;
+  padding: 14px 35px;
   border-radius: 14px;
   font-weight: 700;
-  font-size: 0.95rem;
+  font-size: 1rem;
   cursor: pointer;
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.25);
+  box-shadow: 0 8px 25px rgba(79, 70, 229, 0.35);
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   position: relative;
   overflow: hidden;
+  letter-spacing: 0.5px;
 }
 
 .btn-print-final:hover {
-  transform: translateY(-4px) scale(1.02);
-  box-shadow: 0 12px 25px rgba(16, 185, 129, 0.4);
-  background: linear-gradient(135deg, #34d399, #10b981);
+  transform: translateY(-5px) scale(1.03);
+  box-shadow: 0 15px 35px rgba(79, 70, 229, 0.5);
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
 }
 
+.btn-print-final:active {
+  transform: translateY(-2px) scale(0.98);
+}
+
+.btn-print-final svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* SHINE EFFECT */
 .btn-print-final::after {
   content: '';
   position: absolute;
@@ -222,18 +319,23 @@ body.dark-mode .receipt-preview {
   left: -50%;
   width: 200%;
   height: 200%;
-  background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+  background: linear-gradient(45deg, transparent, rgba(255,255,255,0.2), transparent);
   transform: rotate(45deg);
-  transition: 0.8s;
+  transition: 0.6s;
 }
 
 .btn-print-final:hover::after {
   left: 120%;
 }
 
+/* Adjust modal width for side-by-side */
+.modal-content {
+  max-width: 800px !important;
+}
+
 /* SEARCH MODAL SPECIFIC (Shared logic) */
 .search-modal-content {
-  max-width: 500px;
+  max-width: 500px !important;
 }
 
 .search-box-wrap {
@@ -287,7 +389,6 @@ body.dark-mode .receipt-preview {
   box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
 }
 
-/* Dark Mode specific overrides if variables are not enough */
 body.dark-mode .search-list {
   background: rgba(30, 41, 59, 0.5);
   border-color: rgba(255, 255, 255, 0.1);

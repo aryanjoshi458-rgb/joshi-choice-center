@@ -56,6 +56,24 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   updateAlertButtonBadge();
+
+  // --- DYNAMIC TEXT LOGIC (Welcome / Alerts) ---
+  const alertText = alertBtn.querySelector("span");
+  if (alertText) {
+    let mode = 'alerts';
+    setInterval(() => {
+        if (mode === 'alerts') {
+            alertText.innerText = "Welcome";
+            alertBtn.classList.add("welcome-mode");
+            mode = 'welcome';
+        } else {
+            alertText.innerText = "Alerts";
+            alertBtn.classList.remove("welcome-mode");
+            mode = 'alerts';
+        }
+    }, 5000);
+  }
+
   window.addEventListener("storage", (e) => {
     if (e.key === "app_notifications") updateAlertButtonBadge();
   });

@@ -355,117 +355,198 @@ document.addEventListener("DOMContentLoaded", () => {
     // Initial UI sync
     syncZoomUI();
 
-    // 5. PRINT SETTINGS LOGIC
-    const printInputs = {
-        title: document.getElementById("printTitle"),
-        header: document.getElementById("printHeader"),
-        footer1: document.getElementById("printFooter1"),
-        footer2: document.getElementById("printFooter2"),
-        showContact: document.getElementById("showContact"),
+    // 5. RECEIPT STUDIO PRO (ULTIMATE DESIGNER)
+    const receiptInputs = {
+        format: document.getElementById("receiptDefaultFormat"),
+        title: document.getElementById("receiptTitle"),
+        header: document.getElementById("receiptHeader"),
+        showLogo: document.getElementById("showLogo"),
         showAddress: document.getElementById("showAddress"),
-        taxId: document.getElementById("taxId"),
-        terms: document.getElementById("receiptTerms"),
-        showTax: document.getElementById("showTax"),
-        logoScale: document.getElementById("logoScale")
-    };
-    const logoScaleVal = document.getElementById("logoScaleVal");
-    const previewFormatSelect = document.getElementById("previewFormat");
-    const livePreview = document.getElementById("liveReceiptPreview");
-    const savePrintBtn = document.getElementById("savePrintSettings");
-
-    const dummyTxn = {
-        transactionId: "TXN12345678",
-        date: new Date().toISOString(),
-        customerName: "Rahul Sharma",
-        mobileNumber: "9876543210",
-        serviceName: "Digital Service",
-        amount: 500,
-        charge: 50,
-        totalAmount: 550,
-        status: "Success"
+        showContact: document.getElementById("showContact"),
+        showPaymentMode: document.getElementById("showPaymentMode"),
+        terms: document.getElementById("receiptTerms")
     };
 
-    function updateLivePreview() {
-        if (!livePreview) return;
-        const format = previewFormatSelect ? previewFormatSelect.value : 1;
+    const previewContainer = document.getElementById("receiptStudioPreview");
+    const saveReceiptBtn = document.getElementById("saveReceiptSettings");
+
+    function updateStudioPreview() {
+        if (!previewContainer) return;
+
         const ps = {
-            title: printInputs.title?.value || "TAX INVOICE",
-            header: printInputs.header?.value || "OFFICIAL RECEIPT",
-            footer1: printInputs.footer1?.value || "Thank You",
-            footer2: printInputs.footer2?.value || "Please Visit Again",
-            showContact: printInputs.showContact?.checked || false,
-            showAddress: printInputs.showAddress?.checked || false,
-            taxId: printInputs.taxId?.value || "",
-            terms: printInputs.terms?.value || "",
-            showTax: printInputs.showTax?.checked || false,
-            logoScale: printInputs.logoScale?.value || 100
+            format: receiptInputs.format?.value || "6",
+            title: receiptInputs.title?.value || "TAX INVOICE",
+            header: receiptInputs.header?.value || "OFFICIAL RECEIPT",
+            showLogo: receiptInputs.showLogo?.checked,
+            showAddress: receiptInputs.showAddress?.checked,
+            showContact: receiptInputs.showContact?.checked,
+            showPaymentMode: receiptInputs.showPaymentMode?.checked,
+            terms: receiptInputs.terms?.value || ""
         };
-
-        if (logoScaleVal) logoScaleVal.innerText = `${ps.logoScale}%`;
 
         const shop = JSON.parse(localStorage.getItem("shopProfile")) || {
             name: "JOSHI CHOICE CENTER",
-            address: "Kodapar Square (Main)"
+            address: "Main Market, Kodapar"
         };
 
-        const date = new Date().toLocaleDateString("en-GB").replace(/\//g, "-");
-        const contactStr = ps.showContact ? `Mobile: ${dummyTxn.mobileNumber}` : "";
-        const addressStr = ps.showAddress ? shop.address : "";
+        const dummy = {
+            txnId: "TXN-882299", // FIXED STATIC ID FOR PREVIEW
+            date: new Date().toLocaleDateString("en-GB").replace(/\//g, "-"),
+            name: "John Doe (Example)",
+            mobile: "9876543210",
+            service: "Premium Digital Service Registration",
+            amount: "500.00",
+            charge: "50.00",
+            total: "550.00",
+            pMode: "UPI / ONLINE",
+            status: "SUCCESS"
+        };
 
-        let content = "";
-        if (format == 1) {
-            content = `${shop.name}\n${ps.header}\n-------------------------\nDate: ${date}\nTxn: ${dummyTxn.transactionId}\n\nCustomer: ${dummyTxn.customerName}\n${contactStr}\n\nService: ${dummyTxn.serviceName}\n\nAmount: Rs. 500.00\nCharge: Rs. 50.00\n-------------------------\nTotal: Rs. 550.00\n\nStatus: SUCCESS\n-------------------------\n${ps.footer1}`;
-        } else if (format == 2) {
-            content = `*************************\n  ${shop.name}\n*************************\n     ${ps.title}\n*************************\nID   : ${dummyTxn.transactionId}\nDate : ${date}\n-------------------------\nCustomer : ${dummyTxn.customerName}\nService  : ${dummyTxn.serviceName}\n-------------------------\nAmount   : Rs. 500.00\nCharge   : Rs. 50.00\n-------------------------\nNET TOTAL: Rs. 550.00\n-------------------------\nStatus   : SUCCESS\n-------------------------\n   ${ps.footer1}\n   ${ps.footer2}\n*************************`;
-        } else if (format == 3) {
-            content = `   ${shop.name}\n   ${ps.header}\n=========================\nDATE : ${date}\nTXN  : ${dummyTxn.transactionId}\nNAME : ${dummyTxn.customerName}\nSVC  : ${dummyTxn.serviceName}\n=========================\nAMOUNT : Rs. 500.00\nCHARGE : Rs. 50.00\nTOTAL  : Rs. 550.00\n=========================\nSTATUS : SUCCESS\n      ${ps.footer1}\n=========================`;
-        } else if (format == 4) {
-            content = `${shop.name}\n-------------------------\n${date} | ${dummyTxn.transactionId}\n\nName: ${dummyTxn.customerName}\nSvc : ${dummyTxn.serviceName}\n\nNet : Rs. 550.00\n\n-- ${ps.footer1} --`;
-        } else {
-            content = `-------------------------\n    ${ps.title}\n-------------------------\n${shop.name}\n${addressStr}\n\nTrans ID : ${dummyTxn.transactionId}\nDate     : ${date}\n-------------------------\nCustomer Details:\nName   : ${dummyTxn.customerName}\n${contactStr}\n-------------------------\nService Details:\nDescription: ${dummyTxn.serviceName}\n-------------------------\nPayment Details:\nBase Amount : Rs. 500.00\nService Chg : Rs. 50.00\nNet Payable : Rs. 550.00\n-------------------------\nStatus : SUCCESS\n-------------------------\n  ${ps.footer2}\n-------------------------`;
+        let html = "";
+        const f = parseInt(ps.format);
+
+        // RENDER LOGIC FOR ALL 7 FORMATS
+        if (f <= 5) {
+            // TEXT BASED FORMATS (1-5) - Rendered in a <pre> style
+            let out = "";
+            const contactStr = ps.showContact ? `Mobile: ${dummy.mobile}` : "";
+            const addressStr = ps.showAddress ? shop.address : "";
+
+            if (f == 1) {
+                out = `${shop.name}\n${ps.header}\n-------------------------\nDate: ${dummy.date}\nTxn: ${dummy.txnId}\n\nCustomer: ${dummy.name}\n${contactStr}\n\nService: ${dummy.service}\n\nAmount: Rs. ${dummy.amount}\nCharge: Rs. ${dummy.charge}\n-------------------------\nTotal: Rs. ${dummy.total}\n\nStatus: ${dummy.status}\n-------------------------\nThank You`;
+            } else if (f == 2) {
+                out = `*************************\n  ${shop.name}\n*************************\n     ${ps.title}\n*************************\nID   : ${dummy.txnId}\nDate : ${dummy.date}\n-------------------------\nCustomer : ${dummy.name}\nService  : ${dummy.service}\n-------------------------\nAmount   : Rs. ${dummy.amount}\nCharge   : Rs. ${dummy.charge}\n-------------------------\nNET TOTAL: Rs. ${dummy.total}\n-------------------------\nStatus   : ${dummy.status}\n-------------------------\n   Thank You\n*************************`;
+            } else if (f == 3) {
+                out = `   ${shop.name}\n   ${ps.header}\n=========================\nDATE : ${dummy.date}\nTXN  : ${dummy.txnId}\nNAME : ${dummy.name}\nSVC  : ${dummy.service}\n=========================\nAMOUNT : Rs. ${dummy.amount}\nCHARGE : Rs. ${dummy.charge}\nTOTAL  : Rs. ${dummy.total}\n=========================\nSTATUS : ${dummy.status}\n      Thank You\n=========================`;
+            } else if (f == 4) {
+                out = `${shop.name}\n-------------------------\n${dummy.date} | ${dummy.txnId}\n\nName: ${dummy.name}\nSvc : ${dummy.service}\n\nNet : Rs. ${dummy.total}\n\n-- Thank You --`;
+            } else if (f == 5) {
+                out = `-------------------------\n    ${ps.title}\n-------------------------\n${shop.name}\n${addressStr}\n\nTrans ID : ${dummy.txnId}\nDate     : ${dummy.date}\n-------------------------\nCustomer Details:\nName   : ${dummy.name}\n${contactStr}\n-------------------------\nService Details:\nDescription: ${dummy.service}\n-------------------------\nPayment Details:\nBase Amount : Rs. ${dummy.amount}\nService Chg : Rs. ${dummy.charge}\nNet Payable : Rs. ${dummy.total}\n-------------------------\nStatus : ${dummy.status}\n-------------------------`;
+            }
+
+            if (ps.terms) out += `\n\n- TERMS & CONDITIONS -\n${ps.terms}`;
+            html = `<pre style="margin:0; padding:10px; font-size:12px; line-height:1.2; font-family:monospace; color:#334155;">${out}</pre>`;
+        } else if (f == 6) {
+            // FORMAT 6: MODERN COLORFUL
+            const logoHtml = (ps.showLogo && shop.logo) ? `<img src="${shop.logo}" style="height: 35px; margin-bottom: 8px;">` : "";
+            const addrHtml = ps.showAddress ? `<div style="font-size: 0.75em; color: #64748b; margin-top: 2px;">${shop.address}</div>` : "";
+            const contactHtml = ps.showContact ? `<div style="font-size: 0.85em; color: #64748b; margin-top: 3px;">📞 ${dummy.mobile}</div>` : "";
+            const modeHtml = ps.showPaymentMode ? `<div style="border-top:1px dashed #e2e8f0; margin-top:8px; padding-top:8px; display:flex; justify-content:space-between; font-weight:700;"><span style="color:#64748b;">Mode:</span><span style="color:#4f46e5;">${dummy.pMode}</span></div>` : "";
+            const termsHtml = ps.terms ? `<div style="margin-top:12px; padding:8px; background:#f8fafc; border-radius:6px; font-size:0.7em; color:#64748b; border:1px solid #f1f5f9;"><strong>T&C:</strong> ${ps.terms}</div>` : "";
+
+            html = `
+            <div style="font-family: sans-serif; padding: 5px; color: #1e293b;">
+              <div style="text-align: center; margin-bottom: 12px;">
+                ${logoHtml}
+                <div style="font-size: 1.1em; font-weight: 800; color: #4f46e5; text-transform: uppercase;">${shop.name}</div>
+                ${addrHtml}
+              </div>
+              <div style="background: linear-gradient(135deg, #4f46e5, #818cf8); color: white; padding: 10px; border-radius: 8px; text-align: center; margin-bottom: 12px;">
+                <div style="font-size: 0.9em; font-weight: 800; text-transform: uppercase;">${ps.title}</div>
+                <div style="font-size: 0.7em; opacity: 0.8;">${ps.header}</div>
+              </div>
+              <div style="display: flex; justify-content: space-between; font-size: 0.75em; margin-bottom: 10px; border-bottom: 1px solid #e2e8f0; padding-bottom: 5px;">
+                <span>Date: ${dummy.date}</span>
+                <span>TXN: <b>${dummy.txnId}</b></span>
+              </div>
+              <div style="background: #f8fafc; padding: 10px; border-radius: 8px; margin-bottom: 10px; border-left: 3px solid #4f46e5;">
+                <div style="font-size: 1em; font-weight: 800;">${dummy.name}</div>
+                ${contactHtml}
+              </div>
+              <div style="background: white; border: 1px solid #e2e8f0; padding: 10px; border-radius: 8px;">
+                <div style="display: flex; justify-content: space-between; font-size: 0.85em; margin-bottom: 5px;"><span>Amount:</span><span>₹${dummy.amount}</span></div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.85em; margin-bottom: 5px;"><span>Charge:</span><span>₹${dummy.charge}</span></div>
+                ${modeHtml}
+              </div>
+              <div style="background: #1e293b; color: white; padding: 12px; border-radius: 8px; margin-top: 10px; display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-weight: 800;">TOTAL: ₹${dummy.total}</span>
+                <span style="background: #10b981; padding: 3px 8px; border-radius: 10px; font-size: 0.7em;">${dummy.status}</span>
+              </div>
+              ${termsHtml}
+            </div>`;
+        } else if (f == 7) {
+            // FORMAT 7: BUSINESS PRO TABLE
+            const logoHtml = (ps.showLogo && shop.logo) ? `<img src="${shop.logo}" style="height: 30px; margin-right: 8px;">` : "";
+            const addrHtml = ps.showAddress ? `<div style="font-size: 0.7em; color: #64748b;">${shop.address}</div>` : "";
+            const termsHtml = ps.terms ? `<div style="margin-top:15px; border-top:1px solid #eee; padding-top:8px; font-size:0.7em; color:#94a3b8; font-style:italic;">Note: ${ps.terms}</div>` : "";
+
+            html = `
+            <div style="font-family: sans-serif; color: #334155;">
+              <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #4f46e5; padding-bottom: 8px; margin-bottom: 12px;">
+                <div style="display: flex; align-items: center;">${logoHtml}<div><div style="font-weight: 800; color: #1e293b;">${shop.name}</div>${addrHtml}</div></div>
+                <div style="text-align: right;"><div style="font-weight: 800; color: #4f46e5; font-size: 0.9em;">${ps.title}</div><div style="font-size: 0.7em;">#${dummy.txnId}</div></div>
+              </div>
+              <table style="width: 100%; font-size: 0.8em; margin-bottom: 12px;">
+                <tr style="background: #f1f5f9;"><th style="text-align: left; padding: 8px;">Description</th><th style="text-align: right; padding: 8px;">Total</th></tr>
+                <tr><td style="padding: 8px; border-bottom: 1px solid #f1f5f9;">${dummy.service}</td><td style="padding: 8px; text-align: right; border-bottom: 1px solid #f1f5f9; font-weight: 700;">₹${dummy.total}</td></tr>
+              </table>
+              <div style="text-align: right; font-size: 0.8em;">
+                <div>Subtotal: ₹${dummy.amount}</div>
+                <div>Charges: ₹${dummy.charge}</div>
+                <div style="font-size: 1.1em; font-weight: 800; color: #4f46e5; margin-top: 5px;">GRAND TOTAL: ₹${dummy.total}</div>
+              </div>
+              ${termsHtml}
+            </div>`;
         }
 
-        if (ps.taxId) content = `GST: ${ps.taxId}\n` + content;
-        if (ps.terms) content += `\n\n- T&C -\n${ps.terms}`;
-
-        livePreview.innerText = content;
+        previewContainer.innerHTML = html;
     }
 
-    function loadPrintSettings() {
-        const ps = JSON.parse(localStorage.getItem("printSettings")) || {};
-        if (printInputs.title) printInputs.title.value = ps.title || "TAX INVOICE";
-        if (printInputs.header) printInputs.header.value = ps.header || "OFFICIAL RECEIPT";
-        if (printInputs.footer1) printInputs.footer1.value = ps.footer1 || "Thank You";
-        if (printInputs.footer2) printInputs.footer2.value = ps.footer2 || "Please Visit Again";
-        if (printInputs.showContact) printInputs.showContact.checked = ps.showContact !== false;
-        if (printInputs.showAddress) printInputs.showAddress.checked = ps.showAddress !== false;
-        if (printInputs.taxId) printInputs.taxId.value = ps.taxId || "";
-        if (printInputs.terms) printInputs.terms.value = ps.terms || "";
-        if (printInputs.showTax) printInputs.showTax.checked = ps.showTax || false;
-        if (printInputs.logoScale) printInputs.logoScale.value = ps.logoScale || 100;
+    function loadReceiptSettings() {
+        const ps = JSON.parse(localStorage.getItem("printSettings")) || {
+            format: "6",
+            title: "TAX INVOICE",
+            header: "OFFICIAL RECEIPT",
+            showLogo: true,
+            showAddress: true,
+            showContact: true,
+            showPaymentMode: true,
+            terms: ""
+        };
 
-        updateLivePreview();
+        if (receiptInputs.format) receiptInputs.format.value = ps.format || "6";
+        if (receiptInputs.title) receiptInputs.title.value = ps.title || "";
+        if (receiptInputs.header) receiptInputs.header.value = ps.header || "";
+
+        if (receiptInputs.showLogo) receiptInputs.showLogo.checked = ps.showLogo !== false;
+        if (receiptInputs.showAddress) receiptInputs.showAddress.checked = ps.showAddress !== false;
+        if (receiptInputs.showContact) receiptInputs.showContact.checked = ps.showContact !== false;
+        if (receiptInputs.showPaymentMode) receiptInputs.showPaymentMode.checked = ps.showPaymentMode !== false;
+
+        if (receiptInputs.terms) receiptInputs.terms.value = ps.terms || "";
+
+        updateStudioPreview();
     }
 
-    Object.values(printInputs).forEach(el => el?.addEventListener("input", updateLivePreview));
-    previewFormatSelect?.addEventListener("change", updateLivePreview);
+    // Add listeners to all inputs for real-time preview
+    Object.values(receiptInputs).forEach(el => {
+        if (el) {
+            const eventType = (el.tagName === "SELECT" || el.type === "checkbox") ? "change" : "input";
+            el.addEventListener(eventType, updateStudioPreview);
+        }
+    });
 
-    savePrintBtn?.addEventListener("click", () => {
+    saveReceiptBtn?.addEventListener("click", () => {
         const ps = {
-            title: printInputs.title?.value,
-            header: printInputs.header?.value,
-            footer1: printInputs.footer1?.value,
-            footer2: printInputs.footer2?.value,
-            showContact: printInputs.showContact?.checked,
-            showAddress: printInputs.showAddress?.checked,
-            taxId: printInputs.taxId?.value,
-            terms: printInputs.terms?.value,
-            showTax: printInputs.showTax?.checked,
-            logoScale: printInputs.logoScale?.value
+            format: receiptInputs.format?.value || "6",
+            title: receiptInputs.title?.value || "TAX INVOICE",
+            header: receiptInputs.header?.value || "OFFICIAL RECEIPT",
+            showLogo: receiptInputs.showLogo?.checked,
+            showAddress: receiptInputs.showAddress?.checked,
+            showContact: receiptInputs.showContact?.checked,
+            showPaymentMode: receiptInputs.showPaymentMode?.checked,
+            terms: receiptInputs.terms?.value || ""
         };
         localStorage.setItem("printSettings", JSON.stringify(ps));
-        showToast("Print Settings Saved! 🖨️", "success");
+
+        // Also update global default format if needed
+        localStorage.setItem("jc_default_receipt_format", ps.format);
+
+        showToast(`Design ${ps.format} Saved & Applied Globally! 🖨️`, "success");
+        updateStudioPreview();
     });
+
+    loadReceiptSettings();
 
     // 6. BACKUP & RESTORE LOGIC (FOCUS: CUSTOMER DATA ONLY)
     const exportBtn = document.getElementById("exportBackup");
@@ -1067,7 +1148,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // 11. INITIAL TAB RESTORATION
     setTimeout(() => {
-        const savedTab = sessionStorage.getItem("activeSettingsTab") || "shop";
+        let savedTab = sessionStorage.getItem("activeSettingsTab") || "shop";
+        // Never restore the reset tab by default, as it's a destructive one-time action
+        if (savedTab === "reset") savedTab = "shop";
         const lastBtn = document.querySelector(`.aura-nav-btn[data-tab="${savedTab}"], .tab-btn[data-tab="${savedTab}"]`);
         if (lastBtn) {
             lastBtn.click();
@@ -1247,10 +1330,68 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // INITIAL LOADS - Wrapped in try-catch to ensure one failure doesn't block others
     try { loadShopProfile(); } catch (e) { console.error("Shop load fail", e); }
-    try { loadPrintSettings(); } catch (e) { console.error("Print load fail", e); }
+    try { loadReceiptSettings(); } catch (e) { console.error("Print load fail", e); }
     try { loadLangSettings(); } catch (e) { console.error("Lang load fail", e); }
     try { loadShortcuts(); } catch (e) { console.error("Shortcut load fail", e); }
     try { loadSecuritySettings(); } catch (e) { console.error("Security load fail", e); }
+
+    // 8. ADVANCED SETTINGS ENGINE
+    const advancedInputs = {
+        privacy: document.getElementById("privacyBlurToggle"),
+        performance: document.getElementById("performanceModeToggle"),
+        widgetToday: document.getElementById("widgetToday"),
+        widgetEarnings: document.getElementById("widgetEarnings"),
+        widgetExpenses: document.getElementById("widgetExpenses"),
+        widgetPending: document.getElementById("widgetPending"),
+        lockPassword: document.getElementById("lockScreenPassword")
+    };
+
+    function loadAdvancedSettings() {
+        if (advancedInputs.privacy) advancedInputs.privacy.checked = localStorage.getItem("jc_privacy_mode") === "true";
+        if (advancedInputs.performance) advancedInputs.performance.checked = localStorage.getItem("jc_performance_mode") === "true";
+        if (advancedInputs.lockPassword) advancedInputs.lockPassword.value = localStorage.getItem("jc_password") || "123";
+        
+        const widgets = JSON.parse(localStorage.getItem("jc_dashboard_widgets") || '{"today":true,"earnings":true,"expenses":true,"pending":true}');
+        if (advancedInputs.widgetToday) advancedInputs.widgetToday.checked = widgets.today;
+        if (advancedInputs.widgetEarnings) advancedInputs.widgetEarnings.checked = widgets.earnings;
+        if (advancedInputs.widgetExpenses) advancedInputs.widgetExpenses.checked = widgets.expenses;
+        if (advancedInputs.widgetPending) advancedInputs.widgetPending.checked = widgets.pending;
+    }
+
+    document.getElementById("saveAdvancedSettings")?.addEventListener("click", () => {
+        const privacy = advancedInputs.privacy?.checked || false;
+        const performance = advancedInputs.performance?.checked || false;
+        
+        localStorage.setItem("jc_privacy_mode", privacy);
+        localStorage.setItem("jc_performance_mode", performance);
+        
+        if (advancedInputs.lockPassword) {
+            localStorage.setItem("jc_password", advancedInputs.lockPassword.value);
+        }
+        
+        // Apply classes immediately
+        document.body.classList.toggle("privacy-mode-active", privacy);
+        document.body.classList.toggle("performance-mode", performance);
+        
+        // Refresh animations if performance mode changed
+        if (window.refreshAnimation) window.refreshAnimation();
+        
+        const widgets = {
+            today: advancedInputs.widgetToday?.checked || false,
+            earnings: advancedInputs.widgetEarnings?.checked || false,
+            expenses: advancedInputs.widgetExpenses?.checked || false,
+            pending: advancedInputs.widgetPending?.checked || false
+        };
+        localStorage.setItem("jc_dashboard_widgets", JSON.stringify(widgets));
+        
+        if (window.showToast) window.showToast("Advanced preferences saved! 🚀", "success");
+    });
+
+    document.getElementById("triggerQuickLock")?.addEventListener("click", () => {
+        if (window.AuraQuickLock) window.AuraQuickLock.lock();
+    });
+
+    try { loadAdvancedSettings(); } catch (e) { console.error("Advanced load fail", e); }
 });
 // 14. SIDEBAR LAYOUT ENGINE
 const layoutCards = document.querySelectorAll('.layout-card');

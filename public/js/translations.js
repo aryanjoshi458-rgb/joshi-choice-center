@@ -12,7 +12,7 @@ const translations = {
         "sidebar-digital-notes": "Digital Notes",
         "sidebar-expenses": "Expenses",
         "sidebar-customer-directory": "Customer Directory",
-        
+
         "app-title": "Joshi Choice Center",
         "customer-directory": "Customer Directory",
         "search-customer": "Search by Name or Mobile...",
@@ -22,19 +22,19 @@ const translations = {
         "your-commission": "Your Commission Today",
         "total-expenses": "Total Expenses Today",
         "weekly-trends": "Weekly Business Trends",
-        
+
         "save-profile": "Save Profile",
         "upload-logo": "Upload Logo",
         "shop-name": "Shop Name",
         "owner-name": "Owner Name",
         "phone-number": "Phone Number",
         "address": "Address",
-        
+
         "language-settings": "Language Settings",
         "select-language": "Select Software Language",
         "english": "English",
         "hindi": "Hindi (हिंदी)",
-        
+
         "search-receipt": "Search Receipt",
         "receipt-preview": "🧾 Receipt Preview",
         "print-receipt-btn": "🖨 Print Receipt",
@@ -92,7 +92,7 @@ const translations = {
         "sidebar-digital-notes": "डिजिटल नोट्स",
         "sidebar-expenses": "खर्चे",
         "sidebar-customer-directory": "ग्राहक निर्देशिका",
-        
+
         "app-title": "जोशी चॉइस सेंटर",
         "customer-directory": "ग्राहक निर्देशिका",
         "search-customer": "नाम या मोबाइल से खोजें...",
@@ -102,14 +102,14 @@ const translations = {
         "your-commission": "आज का आपका कमीशन",
         "total-expenses": "आज के कुल खर्चे",
         "weekly-trends": "साप्ताहिक व्यापार रुझान",
-        
+
         "save-profile": "प्रोफ़ाइल सहेजें",
         "upload-logo": "लोगो अपलोड करें",
         "shop-name": "दुकान का नाम",
         "owner-name": "मालिक का नाम",
         "phone-number": "फ़ोन नंबर",
         "address": "पता",
-        
+
         "language-settings": "भाषा सेटिंग्स",
         "select-language": "सॉफ्टवेयर की भाषा चुनें",
         "english": "English",

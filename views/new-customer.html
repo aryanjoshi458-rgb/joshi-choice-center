@@ -252,8 +252,9 @@
                         </svg> Customer Information</h3>
                     <div class="form-grid">
                         <div class="floating-group">
-                            <input id="custMobile" type="text" placeholder="10 digit mobile" maxlength="10">
-                            <label>Mobile Number <span id="mobileReqStar" style="display:none;" class="required-star">*</span></label>
+                            <input id="custMobile" type="text" placeholder="10 digit mobile">
+                            <label>Mobile Number <span id="mobileReqStar" style="display:none;"
+                                    class="required-star">*</span></label>
                         </div>
                         <div class="floating-group">
                             <input id="custName" type="text" placeholder="Enter name">
@@ -411,11 +412,22 @@
                         </div>
                         <div class="form-group" id="totalGroup">
                             <label>Total Amount (₹)</label>
-                            <input id="totalAmount" type="text" placeholder="0.00" readonly class="readonly-input comma-format">
+                            <input id="totalAmount" type="text" placeholder="0.00" readonly
+                                class="readonly-input comma-format">
+                        </div>
+                        <div class="form-group" id="receivedChargeGroup">
+                            <label>Received Charge (₹)</label>
+                            <input id="receivedCharge" type="text" placeholder="0.00" class="comma-format" style="background: rgba(99, 102, 241, 0.05); border-color: #6366f1;">
+                        </div>
+                        <div class="form-group" id="pendingChargeGroup">
+                            <label>Pending Charge (₹)</label>
+                            <input id="pendingCharge" type="text" placeholder="0.00" readonly
+                                class="readonly-input comma-format" style="background: rgba(239, 68, 68, 0.05); border-color: #ef4444; color: #ef4444; font-weight: bold;">
                         </div>
                         <div class="form-group" id="netPayableGroup" style="display:none;">
                             <label>Cash to Customer (₹)</label>
-                            <input id="netPayable" type="text" placeholder="0.00" readonly class="readonly-input comma-format"
+                            <input id="netPayable" type="text" placeholder="0.00" readonly
+                                class="readonly-input comma-format"
                                 style="background: rgba(34, 197, 94, 0.1); border-color: #22c55e; color: #22c55e; font-weight: bold;">
                         </div>
                         <div class="form-group" id="paymentModeGroup">
@@ -620,7 +632,8 @@
 
     <!-- Modern Alert -->
 
-    <script src="../public/js/aura-modals.js"></script><script src="../public/js/liquid-buttons.js"></script>
+    <script src="../public/js/aura-modals.js"></script>
+    <script src="../public/js/button-animations.js"></script>
     <script src="../public/js/delete-transaction.js"></script>
     <!-- Transaction / Customer logic -->
     <script src="../public/js/script.js"></script>

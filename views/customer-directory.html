@@ -15,17 +15,20 @@
     <link rel="stylesheet" href="../public/assets/features/notification/notification.css">
     <link rel="stylesheet" href="../public/css/loader.css">
     <link rel="stylesheet" href="../public/assets/sidebar-pages/extra/customer-directory.css">
-    <style>body.dark-mode .view-link:hover { background: var(--elite-accent); }
-</style>
+    <style>
+        body.dark-mode .view-link:hover {
+            background: var(--elite-accent);
+        }
+    </style>
     <link rel="stylesheet" href="../public/assets/sidebar-pages/global/global-background-animation.css">
     <link rel="stylesheet" href="../public/assets/features/scroll-toggle.css">
 
     <script src="../public/js/loader.js"></script>
     <script src="../public/js/auth.js"></script>
     <script>Auth.protectPage();</script>
-  <link rel="stylesheet" href="../public/css/aura-modals.css">
-  <link rel="stylesheet" href="../public/css/aura-assistant.css">
-  <link rel="stylesheet" href="../public/assets/features/notification/toast.css">
+    <link rel="stylesheet" href="../public/css/aura-modals.css">
+    <link rel="stylesheet" href="../public/css/aura-assistant.css">
+    <link rel="stylesheet" href="../public/assets/features/notification/toast.css">
 </head>
 
 <body>
@@ -154,61 +157,61 @@
         </div>
     </div>
 
-  <!-- Toggle Button (Speak ke niche) -->
-  <button id="sidebarToggle">
-    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-      stroke-linejoin="round">
-      <line x1="3" y1="12" x2="21" y2="12"></line>
-      <line x1="3" y1="6" x2="21" y2="6"></line>
-      <line x1="3" y1="18" x2="21" y2="18"></line>
-    </svg>
-  </button>
+    <!-- Toggle Button (Speak ke niche) -->
+    <button id="sidebarToggle">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+    </button>
 
-  <!-- VOICE + THEME CONTROLS -->
-  <div class="assistant-speaker" id="assistantSpeaker">
-    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-      stroke-linejoin="round">
-      <path d="M11 5L6 9H2v6h4l5 4V5z"></path>
-      <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-    </svg>
-    <span>Speak</span>
-  </div>
+    <!-- VOICE + THEME CONTROLS -->
+    <div class="assistant-speaker" id="assistantSpeaker">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11 5L6 9H2v6h4l5 4V5z"></path>
+            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+        </svg>
+        <span>Speak</span>
+    </div>
 
-  <!-- AURA CELESTIAL v4 THEME SLIDER -->
-  <div class="aura-celestial-v4" id="themeToggleV4">
-    <div class="celestial-sky-window"></div>
-    <div class="celestial-knob-v4" id="celestialKnob"></div>
-  </div>
+    <!-- AURA CELESTIAL v4 THEME SLIDER -->
+    <div class="aura-celestial-v4" id="themeToggleV4">
+        <div class="celestial-sky-window"></div>
+        <div class="celestial-knob-v4" id="celestialKnob"></div>
+    </div>
 
     <!-- AURA SMART CHAT PANEL -->
-  <div id="auraChatPanel" class="aura-chat-panel">
-    <div class="aura-chat-header">
-      <div class="aura-chat-header-left">
-        <div class="aura-chat-logo">AI</div>
-        <div class="aura-chat-header-info">
-          <h3>Aura Assistant</h3>
-          <p>Your Smart Companion</p>
+    <div id="auraChatPanel" class="aura-chat-panel">
+        <div class="aura-chat-header">
+            <div class="aura-chat-header-left">
+                <div class="aura-chat-logo">AI</div>
+                <div class="aura-chat-header-info">
+                    <h3>Aura Assistant</h3>
+                    <p>Your Smart Companion</p>
+                </div>
+            </div>
+            <div class="aura-chat-controls">
+                <div class="aura-chat-control min"></div>
+                <div class="aura-chat-control max"></div>
+                <div id="closeAuraChat" class="aura-chat-control close"></div>
+            </div>
         </div>
-      </div>
-      <div class="aura-chat-controls">
-        <div class="aura-chat-control min"></div>
-        <div class="aura-chat-control max"></div>
-        <div id="closeAuraChat" class="aura-chat-control close"></div>
-      </div>
+        <div class="aura-chat-history" id="auraChatHistory">
+            <!-- Messages appear here -->
+        </div>
+        <div class="aura-chat-input-area">
+            <input type="text" id="auraChatInput" placeholder="Ask about the software...">
+            <button class="aura-chat-send" id="auraChatSend">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="22" y1="2" x2="11" y2="13" />
+                    <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                </svg>
+            </button>
+        </div>
     </div>
-    <div class="aura-chat-history" id="auraChatHistory">
-      <!-- Messages appear here -->
-    </div>
-    <div class="aura-chat-input-area">
-      <input type="text" id="auraChatInput" placeholder="Ask about the software...">
-      <button class="aura-chat-send" id="auraChatSend">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5">
-          <line x1="22" y1="2" x2="11" y2="13" />
-          <polygon points="22 2 15 22 11 13 2 9 22 2" />
-        </svg>
-      </button>
-    </div>
-  </div>
 
     <!-- Main -->
     <main class="main">
@@ -223,21 +226,35 @@
             <!-- Advanced Stats Dashboard -->
             <div class="directory-dashboard">
                 <div class="stat-card premium-shadow animate-card">
-                    <div class="stat-icon users"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-3-3.87M9 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+                    <div class="stat-icon users"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-3-3.87M9 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                            <circle cx="9" cy="7" r="4" />
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                        </svg></div>
                     <div class="stat-info">
                         <h4 id="totalCustCount">0</h4>
                         <p>Total Customers</p>
                     </div>
                 </div>
                 <div class="stat-card premium-shadow animate-card">
-                    <div class="stat-icon business"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
+                    <div class="stat-icon business"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
+                            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+                        </svg></div>
                     <div class="stat-info">
                         <h4 id="totalBusinessValue">₹0</h4>
                         <p>Total Business</p>
                     </div>
                 </div>
                 <div class="stat-card premium-shadow animate-card">
-                    <div class="stat-icon loyalty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+                    <div class="stat-icon loyalty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path
+                                d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                        </svg></div>
                     <div class="stat-info">
                         <h4 id="returningRate">0%</h4>
                         <p>Returning Rate</p>
@@ -249,13 +266,15 @@
             <div class="directory-controls premium-shadow">
                 <div class="search-section">
                     <div class="search-box-modern">
-                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
-                            <circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" />
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"
+                            stroke-width="2.5">
+                            <circle cx="11" cy="11" r="8" />
+                            <path d="M21 21l-4.35-4.35" />
                         </svg>
                         <input type="text" id="customerSearch" placeholder="Search by name, mobile or aadhar...">
                     </div>
                 </div>
-                
+
                 <div class="filter-tabs" id="filterTabs">
                     <button class="filter-btn active" data-filter="all">All</button>
                     <button class="filter-btn" data-filter="regular">Regulars</button>
@@ -299,7 +318,16 @@
     <div id="scrollArrow">▲</div>
     <script src="../public/assets/features/scroll-toggle.js"></script>
     <script src="../public/js/shortcuts.js"></script>
-    <script src="../public/js/aura-modals.js"></script><script src="../public/js/liquid-buttons.js"></script>
+    <script src="../public/js/aura-modals.js"></script>
+    <script src="../public/js/button-animations.js"></script>
+
+</body>
+
+</html>
+<script src="../public/assets/features/scroll-toggle.js"></script>
+<script src="../public/js/shortcuts.js"></script>
+<script src="../public/js/aura-modals.js"></script>
+<script src="../public/js/button-animations.js"></script>
 
 </body>
 

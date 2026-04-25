@@ -47,9 +47,6 @@ function renderTransactions() {
 
     tbody.appendChild(tr);
   });
-  // ✅ ADD THIS (VERY IMPORTANT)
-  filterTodayData();
-
   // ✅ Dashboard update
   updateTodayDashboard();
 }
@@ -87,9 +84,8 @@ function formatDateDDMMYYYY() {
     const match = v.match(/^(\d{4})-(\d{2})-(\d{2})(.*)$/);
     if (!match) return;
 
-    const [_, y, m, d, timePart] = match;
-    const timeShort = timePart ? timePart.trim().split(':').slice(0, 2).join(':') : "";
-    dateCell.innerText = `${d}-${m}-${y}${timeShort ? ' ' + timeShort : ''}`;
+    const [_, y, m, d] = match;
+    dateCell.innerText = `${d}-${m}-${y}`;
   });
 }
 window.addEventListener("load", () => {
@@ -108,38 +104,7 @@ function openPage(pageId) {
 
 
 
-// IS CODE SE TODAYS REPORTS ME DATA SIRF AAJ KA HOGA 24 HOUR KA BAS
-// ✅ FIXED - ONLY TODAY DATA FILTER (PRO VERSION)
-function filterTodayData() {
-  const today = new Date();
-
-  const rows = document.querySelectorAll("#reportTable tbody tr");
-
-  rows.forEach(row => {
-    const dateCell = row.children[1];
-    if (!dateCell) return;
-
-    const dateText = dateCell.innerText.trim();
-
-    // Safe format check
-    if (!dateText.includes("-")) return;
-
-    const parts = dateText.split("-");
-    if (parts.length !== 3) return;
-
-    // dd-mm-yyyy → yyyy-mm-dd
-    const formattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
-    const d = new Date(formattedDate);
-
-    const isToday =
-      d.getDate() === today.getDate() &&
-      d.getMonth() === today.getMonth() &&
-      d.getFullYear() === today.getFullYear();
-
-    row.style.display = isToday ? "" : "none";
-  });
-}
 
 document.addEventListener("DOMContentLoaded", () => {
-  filterTodayData();
+  // layout is already managed by window.load
 });

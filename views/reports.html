@@ -19,14 +19,14 @@
   <link rel="stylesheet" href="../public/assets/features/scroll-toggle.css">
   <link rel="stylesheet" href="../public/assets/sidebar-pages/reports/print-pdf-excel/print-pdf-excel.css">
   <link rel="stylesheet" href="../public/css/loader.css">
-    <!-- Professional Toast Notification styling -->
-    <link rel="stylesheet" href="../public/assets/features/notification/toast.css">
-    
-    <!-- MODERN DATE PICKER -->
-    <link rel="stylesheet" href="../public/assets/features/modern-datepicker/modern-datepicker.css">
-    <script src="../public/assets/features/modern-datepicker/modern-datepicker.js"></script>
+  <!-- Professional Toast Notification styling -->
+  <link rel="stylesheet" href="../public/assets/features/notification/toast.css">
 
-    <script src="../public/js/auth.js"></script>
+  <!-- MODERN DATE PICKER -->
+  <link rel="stylesheet" href="../public/assets/features/modern-datepicker/modern-datepicker.css">
+  <script src="../public/assets/features/modern-datepicker/modern-datepicker.js"></script>
+
+  <script src="../public/js/auth.js"></script>
   <script>Auth.protectPage();</script>
 
 
@@ -221,7 +221,42 @@
     <div class="reports-wrapper">
 
       <div class="reports-header">
-        <h2>Reports</h2>
+        <div class="header-main">
+          <h2>Reports</h2>
+          <div class="report-pockets">
+            <div class="pocket pocket-banking">
+              <span class="p-icon">🏦</span>
+              <div class="p-info">
+                <label>Banking</label>
+                <span id="bankingTotal">₹0</span>
+              </div>
+            </div>
+            <div class="pocket pocket-recharge">
+              <span class="p-icon">📱</span>
+              <div class="p-info">
+                <label>Recharge</label>
+                <span id="rechargeTotal">₹0</span>
+              </div>
+            </div>
+            <div class="pocket pocket-other">
+              <span class="p-icon">📄</span>
+              <div class="p-info">
+                <label>Others</label>
+                <span id="otherTotal">₹0</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 🏷️ CATEGORY TABS -->
+        <div class="report-category-tabs">
+          <button class="cat-tab active" data-category="all">All Services</button>
+          <button class="cat-tab" data-category="Banking">Banking 🏦</button>
+          <button class="cat-tab" data-category="Mobile/Util">Recharge 📱</button>
+          <button class="cat-tab" data-category="Printing">Printing 🖨️</button>
+          <button class="cat-tab" data-category="Education">Education 🎓</button>
+          <button class="cat-tab" data-category="Forms">Govt Forms 📄</button>
+        </div>
 
         <div class="reports-table-wrap">
           <table id="reportsTable">
@@ -339,8 +374,8 @@
         <h3>🖨️ Receipt Preview</h3>
         <span class="close-modal" onclick="closePrintModal()">&times;</span>
       </div>
-      <div class="modal-body">
-        <div class="modal-controls">
+      <div class="modal-body print-modal-body">
+        <div class="modal-controls-side">
           <div class="control-group">
             <label>Format:</label>
             <select id="modalFormat" onchange="updateModalPreview()">
@@ -349,6 +384,8 @@
               <option value="3">Modern Receipt</option>
               <option value="4">Compact Bill</option>
               <option value="5">Detailed Service</option>
+              <option value="6">Modern Colorful</option>
+              <option value="7">Business Pro</option>
             </select>
           </div>
           <div class="control-group">
@@ -361,7 +398,9 @@
             </select>
           </div>
         </div>
-        <div id="modalPreview" class="receipt-preview"></div>
+        <div class="modal-preview-side">
+          <div id="modalPreview" class="receipt-preview"></div>
+        </div>
       </div>
       <div class="modal-footer">
         <button class="btn btn-print-final" onclick="printFromModal()">🖨️ Print Now</button>
@@ -399,6 +438,8 @@
                 <option value="3">Modern Receipt</option>
                 <option value="4">Compact Bill</option>
                 <option value="5">Detailed Service</option>
+                <option value="6">Modern Colorful</option>
+                <option value="7">Business Pro</option>
               </select>
             </div>
             <div class="control-group">
@@ -528,7 +569,8 @@
       <div class="modal-footer">
         <div class="control-group" style="margin-right: auto; display: flex; align-items: center; gap: 10px;">
           <label style="color: white; font-size: 14px; font-weight: 600;">Page Orientation:</label>
-          <select id="pdfOrientation" onchange="openPdfModal()" style="padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: rgba(30,41,59,0.8); color: white; cursor: pointer; font-weight: 500;">
+          <select id="pdfOrientation" onchange="openPdfModal()"
+            style="padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: rgba(30,41,59,0.8); color: white; cursor: pointer; font-weight: 500;">
             <option value="landscape" selected>A4 Landscape (Default)</option>
             <option value="portrait">A4 Portrait</option>
           </select>
@@ -556,7 +598,8 @@
   <script src="../public/assets/sidebar-pages/reports/print-pdf-excel/print-pdf-excel.js"></script>
 
   <script src="../public/js/loader.js"></script>
-  <script src="../public/js/aura-modals.js"></script><script src="../public/js/liquid-buttons.js"></script>
+  <script src="../public/js/aura-modals.js"></script>
+  <script src="../public/js/button-animations.js"></script>
   <script src="../public/js/shortcuts.js"></script>
 </body>
 

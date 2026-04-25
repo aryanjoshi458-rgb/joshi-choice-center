@@ -21,16 +21,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const totalInput = document.getElementById("totalAmount");
     const netPayableInput = document.getElementById("netPayable");
 
+    const receivedChargeInput = document.getElementById("receivedCharge");
+    const pendingChargeInput = document.getElementById("pendingCharge");
+
     // Helper to apply formatting live to an input
     const applyLiveFormatting = (input) => {
         if (!input) return;
         input.addEventListener("input", (e) => {
             const rawValue = parseCommas(e.target.value);
-            // Only format if there's a value to prevent cursor jumping on empty
             if (e.target.value !== "") {
                 const formatted = formatWithCommas(rawValue);
-                // Simple cursor management: if formatting added a comma, we might need to adjust
-                // but for simple cases, just setting value works.
                 e.target.value = formatted;
             }
         });
@@ -42,13 +42,20 @@ document.addEventListener("DOMContentLoaded", () => {
     function calculateTotal() {
         const amount = parseCommas(amountInput.value);
         const charge = parseCommas(chargeInput.value);
+        const received = parseCommas(receivedChargeInput?.value || "0");
 
         if (totalInput) totalInput.value = formatWithCommas(amount + charge);
         if (netPayableInput) netPayableInput.value = formatWithCommas(amount - charge);
+        
+        if (pendingChargeInput) {
+            const pending = charge - received;
+            pendingChargeInput.value = formatWithCommas(Math.max(0, pending));
+        }
     }
 
     if (amountInput) amountInput.addEventListener("input", calculateTotal);
     if (chargeInput) chargeInput.addEventListener("input", calculateTotal);
+    if (receivedChargeInput) receivedChargeInput.addEventListener("input", calculateTotal);
 
     /***************************************
      * EDIT MODAL CALCULATIONS

@@ -142,6 +142,12 @@ window.AuraDialog = (() => {
 // Global Electron Close Intercept Listener
 if (window.electronAPI && window.electronAPI.onAttemptClose) {
     window.electronAPI.onAttemptClose(async () => {
+        // ✅ SKIP CONFIRMATION ON LOGIN PAGE
+        if (document.body.classList.contains("login-page")) {
+            window.electronAPI.confirmQuit();
+            return;
+        }
+
         const confirmed = await window.AuraDialog.confirm(
             "Are you sure you want to close Joshi Choice Center? Any unsaved changes may be lost.",
             "Confirm Exit",

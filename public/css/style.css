@@ -1,3 +1,249 @@
+/* --- PRIVACY & BOSS MODE --- */
+.privacy-sensitive {
+  transition: filter 0.3s ease, transform 0.3s ease;
+}
+
+body.privacy-mode-active .privacy-sensitive {
+  filter: blur(12px);
+  cursor: help;
+}
+
+body.privacy-mode-active .privacy-sensitive:hover {
+  filter: blur(0);
+  transform: scale(1.02);
+}
+
+/* --- MINIMALIST FLOATING LOCK --- */
+.quick-lock-overlay {
+  position: fixed !important;
+  top: -50% !important;
+  left: -50% !important;
+  width: 200% !important;
+  height: 200% !important;
+  background: rgba(10, 15, 28, 0.92) !important;
+  backdrop-filter: blur(60px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(60px) saturate(200%) !important;
+  z-index: 99999999 !important;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.quick-lock-overlay.active {
+  display: flex;
+}
+
+.floating-lock-content {
+  text-align: center;
+  width: 100%;
+  max-width: 450px;
+  color: white;
+  font-family: 'Outfit', sans-serif;
+  animation: lockFadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes lockFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Earthquake Animation */
+@keyframes earthquake {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+
+  10% {
+    transform: translate(-8px, -4px) rotate(-1.5deg);
+  }
+
+  20% {
+    transform: translate(8px, 4px) rotate(1.5deg);
+  }
+
+  30% {
+    transform: translate(-8px, 4px) rotate(-1.5deg);
+  }
+
+  40% {
+    transform: translate(8px, -4px) rotate(1.5deg);
+  }
+
+  50% {
+    transform: translate(-8px, -4px) rotate(-1.5deg);
+  }
+
+  60% {
+    transform: translate(8px, 4px) rotate(1.5deg);
+  }
+
+  70% {
+    transform: translate(-8px, 4px) rotate(-1.5deg);
+  }
+
+  80% {
+    transform: translate(8px, -4px) rotate(1.5deg);
+  }
+
+  90% {
+    transform: translate(-8px, -4px) rotate(-1.5deg);
+  }
+
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+}
+
+.floating-lock-content.quake {
+  animation: earthquake 0.5s ease-in-out;
+}
+
+/* Animated Cyber-Shield Lock Icon */
+.svg-lock-icon {
+  width: 90px;
+  height: 90px;
+  margin: 0 auto 35px;
+  display: block;
+  color: #00d2ff;
+}
+
+.shield-path {
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  animation: drawShield 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  opacity: 0.6;
+}
+
+@keyframes drawShield {
+  to {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}
+
+.shackle {
+  transform-origin: center;
+  animation: shackleClose 0.8s 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.4) forwards;
+  opacity: 0;
+}
+
+@keyframes shackleClose {
+  0% {
+    transform: translateY(-12px);
+    opacity: 0;
+  }
+
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.lock-body {
+  animation: shieldPulse 3s infinite ease-in-out;
+}
+
+@keyframes shieldPulse {
+
+  0%,
+  100% {
+    filter: drop-shadow(0 0 10px rgba(0, 210, 255, 0.3));
+    transform: scale(1);
+  }
+
+  50% {
+    filter: drop-shadow(0 0 30px rgba(0, 210, 255, 0.6));
+    transform: scale(1.02);
+  }
+}
+
+.admin-title {
+  font-size: 3rem;
+  font-weight: 800;
+  margin-bottom: 10px;
+  letter-spacing: -1.5px;
+  background: linear-gradient(to bottom, #fff, #888);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.admin-subtitle {
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 0.95rem;
+  margin-bottom: 50px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.minimal-input-box {
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  width: 300px;
+  margin: 0 auto;
+  backdrop-filter: none !important;
+}
+
+.minimal-input-box:focus-within {
+  border-color: #6366f1 !important;
+  box-shadow: 0 15px 25px -15px rgba(99, 102, 241, 0.5) !important;
+  width: 350px;
+}
+
+.minimal-input-box.error {
+  border-color: #ef4444 !important;
+  box-shadow: 0 15px 25px -15px rgba(239, 68, 68, 0.5) !important;
+}
+
+.minimal-input-box input {
+  width: 100%;
+  background: transparent !important;
+  border: none !important;
+  padding: 15px 0 !important;
+  color: white !important;
+  font-size: 1.8rem !important;
+  text-align: center !important;
+  outline: none !important;
+  letter-spacing: 12px;
+  font-weight: 600;
+}
+
+.minimal-input-box input::placeholder {
+  color: rgba(255, 255, 255, 0.15);
+  letter-spacing: 2px;
+  font-size: 1.1rem;
+  font-weight: 400;
+}
+
+/* --- PERFORMANCE MODE OVERRIDES --- */
+
+/* --- PERFORMANCE MODE OVERRIDES --- */
+
+/* --- PERFORMANCE MODE OVERRIDES --- */
+body.performance-mode .animated-bg {
+  display: none !important;
+}
+
+body.performance-mode * {
+  animation-duration: 0.1s !important;
+  transition-duration: 0.1s !important;
+  box-shadow: none !important;
+}
+
+body.performance-mode .dashboard-card {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+}
+
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
@@ -1186,3 +1432,35 @@ body.dark-mode .unified-card select {
 }
 
 /* TODAY REPORT REMAINS UNTOUCHED */
+padding: 5px 12px;
+border-radius: 10px;
+font-size: 0.75rem;
+color: #6366f1;
+font-weight: 600;
+/* --- AURA PRIVACY BLUR ENGINE --- */
+body.privacy-mode-active .dashboard-card .card-value,
+body.privacy-mode-active .stat-value,
+body.privacy-mode-active .customer-info,
+body.privacy-mode-active .vault-info h3,
+body.privacy-mode-active .vault-info p,
+body.privacy-mode-active .transaction-amount,
+body.privacy-mode-active .dashboard-card h3,
+body.privacy-mode-active .dashboard-card .card-content span,
+body.privacy-mode-active .quick-stat-item span {
+    filter: blur(8px) !important;
+    transition: filter 0.3s ease !important;
+    cursor: pointer !important;
+    user-select: none !important;
+}
+
+body.privacy-mode-active .dashboard-card .card-value:hover,
+body.privacy-mode-active .stat-value:hover,
+body.privacy-mode-active .customer-info:hover,
+body.privacy-mode-active .vault-info h3:hover,
+body.privacy-mode-active .vault-info p:hover,
+body.privacy-mode-active .transaction-amount:hover,
+body.privacy-mode-active .dashboard-card h3:hover,
+body.privacy-mode-active .dashboard-card .card-content span:hover,
+body.privacy-mode-active .quick-stat-item span:hover {
+    filter: blur(0) !important;
+}

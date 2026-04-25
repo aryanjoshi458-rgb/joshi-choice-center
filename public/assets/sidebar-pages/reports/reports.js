@@ -30,17 +30,24 @@ function loadReports() {
   }
 
   reports.forEach((r, index) => {
-    const customer = r.customerName || "-";
-    const mobile = r.mobileNumber || "-";
-    const aadhar = r.aadharNumber || "-";
-    const address = r.address || "N/A";
-    const service = r.serviceName || r.serviceType || "-";
+    const customer = r.customerName || r.name || "-";
+    const mobile = r.mobileNumber || r.mobile || "-";
+    const aadhar = r.aadharNumber || r.aadhar || "-";
+    const address = r.address || "-";
+    const service = r.serviceName || r.serviceType || r.service || "-";
     const amount = Number(r.amount) || 0;
     const charge = Number(r.charge) || 0;
-    const total = Number(r.totalAmount) || (amount + charge);
+    const total = Number(r.totalAmount) || Number(r.total) || (amount + charge);
     const status = (r.status || "Pending").toLowerCase();
-    const txnId = r.transactionId || r.txnId || r.id || "-";
+    const txnId = r.transactionId || r.txnId || r.txn || r.id || "-";
     const date = formatDate(r.date);
+
+    // ✅ CATEGORY BADGE LOGIC
+    let catClass = "";
+    let catIcon = "📄";
+    if (service.toLowerCase().includes("banking")) { catClass = "banking"; catIcon = "🏦"; }
+    else if (service.toLowerCase().includes("recharge") || service.toLowerCase().includes("mobile")) { catClass = "recharge"; catIcon = "📱"; }
+    else if (service.toLowerCase().includes("print")) { catClass = "printing"; catIcon = "🖨️"; }
 
     let statusClass = "pending";
     if (status === "success") statusClass = "paid";
@@ -56,7 +63,7 @@ function loadReports() {
       <td>${mobile}</td>
       <td>${aadhar}</td>
       <td>${address}</td>
-      <td>${service}</td>
+      <td><span class="service-badge ${catClass}"><i>${catIcon}</i> ${service}</span></td>
       <td>${amount}</td>
       <td>${charge}</td>
       <td>${total}</td>
@@ -133,27 +140,31 @@ function formatDate(dateStr) {
 
   if (!dateStr) return "-";
 
-  // ✅ HANDLE "22-03-2026" FORMAT (Confirm it is not YYYY-MM-DD)
-  if (dateStr.includes("-")) {
-    const parts = dateStr.split("-");
-    if (parts.length === 3 && parts[0].length === 2 && parts[2].length === 4) return dateStr;
+  // ✅ HANDLE "22-03-2026" or "2026-04-24"
+  let cleanDate = dateStr;
+  if (cleanDate.includes(" ")) cleanDate = cleanDate.replace(" ", "T"); // Convert to ISO-like format for better parsing
+
+  const d = new Date(cleanDate);
+
+  if (isNaN(d.getTime())) {
+    // Last ditch effort: if it's "2026-04-24 17:14:23", split and try date part
+    const datePart = dateStr.split(" ")[0];
+    if (datePart.includes("-")) {
+      const parts = datePart.split("-");
+      if (parts.length === 3) {
+        if (parts[0].length === 4) return `${parts[2]}-${parts[1]}-${parts[0]}`; // YYYY-MM-DD -> DD-MM-YYYY
+        if (parts[2].length === 4) return datePart; // Already DD-MM-YYYY
+      }
+    }
+    return dateStr || "-";
   }
-
-  const d = new Date(dateStr);
-
-  if (isNaN(d)) return "-";
 
   const dd = String(d.getDate()).padStart(2, "0");
   const mm = String(d.getMonth() + 1).padStart(2, "0");
   const yyyy = d.getFullYear();
 
-  // Show time if available
-  const hasTime = dateStr.includes(" ") || dateStr.includes("T");
-  if (hasTime) {
-    const hh = String(d.getHours()).padStart(2, "0");
-    const min = String(d.getMinutes()).padStart(2, "0");
-    return `${dd}-${mm}-${yyyy} ${hh}:${min}`;
-  }
+  // Show only date
+  return `${dd}-${mm}-${yyyy}`;
 
   return `${dd}-${mm}-${yyyy}`;
 }
@@ -196,6 +207,20 @@ function initSearchAndFilter() {
   filter?.addEventListener("change", applyFilter);
   document.getElementById("monthFilter")?.addEventListener("change", applyFilter);
 
+  // ✅ CATEGORY TABS (NEW)
+  const tabs = document.querySelectorAll(".cat-tab");
+  tabs.forEach(tab => {
+    tab.addEventListener("click", () => {
+      tabs.forEach(t => t.classList.remove("active"));
+      tab.classList.add("active");
+      window.currentCategoryFilter = tab.dataset.category;
+      applyFilter();
+    });
+  });
+
+  // Initial Apply
+  setTimeout(applyFilter, 100);
+
   // ✅ Set Current Month by Default
   const monthFilter = document.getElementById("monthFilter");
   if (monthFilter && !monthFilter.value) {
@@ -214,6 +239,7 @@ function applyFilter() {
   const searchValue = document.getElementById("bestInput")?.value.toLowerCase() || "";
   const statusValue = document.getElementById("reportStatusFilter")?.value || "all";
   const selectedMonth = document.getElementById("monthFilter")?.value || "";
+  const catFilter = window.currentCategoryFilter || "all";
 
   const rows = document.querySelectorAll("#reportsTable tbody tr");
   window.filteredReportsData = []; // ✅ Reset before re-populating
@@ -246,7 +272,10 @@ function applyFilter() {
     }
     const matchMonth = !selectedMonth || rowMonth === selectedMonth;
 
-    if (matchSearch && matchStatus && matchMonth) {
+    // Category match (NEW)
+    const matchCat = catFilter === "all" || service.includes(catFilter.toLowerCase());
+
+    if (matchSearch && matchStatus && matchMonth && matchCat) {
       window.filteredReportsData.push(r);
     }
   });
@@ -278,7 +307,9 @@ function applyFilter() {
     }
     const matchMonth = !selectedMonth || rowMonth === selectedMonth;
 
-    row.style.display = (matchSearch && matchStatus && matchMonth) ? "" : "none";
+    const matchCat = catFilter === "all" || service.includes(catFilter.toLowerCase());
+
+    row.style.display = (matchSearch && matchStatus && matchMonth && matchCat) ? "" : "none";
   });
 
   // Always update metrics after filtering
@@ -318,6 +349,24 @@ function updateSummaryMetrics() {
   document.getElementById("commissionValue").innerText = "₹" + totalCommission.toLocaleString();
   document.getElementById("totalBusinessValue").innerText = "₹" + totalBusiness.toLocaleString();
   document.getElementById("totalTransactionsValue").innerText = transactionCount;
+
+  // ✅ UPDATE POCKET CARDS (Real-time category breakdown)
+  let bankingTotal = 0;
+  let rechargeTotal = 0;
+  let otherTotal = 0;
+
+  window.allReportsData.forEach(r => {
+    const s = (r.serviceName || r.serviceType || "").toLowerCase();
+    const t = Number(r.totalAmount) || (Number(r.amount) + Number(r.charge));
+
+    if (s.includes("banking")) bankingTotal += t;
+    else if (s.includes("recharge") || s.includes("mobile")) rechargeTotal += t;
+    else otherTotal += t;
+  });
+
+  document.getElementById("bankingTotal").innerText = "₹" + bankingTotal.toLocaleString();
+  document.getElementById("rechargeTotal").innerText = "₹" + rechargeTotal.toLocaleString();
+  document.getElementById("otherTotal").innerText = "₹" + otherTotal.toLocaleString();
 }
 
 
@@ -353,7 +402,8 @@ window.updateModalPreview = function () {
   const content = generateReceiptText(currentModalTxn, format);
 
   const preview = document.getElementById("modalPreview");
-  preview.innerText = content;
+  const shop = JSON.parse(localStorage.getItem("shopProfile")) || { name: "JOSHI CHOICE CENTER" };
+  preview.innerHTML = `<div style="font-weight:bold; text-align:center; border-bottom:1px solid #ccc; margin-bottom:5px; padding-bottom:5px;">${shop.name}</div>` + content;
   preview.className = "receipt-preview size-" + size;
 }
 
@@ -426,7 +476,8 @@ window.updateSearchModalPreview = function () {
   const content = generateReceiptText(searchModalSelectedTxn, format);
 
   const preview = document.getElementById("searchModalPreview");
-  preview.innerText = content;
+  const shop = JSON.parse(localStorage.getItem("shopProfile")) || { name: "JOSHI CHOICE CENTER" };
+  preview.innerHTML = `<div style="font-weight:bold; text-align:center; border-bottom:1px solid #ccc; margin-bottom:5px; padding-bottom:5px;">${shop.name}</div>` + content;
   preview.className = "receipt-preview size-" + size;
 }
 
@@ -468,13 +519,13 @@ function generateReceiptText(t, f) {
   const total = Number(t.totalAmount || (Number(amount) + Number(charge))).toFixed(2);
   const status = (t.status || "Paid").toUpperCase();
   const mobile = t.mobileNumber || "-";
+  const pMode = t.paymentMode || "Cash";
 
   const showContact = ps.showContact ? `Mobile: ${mobile}` : "";
   const showAddress = ps.showAddress ? shop.address : "";
   let out = "";
   if (f == 1) {
     out = `
-${shop.name}
 ${ps.header}
 -------------------------
 Date: ${date}
@@ -489,6 +540,7 @@ Amount: Rs. ${amount}
 Charge: Rs. ${charge}
 -------------------------
 Total: Rs. ${total}
+Mode: ${pMode}
 
 Status: ${status}
 -------------------------
@@ -496,8 +548,6 @@ ${ps.footer1}
 `;
   } else if (f == 2) {
     out = `
-*************************
-  ${shop.name}
 *************************
      ${ps.title}
 *************************
@@ -511,6 +561,7 @@ Amount   : Rs. ${amount}
 Charge   : Rs. ${charge}
 -------------------------
 NET TOTAL: Rs. ${total}
+Mode     : ${pMode}
 -------------------------
 Status   : ${status}
 -------------------------
@@ -520,8 +571,7 @@ Status   : ${status}
 `;
   } else if (f == 3) {
     out = `
-   ${shop.name}
-   ${ps.header}
+    ${ps.header}
 =========================
 DATE : ${date}
 TXN  : ${txnId}
@@ -538,7 +588,6 @@ STATUS : ${status}
 `;
   } else if (f == 4) {
     out = `
-${shop.name}
 -------------------------
 ${date} | ${txnId}
 
@@ -554,7 +603,6 @@ Net : Rs. ${total}
 -------------------------
     ${ps.title}
 -------------------------
-${shop.name}
 ${showAddress}
 
 Trans ID : ${txnId}
@@ -571,17 +619,159 @@ Payment Details:
 Base Amount : Rs. ${amount}
 Service Chg : Rs. ${charge}
 Net Payable : Rs. ${total}
+Payment Mode: ${pMode}
 -------------------------
 Status : ${status}
 -------------------------
   ${ps.footer2}
 -------------------------
 `;
+  } else if (f == 6) {
+    // MODERN COLORFUL DESIGN (HTML) - RESPECTS GLOBAL SETTINGS
+    const ps = JSON.parse(localStorage.getItem("printSettings")) || {};
+    const logoImg = (ps.showLogo !== false && shop.logo) ? `<img src="${shop.logo}" style="height: 40px; margin-bottom: 10px;">` : "";
+    const showShopAddress = ps.showAddress !== false ? `<div style="font-size: 0.8em; color: #64748b; margin-top: 2px;">${showAddress}</div>` : "";
+    const showContactRow = ps.showContact !== false ? `<div style="font-size: 0.9em; color: #64748b; margin-top: 4px;"><span style="color: #4f46e5;">📞</span> ${mobile}</div>` : "";
+    const paymentModeRow = ps.showPaymentMode !== false ? `
+      <div style="display: flex; justify-content: space-between; font-size: 0.9em; margin-top: 8px; padding-top: 8px; border-top: 1px dashed #e2e8f0; color: #1e293b; font-weight: 700;">
+        <span>Payment Mode:</span>
+        <span style="color: #4f46e5;">${pMode.toUpperCase()}</span>
+      </div>` : "";
+    
+    const termsSection = ps.terms ? `
+      <div style="margin-top: 15px; padding: 10px; border-top: 1px solid #f1f5f9; font-size: 0.75em; color: #94a3b8; line-height: 1.4; background: rgba(0,0,0,0.02); border-radius: 8px;">
+        <strong style="color: #64748b; display: block; margin-bottom: 3px;">Terms & Conditions:</strong>
+        ${ps.terms}
+      </div>` : "";
+
+    out = `
+<div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 5px; color: #1e293b; white-space: normal;">
+  <div style="text-align: center; margin-bottom: 15px;">
+    ${logoImg}
+    <div style="font-size: 1.3em; font-weight: 800; color: #f8fafc; text-transform: uppercase; letter-spacing: 1px;">${shop.name}</div>
+    ${showShopAddress}
+  </div>
+
+  <div style="background: linear-gradient(135deg, #4f46e5, #818cf8); color: white; padding: 12px; border-radius: 12px; text-align: center; margin-bottom: 15px; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);">
+    <div style="font-size: 1.1em; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;">${ps.title || "TAX INVOICE"}</div>
+    <div style="font-size: 0.8em; opacity: 0.9; margin-top: 3px;">${ps.header || "OFFICIAL RECEIPT"}</div>
+  </div>
+  
+  <div style="display: flex; justify-content: space-between; font-size: 0.8em; margin-bottom: 15px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">
+    <div><strong>Date:</strong> ${date}</div>
+    <div><strong>TXN:</strong> <span style="color: #4f46e5; font-weight: bold;">${txnId}</span></div>
+  </div>
+
+  <div style="background: #f8fafc; padding: 12px; border-radius: 10px; margin-bottom: 15px; border-left: 4px solid #4f46e5;">
+    <div style="font-size: 0.7em; font-weight: 700; color: #94a3b8; text-transform: uppercase; margin-bottom: 5px;">Customer Details</div>
+    <div style="font-size: 1.1em; font-weight: 800; color: #1e293b;">${name}</div>
+    ${showContactRow}
+  </div>
+
+  <div style="background: #f0f9ff; padding: 12px; border-radius: 10px; margin-bottom: 15px; border: 1px solid #bae6fd;">
+    <div style="font-size: 0.7em; font-weight: 700; color: #0ea5e9; text-transform: uppercase; margin-bottom: 5px;">Service Details</div>
+    <div style="font-size: 1em; font-weight: 600; color: #0369a1; line-height: 1.4;">${service}</div>
+  </div>
+
+  <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; margin-bottom: 15px;">
+     <div style="display: flex; justify-content: space-between; font-size: 0.9em; margin-bottom: 5px; color: #475569;">
+       <span>Base Amount:</span>
+       <span>₹${amount}</span>
+     </div>
+     <div style="display: flex; justify-content: space-between; font-size: 0.9em; margin-bottom: 5px; color: #475569;">
+       <span>Service Charges:</span>
+       <span>₹${charge}</span>
+     </div>
+     ${paymentModeRow}
+  </div>
+
+  <div style="background: #1e293b; color: white; padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center;">
+    <div>
+      <div style="font-size: 0.75em; opacity: 0.8; text-transform: uppercase;">Total Paid</div>
+      <div style="font-size: 1.4em; font-weight: 800;">₹${total}</div>
+    </div>
+    <div style="background: ${status === 'SUCCESS' || status === 'PAID' ? '#10b981' : '#f59e0b'}; padding: 6px 12px; border-radius: 20px; font-size: 0.8em; font-weight: 800;">${status}</div>
+  </div>
+
+  ${termsSection}
+
+  <div style="text-align: center; margin-top: 20px; font-size: 0.8em; color: #94a3b8; font-style: italic;">
+    <div style="margin-bottom: 2px;">${ps.footer1 || "Thank You"}</div>
+    <div>${ps.footer2 || "Please Visit Again"}</div>
+  </div>
+</div>
+`;
+  } else if (f == 7) {
+    // PROFESSIONAL BUSINESS PRO (COLORFUL TABLE) - UPDATED WITH BRANDING
+    const statusColor = (status === 'SUCCESS' || status === 'PAID') ? '#10b981' : '#f59e0b';
+    const logoImg = shop.logo ? `<img src="${shop.logo}" style="height: 35px; margin-right: 10px;">` : "";
+    out = `
+<div style="font-family: sans-serif; color: #e2e8f0; line-height: 1.4; white-space: normal;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #4f46e5; padding-bottom: 10px;">
+    <div style="display: flex; align-items: center;">
+      ${logoImg}
+      <div>
+        <div style="font-size: 1.2em; font-weight: 800; color: #f8fafc; text-transform: uppercase;">${shop.name}</div>
+        <div style="font-size: 0.75em; color: #94a3b8;">${showAddress}</div>
+      </div>
+    </div>
+    <div style="text-align: right;">
+      <div style="font-size: 1.1em; font-weight: 700; color: #4f46e5;">${ps.title}</div>
+      <span style="background: ${statusColor}15; color: ${statusColor}; padding: 3px 8px; border-radius: 4px; font-size: 0.7em; font-weight: 800; border: 1px solid ${statusColor}40;">${status}</span>
+    </div>
+  </div>
+
+  <table style="width: 100%; font-size: 0.85em; margin-bottom: 15px; color: #94a3b8;">
+    <tr>
+      <td>Invoice No: <span style="color: #f8fafc; font-weight: 600;">#${txnId}</span></td>
+      <td style="text-align: right;">Date: <span style="color: #f8fafc; font-weight: 600;">${date}</span></td>
+    </tr>
+  </table>
+
+  <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; overflow: hidden; margin-bottom: 15px;">
+    <table style="width: 100%; border-collapse: collapse; font-size: 0.85em;">
+      <tr style="background: rgba(255,255,255,0.05); color: #f8fafc;">
+        <th style="text-align: left; padding: 10px;">Description</th>
+        <th style="text-align: right; padding: 10px;">Total</th>
+      </tr>
+      <tr>
+        <td style="padding: 10px; color: #e2e8f0; font-weight: 600;">${service}</td>
+        <td style="padding: 10px; text-align: right; font-weight: 700; color: #f8fafc;">₹${total}</td>
+      </tr>
+    </table>
+  </div>
+
+  <div style="text-align: right; font-size: 0.9em; margin-bottom: 20px; color: #94a3b8;">
+    <div style="margin-bottom: 4px;">Base Amount: <span style="color: #f8fafc;">₹${amount}</span></div>
+    <div style="margin-bottom: 4px;">Service Charges: <span style="color: #f8fafc;">₹${charge}</span></div>
+    <div style="font-size: 1.1em; font-weight: 800; color: #4f46e5; margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.1);">Amount Paid: ₹${total}</div>
+  </div>
+
+  <div style="background: rgba(245, 158, 11, 0.05); border: 1px dashed rgba(245, 158, 11, 0.3); padding: 8px; border-radius: 6px; font-size: 0.75em; color: #f59e0b; margin-bottom: 15px;">
+    <strong>Payment Details:</strong> Paid via ${pMode}
+  </div>
+
+  <div style="text-align: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 12px; font-size: 0.8em; color: #64748b; font-style: italic;">
+    ${ps.footer1}
+  </div>
+</div>
+`;
   }
 
-  // ADD DETAILING (NEW)
-  if (ps.taxId) out = `GST: ${ps.taxId}\n` + out.trimStart();
-  if (ps.terms) out = out.trimEnd() + `\n\n- T&C -\n${ps.terms}`;
+  // ADD DETAILING (NEW) - Only for non-HTML formats (1-5)
+  if (f <= 5) {
+    if (ps.taxId) out = `GST: ${ps.taxId}\n` + out.trimStart();
+    if (ps.terms) out = out.trimEnd() + `\n\n- TERMS & CONDITIONS -\n${ps.terms}`;
+  } else {
+    // For HTML formats, add GST and Terms if present
+    if (ps.taxId || ps.terms) {
+      let extra = `<div style="margin-top: 15px; font-size: 0.75em; border-top: 1px dashed #ccc; padding-top: 10px; color: #666;">`;
+      if (ps.taxId) extra += `<div><strong>GSTIN:</strong> ${ps.taxId}</div>`;
+      if (ps.terms) extra += `<div style="margin-top: 5px;"><strong>Terms:</strong> ${ps.terms}</div>`;
+      extra += `</div>`;
+      out += extra;
+    }
+  }
 
   return out;
 }
@@ -596,12 +786,17 @@ function openInternalPrintWindow(content, size) {
   const isA4 = size.startsWith("a4");
   const orientation = size === "a4-l" ? "landscape" : "portrait";
   const maxWidth = size === "58" ? "260px" : size === "80" ? "340px" : "100%";
-  const fontSize = isA4 ? "16px" : (size === "58" ? "10px" : "12px");
-
-  const doc = iframe.contentWindow.document;
-  const shop = JSON.parse(localStorage.getItem("shopProfile")) || {};
+    const doc = iframe.contentWindow.document;
+  const shop = JSON.parse(localStorage.getItem("shopProfile")) || { name: "JOSHI CHOICE CENTER" };
   const ps = JSON.parse(localStorage.getItem("printSettings")) || { logoScale: 100 };
+  const fontSize = ps.fontSize || "12px";
   const logoHtml = shop.logo ? `<div style="text-align:center;"><img src="${shop.logo}" style="width:${ps.logoScale || 100}%; max-width:100%; margin-bottom:10px;"></div>` : "";
+  const shopNameHeader = `<div style="font-size:1.2em; font-weight:bold; text-align:center; margin-bottom:5px;">${shop.name}</div>`;
+  
+  // Detect if content is HTML (new formats 6 & 7)
+  const isHtml = content.trim().startsWith("<div");
+  const bodyStyle = isHtml ? "font-family: sans-serif; margin:0; padding:10px; background:white;" : "font-family: monospace; margin:0; padding:10px; background:white;";
+  const contentStyle = isHtml ? "" : "white-space: pre-line;";
 
   doc.open();
   doc.write(`
@@ -609,14 +804,15 @@ function openInternalPrintWindow(content, size) {
 <head>
 <style>
 @page { size: ${isA4 ? 'A4 ' + orientation : 'auto'}; margin: ${isA4 ? '20mm' : '0'}; }
-body{ font-family: monospace; margin:0; padding:10px; background:white; }
+body{ ${bodyStyle} }
 .wrapper{ max-width:${maxWidth}; margin:auto; }
-.receipt{ white-space: pre-line; font-size:${fontSize}; }
+.receipt{ ${contentStyle} font-size:${fontSize}; }
 </style>
 </head>
 <body onload="window.print()">
 <div class="wrapper">
 ${logoHtml}
+${!isHtml ? shopNameHeader : ""}
 <div class="receipt">${content}</div>
 </div>
 </body>
@@ -624,6 +820,7 @@ ${logoHtml}
 `);
   doc.close();
 }
+
 
 window.openPdfModal = async function () {
   if (filteredReportsData.length === 0) {
@@ -876,7 +1073,7 @@ window.saveTransactionEdit = function () {
 }
 
 /* =========================
-   GLOBAL LOADER HELPERS (UPDATED)
+   GLOBAL LOADER HELPERS
 ========================= */
 function showLoader(msg = "Processing...") {
   if (window.AppLoader) {
