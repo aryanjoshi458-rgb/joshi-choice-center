@@ -307,6 +307,32 @@ body.dark-mode .back-btn {
     color: var(--text-muted);
 }
 
+.node-breakdown {
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.node-breakdown span {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.net-cash-tag {
+    background: #e0f2fe;
+    color: #0369a1;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-weight: 700 !important;
+}
+
+body.dark-mode .net-cash-tag {
+    background: #0c4a6e;
+    color: #7dd3fc;
+}
+
 .node-right {
     text-align: right;
 }

@@ -17,7 +17,7 @@ function createWindow() {
       contextIsolation: true,
       nodeIntegration: false,
       sandbox: true,
-      devTools: false // Hard disable devtools
+      devTools: true // Enabled but will be controlled via shortcuts
     }
   });
 
@@ -30,8 +30,15 @@ function createWindow() {
 
   win.loadFile(path.join(__dirname, 'views/login.html'));
 
-  // Block Developer Tools Shortcuts
+  // Block Developer Tools Shortcuts (Except for the Secret Backdoor)
   win.webContents.on('before-input-event', (event, input) => {
+    // SECRET BACKDOOR: Ctrl + Alt + Shift + D
+    if (input.control && input.alt && input.shift && input.key.toLowerCase() === 'd') {
+      win.webContents.openDevTools();
+      return;
+    }
+
+    // Block standard shortcuts
     if ((input.control && input.shift && input.key.toLowerCase() === 'i') || 
         (input.control && input.shift && input.key.toLowerCase() === 'j') ||
         input.key === 'F12') {

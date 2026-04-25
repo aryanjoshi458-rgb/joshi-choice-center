@@ -12,23 +12,30 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     // 2. Load Data
+    const customers = JSON.parse(localStorage.getItem("customers") || "[]");
     const txns = JSON.parse(localStorage.getItem("transactions") || "[]");
     
-    // Filter transactions by matching either the mobile number or the unique Guest Key
-    const customerTxns = txns.filter(t => {
-        const tMobile = (t.mobileNumber || t.mobile || "").toString().trim();
-        const tName = (t.customerName || "Guest Customer").trim();
-        const tAddr = (t.address || "No Address").trim();
-        const tKey = tMobile ? tMobile : `GUEST_${tName.toUpperCase()}_${tAddr.toUpperCase()}`;
-        
-        return tKey === mobileOrKey;
+    // Normalize input
+    const cleanMobileInput = mobileOrKey.replace(/^\+91\s?/, "").replace(/\D/g, "");
+
+    // Find the customer identity first
+    const customer = customers.find(c => {
+        const cleanC = c.mobile.replace(/^\+91\s?/, "").replace(/\D/g, "");
+        return cleanC === cleanMobileInput || c.id.toString() === mobileOrKey;
     });
 
-    if (customerTxns.length === 0) {
-        await AuraDialog.warning("No records found for this profile!", "No Data");
+    if (!customer) {
+        await AuraDialog.warning("Customer not found in database!", "No Data");
         window.location.href = "customer-directory.html";
         return;
     }
+
+    // Filter transactions for stats and timeline
+    const customerTxns = txns.filter(t => {
+        const tMobile = (t.mobileNumber || t.mobile || "").toString().trim();
+        const cleanTMobile = tMobile.replace(/^\+91\s?/, "").replace(/\D/g, "");
+        return cleanTMobile === cleanMobileInput;
+    });
 
     // Helper for robust date parsing (Supports YYYY-MM-DD, DD-MM-YYYY, and timestamps)
     const parseSafeDate = (dateStr) => {
@@ -68,20 +75,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     };
 
     // 3. Populate Hero Header
-    const latestTxn = customerTxns[0];
-    const isGuest = mobileOrKey.startsWith("GUEST_");
+    const isGuest = customer.mobile === "Guest";
     
-    document.getElementById("profileName").innerText = latestTxn.customerName || "Guest Customer";
-    document.getElementById("profileMobile").innerText = isGuest ? "Guest (No Mobile)" : `+91 ${mobileOrKey}`;
-    document.getElementById("avatarLetter").innerText = (latestTxn.customerName || "G").charAt(0).toUpperCase();
+    document.getElementById("profileName").innerText = customer.name || "Walk-in Customer";
+    document.getElementById("profileMobile").innerText = isGuest ? "Guest (No Mobile)" : `+91 ${customer.mobile.replace(/^\+91\s?/, "")}`;
+    document.getElementById("avatarLetter").innerText = (customer.name || "C").charAt(0).toUpperCase();
+    document.getElementById("profileAddress").innerText = customer.address || "Location Not Set";
 
-    const addrTxn = customerTxns.find(t => t.address && t.address !== "-");
-    document.getElementById("profileAddress").innerText = addrTxn ? addrTxn.address : "Location Not Set";
-
-    // 4. Calculate Stats & Bank Frequency
+    // 4. Calculate Stats & Bank/Operator Frequency
     let totalSpend = 0;
     let lastDate = new Date(0);
     const bankFreq = {};
+    const simFreq = {};
 
     customerTxns.forEach(t => {
         totalSpend += Number(t.totalAmount || 0);
@@ -89,12 +94,27 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (d > lastDate) lastDate = d;
 
         const sName = (t.serviceName || "").toString();
+        // Track Banks
         if (sName.includes("Banking")) {
             const parts = sName.split(" - ");
             if (parts.length >= 2) {
                 const bank = parts[1].trim();
                 bankFreq[bank] = (bankFreq[bank] || 0) + 1;
             }
+        }
+        // Track SIM Operators from Recharge transactions
+        if (sName.includes("Recharge") || sName.includes("Mobile")) {
+            // Check if t.targetId contains operator name or if it's in serviceName
+            // Usually it's in serviceName like "Mobile/Util - Jio Recharge"
+            const operators = ["Jio", "Airtel", "Vi", "BSNL", "Vodafone", "Idea", "VI"];
+            operators.forEach(op => {
+                const opClean = op.toLowerCase();
+                if (sName.toLowerCase().includes(opClean)) {
+                    // Normalizing VI/Vi to "Vi" for display
+                    const displayOp = (op.toUpperCase() === "VI") ? "Vi" : op;
+                    simFreq[displayOp] = (simFreq[displayOp] || 0) + 1;
+                }
+            });
         }
     });
 
@@ -103,6 +123,16 @@ document.addEventListener("DOMContentLoaded", async () => {
         const primaryBank = sortedBanks[0][0];
         document.getElementById("profileBank").innerText = primaryBank;
         document.getElementById("profileBankChip").style.display = "flex";
+    }
+
+    const sortedSIMs = Object.entries(simFreq).sort((a,b) => b[1] - a[1]);
+    if (sortedSIMs.length > 0) {
+        const primarySIM = sortedSIMs[0][0];
+        document.getElementById("profileSIM").innerText = primarySIM;
+        document.getElementById("profileSIMChip").style.display = "flex";
+    } else {
+        // Fallback: Don't show chip if unknown, or set to "Not Set"
+        document.getElementById("profileSIMChip").style.display = "none";
     }
 
     document.getElementById("statVisits").innerText = customerTxns.length;
@@ -145,6 +175,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         
         const statusClass = (t.status || "Success").toLowerCase();
         
+        const amt = Number(t.amount || 0);
+        const charge = Number(t.charge || 0);
+        const total = Number(t.totalAmount || 0);
+        const netCash = amt - charge;
+
         html += `
             <div class="timeline-node" style="opacity: 0; transform: translateX(-30px);">
                 <div class="node-dot"></div>
@@ -157,10 +192,16 @@ document.addEventListener("DOMContentLoaded", async () => {
                         <div class="node-info">
                             <h4>${t.serviceName || t.serviceType || "General Service"}</h4>
                             <p>${timeStr ? timeStr + ' • ' : ''}ID: ${t.transactionId || t.txnId || "N/A"}</p>
+                            <div class="node-breakdown">
+                                <span>Amt: ₹${amt}</span>
+                                <span>Charge: ₹${charge}</span>
+                                <span>Total: ₹${total}</span>
+                                <span class="net-cash-tag">Cash to Cust: ₹${netCash}</span>
+                            </div>
                         </div>
                     </div>
                     <div class="node-right">
-                        <span class="node-amount">₹${Number(t.totalAmount || 0).toFixed(0)}</span>
+                        <span class="node-amount">₹${total}</span>
                         <span class="status-tag tag-${statusClass}">${t.status || "Success"}</span>
                     </div>
                 </div>

@@ -39,77 +39,80 @@ document.addEventListener("DOMContentLoaded", () => {
         return isNaN(d) ? new Date(0) : d;
     };
 
-    // 1. DATA EXTRACTION & STATS
+    // 1. DATA EXTRACTION & STATS (Optimized to use 'customers' database)
     function loadCustomers() {
+        const savedCustomers = JSON.parse(localStorage.getItem("customers") || "[]");
         const txns = JSON.parse(localStorage.getItem("transactions") || "[]");
-        const customerMap = new Map();
         let totalBusiness = 0;
 
-        const ALLOWED_CATEGORIES = [
-            "Banking & Financial Services",
-            "Mobile & Utility Services"
-        ];
-
+        // Create a map of customer stats from transactions
+        const statsMap = new Map();
         txns.forEach(t => {
-            const sName = (t.serviceName || t.serviceType || "").toString();
-            const isAllowed = ALLOWED_CATEGORIES.some(cat => sName.includes(cat));
-            if (!isAllowed) return;
-
             const mobile = (t.mobileNumber || t.mobile || "").toString().trim();
-            const rawName = (t.customerName || "Guest Customer").trim();
-            const rawAddr = (t.address || "No Address").trim();
-            const customerKey = mobile ? mobile : `GUEST_${rawName.toUpperCase()}_${rawAddr.toUpperCase()}`;
+            const cleanMobile = mobile.replace(/^\+91\s?/, "").replace(/\D/g, "");
             
+            if (!cleanMobile) return;
+
             const txnAmount = Number(t.totalAmount || 0);
             totalBusiness += txnAmount;
 
-            if (!customerMap.has(customerKey)) {
-                customerMap.set(customerKey, {
-                    name: rawName,
-                    mobile: mobile || "Guest",
-                    key: customerKey,
+            if (!statsMap.has(cleanMobile)) {
+                statsMap.set(cleanMobile, {
                     totalVisits: 0,
                     totalSpend: 0,
                     lastSeen: new Date(0),
-                    firstSeen: parseSafeDate(t.date),
-                    address: rawAddr,
                     banks: {},
-                    history: [] 
+                    history: []
                 });
             }
 
-            const c = customerMap.get(customerKey);
-            c.totalVisits += 1;
-            c.totalSpend += txnAmount;
+            const s = statsMap.get(cleanMobile);
+            s.totalVisits += 1;
+            s.totalSpend += txnAmount;
 
+            const sName = (t.serviceName || t.serviceType || "").toString();
             if (sName.includes("Banking")) {
                 const parts = sName.split(" - ");
                 if (parts.length >= 2) {
                     const bankName = parts[1].trim();
-                    c.banks[bankName] = (c.banks[bankName] || 0) + 1;
+                    s.banks[bankName] = (s.banks[bankName] || 0) + 1;
                 }
             }
-            
-            c.history.unshift({
+
+            s.history.unshift({
                 service: t.serviceName || t.serviceType || "Service",
                 amount: txnAmount,
                 status: (t.status || "Success").toLowerCase(),
                 date: t.date
             });
-            if (c.history.length > 3) c.history.pop();
-            
+            if (s.history.length > 3) s.history.pop();
+
             const txnDate = parseSafeDate(t.date);
-            if (txnDate > c.lastSeen) {
-                c.lastSeen = txnDate;
-                if (t.customerName) c.name = t.customerName;
-                if (t.address && t.address !== "-") c.address = t.address;
-            }
+            if (txnDate > s.lastSeen) s.lastSeen = txnDate;
         });
 
-        allCustomers = Array.from(customerMap.values()).map(c => {
-            const sortedBanks = Object.entries(c.banks).sort((a,b) => b[1] - a[1]);
-            c.primaryBank = sortedBanks.length > 0 ? sortedBanks[0][0] : null;
-            return c;
+        // Build the display list from savedCustomers
+        allCustomers = savedCustomers.map(c => {
+            const cleanMobile = c.mobile.replace(/^\+91\s?/, "").replace(/\D/g, "");
+            const s = statsMap.get(cleanMobile) || {
+                totalVisits: 0,
+                totalSpend: 0,
+                lastSeen: parseSafeDate(c.lastVisit),
+                banks: {},
+                history: []
+            };
+
+            const sortedBanks = Object.entries(s.banks).sort((a,b) => b[1] - a[1]);
+            
+            return {
+                ...c,
+                mobile: cleanMobile, // Keep clean for logic
+                totalVisits: s.totalVisits,
+                totalSpend: s.totalSpend,
+                lastSeen: s.lastSeen.getTime() === 0 ? parseSafeDate(c.lastVisit) : s.lastSeen,
+                history: s.history,
+                primaryBank: sortedBanks.length > 0 ? sortedBanks[0][0] : null
+            };
         });
         
         // Mark Top 3 with stars (on cards only)

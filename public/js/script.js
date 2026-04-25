@@ -186,7 +186,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // A. Save/Update Customer
     let customers = JSON.parse(localStorage.getItem("customers")) || [];
-    const custIdx = customers.findIndex(c => c.mobile === custMobile.value);
+    
+    // Normalize current input for lookup
+    const currentMobileClean = custMobile.value.replace(/^\+91\s?/, "").replace(/\D/g, "");
+    
+    // Lookup using cleaned number
+    const custIdx = customers.findIndex(c => {
+        const cleanExisting = c.mobile.replace(/^\+91\s?/, "").replace(/\D/g, "");
+        return cleanExisting === currentMobileClean;
+    });
 
     // Default Name if none provided (e.g. Mobile recharge)
     const finalName = custName.value.trim() || "Walk-in Customer";
@@ -194,13 +202,17 @@ document.addEventListener("DOMContentLoaded", () => {
     const customerData = {
       id: custIdx >= 0 ? customers[custIdx].id : Date.now(),
       name: finalName,
-      mobile: custMobile.value.trim(),
+      mobile: custMobile.value.trim(), // Save with prefix for display
       aadhar: custAadhar.value.trim(),
-      address: custAddress.value.trim()
+      address: custAddress.value.trim(),
+      lastVisit: new Date().toISOString() // Useful for Directory/Profile
     };
 
-    if (custIdx >= 0) customers[custIdx] = customerData;
-    else customers.push(customerData);
+    if (custIdx >= 0) {
+        customers[custIdx] = customerData;
+    } else {
+        customers.push(customerData);
+    }
     localStorage.setItem("customers", JSON.stringify(customers));
 
     // B. Save Transaction
@@ -243,8 +255,11 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     } else if (category === "Mobile & Utility Services") {
       const uService = document.getElementById("serviceName")?.value;
+      const opName = document.getElementById("operatorName")?.value;
       const shortUS = shortNames[uService] || uService;
-      if (uService && uService !== "-- Select --") subService = shortUS;
+      if (uService && uService !== "-- Select --") {
+        subService = (opName && opName !== "-- Select --") ? `${opName} ${shortUS}` : shortUS;
+      }
     } else if (category === "Printing & Document Services") {
       const pService = document.getElementById("printService")?.value;
       const shortPS = shortNames[pService] || pService;
