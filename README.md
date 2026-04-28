@@ -9,4 +9,5 @@ System Status - Licensed & Active
 Engine        - Aura Core & Cyrus v2.0
 <br>
 Environment   - Electron x64
+<br>
 © 2026 Joshi Choice Center. All rights reserved.
