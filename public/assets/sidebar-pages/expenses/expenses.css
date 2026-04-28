@@ -410,6 +410,16 @@ tr.expense-row:hover td {
     opacity: 1;
     transform: translate(10%, 10%);
 }
+/* --- Dynamic Profit States --- */
+.profit-positive-state {
+    border-color: rgba(16, 185, 129, 0.2) !important;
+    background: linear-gradient(135deg, var(--card-bg), rgba(16, 185, 129, 0.05)) !important;
+}
+.profit-negative-state {
+    border-color: rgba(244, 63, 94, 0.2) !important;
+    background: linear-gradient(135deg, var(--card-bg), rgba(244, 63, 94, 0.05)) !important;
+}
+
 /* --- Dark Mode Overrides (Strict) --- */
 body.dark-mode .stat-box {
     background: #1e293b !important;

@@ -4,8 +4,7 @@
 
 .notification-alert {
   position: fixed;
-  top: 65px;
-  /* Stacks nicely below Speak/Toggle on the right if needed, though dynamically placed */
+  top: 105px; /* Spaced below theme toggle (45px) */
   right: 20px;
   display: flex;
   align-items: center;

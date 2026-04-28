@@ -25,7 +25,10 @@
   <link rel="stylesheet" href="../public/assets/features/sidebar/sidebar.css">
   <link rel="stylesheet" href="../public/css/aura-modals.css">
   <link rel="stylesheet" href="../public/css/aura-assistant.css">
+  <link rel="stylesheet" href="../public/css/aura-titlebar.css">
+  <link rel="stylesheet" href="../public/css/aura-design-system.css">
   <script src="../public/js/auth.js"></script>
+  <script src="../public/js/aura-window.js"></script>
   <script>Auth.protectPage();</script>
 
   <style>
@@ -127,32 +130,20 @@
 
     <div class="sidebar-menu">
       <a href="dashboard.html">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon">
-          <rect width="7" height="9" x="3" y="3" rx="1" />
-          <rect width="7" height="5" x="14" y="3" rx="1" />
-          <rect width="7" height="9" x="14" y="12" rx="1" />
-          <rect width="7" height="5" x="3" y="16" rx="1" />
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon">
+          <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
         </svg>
         <span data-i18n="sidebar-dashboard">Dashboard</span>
       </a>
       <a href="new-customer.html">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon">
-          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-          <circle cx="9" cy="7" r="4" />
-          <line x1="19" y1="8" x2="19" y2="14" />
-          <line x1="16" y1="11" x2="22" y2="11" />
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="16" y1="11" x2="22" y2="11"/>
         </svg>
         <span data-i18n="sidebar-new-customer">New Customer</span>
       </a>
       <a href="customer-directory.html">
-        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"
-          stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon">
-          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-          <circle cx="9" cy="7" r="4" />
-          <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-          <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
         </svg>
         <span data-i18n="sidebar-customer-directory">Customer Directory</span>
       </a>
@@ -174,19 +165,16 @@
         <span data-i18n="sidebar-print-receipt">Print Receipt</span>
       </a>
       <a href="pending-payments.html">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon">
-          <circle cx="12" cy="12" r="10" />
-          <polyline points="12 6 12 12 16 14" />
-        </svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon">
+                    <path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4"></path>
+                    <path d="M4 6v12c0 1.1.9 2 2 2h14v-4"></path>
+                    <path d="M18 12a2 2 0 0 0-2 2c0 1.1.9 2 2 2h4v-4h-4z"></path>
+                </svg>
         <span data-i18n="sidebar-pending-payments">Pending Payments</span>
       </a>
       <a href="reports.html">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon">
-          <line x1="18" y1="20" x2="18" y2="10" />
-          <line x1="12" y1="20" x2="12" y2="4" />
-          <line x1="6" y1="20" x2="6" y2="14" />
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon">
+          <path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/>
         </svg>
         <span data-i18n="sidebar-reports">Reports</span>
       </a>
@@ -199,23 +187,17 @@
         <span data-i18n="sidebar-expenses">Expenses</span>
       </a>
       <a href="rate-list.html">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon">
-          <path d="M6 3h12" />
-          <path d="M6 8h12" />
-          <path d="m6 13 8.5 8" />
-          <path d="M6 13h3" />
-          <path d="M9 13c6.667 0 6.667-10 0-10" />
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon">
+            <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+            <line x1="7" y1="7" x2="7.01" y2="7"></line>
         </svg>
         <span data-i18n="sidebar-service-rates">Service Rates</span>
       </a>
       <a href="settings.html" class="active">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon">
-          <path
-            d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
-          <circle cx="12" cy="12" r="3" />
-        </svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                </svg>
         <span data-i18n="sidebar-settings">Settings</span>
       </a>
       <a href="#" onclick="Auth.logout()"
@@ -501,7 +483,7 @@
                   </div>
                 </div>
                 <div class="aura-form-footer">
-                  <button class="aura-premium-btn" id="saveShopProfile">Update Details</button>
+                  <button class="aura-btn aura-btn-save" id="saveShopProfile" style="width: 100%;">Update Details</button>
                 </div>
               </div>
             </div>
@@ -1103,6 +1085,46 @@
                 </div>
               </div>
             </div>
+
+            <!-- SETTINGS NAVIGATION SHORTCUTS -->
+            <div class="aura-card-header" style="margin-top: 40px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 25px;">
+              <div class="aura-icon-box blue">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                </svg>
+              </div>
+              <div class="aura-title-stack">
+                <h2>Settings Quick Navigation</h2>
+                <p>Switch between settings tabs instantly</p>
+              </div>
+            </div>
+
+            <div class="aura-shortcut-list">
+              <div class="aura-sh-row">
+                <label>Navigate Tabs (1-9)</label>
+                <div class="aura-sh-input">
+                  <kbd class="current-key-display">Alt + [1-9]</kbd>
+                </div>
+              </div>
+              <div class="aura-sh-row">
+                <label>Security & Access Control</label>
+                <div class="aura-sh-input">
+                  <kbd class="current-key-display">Alt + 0</kbd>
+                </div>
+              </div>
+              <div class="aura-sh-row">
+                <label>Advanced / Maintenance</label>
+                <div class="aura-sh-input">
+                  <kbd class="current-key-display">Alt + -</kbd>
+                </div>
+              </div>
+              <div class="aura-sh-row">
+                <label>System Reset (Wipe)</label>
+                <div class="aura-sh-input">
+                  <kbd class="current-key-display">Alt + =</kbd>
+                </div>
+              </div>
+            </div>
           </div>
           <div class="aura-form-footer split">
             <button class="aura-premium-btn sm" id="saveShortcuts">Save Maps</button>
@@ -1189,7 +1211,32 @@
       </div>
 
       <div class="tab-content" id="receipt">
-        <div class="aura-section-card">
+        <div class="aura-section-card" style="position: relative; overflow: hidden;">
+          <!-- COMING SOON OVERLAY -->
+          <div class="coming-soon-overlay" id="receiptComingSoon" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 50; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-radius: inherit;">
+             <div class="cs-content-box" style="text-align: center; transform: translateY(-20px);">
+                <div class="cs-svg-wrapper" style="margin-bottom: 25px;">
+                  <svg width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="url(#cs-grad)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="cs-glow-svg">
+                    <defs>
+                      <linearGradient id="cs-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#a855f7;stop-opacity:1" />
+                      </linearGradient>
+                    </defs>
+                    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+                  </svg>
+                </div>
+                <h2 style="color: white; font-size: 3rem; font-weight: 900; text-transform: uppercase; letter-spacing: 8px; margin: 0; line-height: 1; text-shadow: 0 0 30px rgba(99, 102, 241, 0.5);">COMING</h2>
+                <h2 style="color: #a855f7; font-size: 3rem; font-weight: 900; text-transform: uppercase; letter-spacing: 8px; margin: 5px 0 20px 0; line-height: 1;">SOON</h2>
+                <p style="color: #94a3b8; font-size: 1.1rem; font-weight: 600; max-width: 300px; margin: 0 auto;">Receipt Studio v2 is currently under construction.</p>
+                
+                <div class="cs-loader-container" style="width: 240px; height: 6px; background: rgba(255,255,255,0.05); border-radius: 10px; margin: 35px auto 0; overflow: hidden; border: 1px solid rgba(255,255,255,0.1);">
+                   <div class="cs-progress-bar" id="csProgress" style="width: 0%; height: 100%; background: linear-gradient(90deg, #6366f1, #a855f7); box-shadow: 0 0 15px rgba(168, 85, 247, 0.6);"></div>
+                </div>
+                <div style="margin-top: 10px; color: #6366f1; font-weight: 800; font-size: 0.8rem; font-family: monospace;" id="csPercentText">SYSTEM_INITIALIZING_0%</div>
+             </div>
+          </div>
+
           <div class="aura-card-header">
             <div class="aura-icon-box blue">
               <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1477,7 +1524,7 @@
                 <div class="aura-toggle-item" style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); padding: 10px 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
                   <span style="font-size: 0.85em; font-weight: 600;">Earnings Analysis</span>
                   <div class="checkbox-wrapper-46">
-                    <input type="checkbox" id="widgetEarnings" class="inp-cbx" checked />
+                    <input type="checkbox" id="widgetEarnings" class="inp-cbx" />
                     <label for="widgetEarnings" class="cbx">
                       <span><svg viewBox="0 0 12 10" height="10px" width="12px"><polyline points="1.5 6 4.5 9 10.5 1"></polyline></svg></span>
                       <span></span>
@@ -1487,7 +1534,7 @@
                 <div class="aura-toggle-item" style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); padding: 10px 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
                   <span style="font-size: 0.85em; font-weight: 600;">Recent Expenses</span>
                   <div class="checkbox-wrapper-46">
-                    <input type="checkbox" id="widgetExpenses" class="inp-cbx" checked />
+                    <input type="checkbox" id="widgetExpenses" class="inp-cbx" />
                     <label for="widgetExpenses" class="cbx">
                       <span><svg viewBox="0 0 12 10" height="10px" width="12px"><polyline points="1.5 6 4.5 9 10.5 1"></polyline></svg></span>
                       <span></span>
@@ -1497,7 +1544,7 @@
                 <div class="aura-toggle-item" style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); padding: 10px 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
                   <span style="font-size: 0.85em; font-weight: 600;">Pending List</span>
                   <div class="checkbox-wrapper-46">
-                    <input type="checkbox" id="widgetPending" class="inp-cbx" checked />
+                    <input type="checkbox" id="widgetPending" class="inp-cbx" />
                     <label for="widgetPending" class="cbx">
                       <span><svg viewBox="0 0 12 10" height="10px" width="12px"><polyline points="1.5 6 4.5 9 10.5 1"></polyline></svg></span>
                       <span></span>

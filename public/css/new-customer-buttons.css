@@ -67,66 +67,52 @@
 }
 
 .btn-edit-s, .btn-delete-s, .btn-print-s, .btn-profile-s {
-  padding: 5px 10px;
+  width: 32px;
+  height: 32px;
+  padding: 0;
   font-size: 11px;
   font-weight: 700;
   border-radius: 8px;
   cursor: pointer;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.05);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  color: white;
+  color: #94a3b8;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  min-width: 65px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-/* Edit Button - Indigo/Blue Gradient */
-.btn-edit-s {
-  background: linear-gradient(135deg, #6366f1, #4338ca);
+/* Neutral Hover States with subtle action colors */
+.btn-edit-s:hover, .btn-delete-s:hover, .btn-print-s:hover, .btn-profile-s:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-.btn-edit-s:hover {
-  transform: translateY(-2px) scale(1.05);
-  box-shadow: 0 4px 12px rgba(67, 56, 202, 0.4);
-  filter: brightness(1.15);
+.btn-edit-s:hover { 
+    background: rgba(59, 130, 246, 0.15) !important;
+    border-color: rgba(59, 130, 246, 0.3) !important;
+    color: #3b82f6 !important;
 }
 
-/* Delete Button - Red/Rose Gradient */
-.btn-delete-s {
-  background: linear-gradient(135deg, #f43f5e, #be123c);
+.btn-delete-s:hover { 
+    background: rgba(239, 68, 68, 0.15) !important;
+    border-color: rgba(239, 68, 68, 0.3) !important;
+    color: #f87171 !important;
 }
 
-.btn-delete-s:hover {
-  transform: translateY(-2px) scale(1.05);
-  box-shadow: 0 4px 12px rgba(190, 18, 60, 0.4);
-  filter: brightness(1.15);
+.btn-print-s:hover { 
+    background: rgba(16, 185, 129, 0.15) !important;
+    border-color: rgba(16, 185, 129, 0.3) !important;
+    color: #34d399 !important;
 }
 
-/* Print Button - Green/Emerald Gradient */
-.btn-print-s {
-  background: linear-gradient(135deg, #10b981, #059669);
-}
-
-.btn-print-s:hover {
-  transform: translateY(-2px) scale(1.05);
-  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.4);
-  filter: brightness(1.15);
-}
-
-/* Profile Button - Slate/Indigo Gradient */
-.btn-profile-s {
-  background: linear-gradient(135deg, #64748b, #475569);
-}
-
-.btn-profile-s:hover {
-  transform: translateY(-2px) scale(1.05);
-  box-shadow: 0 4px 12px rgba(71, 85, 105, 0.4);
-  filter: brightness(1.15);
+.btn-profile-s:hover { 
+    background: rgba(96, 165, 250, 0.15) !important;
+    border-color: rgba(96, 165, 250, 0.3) !important;
+    color: #60a5fa !important;
 }
 
 /* Common Active State */
@@ -138,9 +124,93 @@
 /* Responsive Table Fix */
 .report-card {
   overflow-x: auto;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.7);
+  border-radius: 20px;
+  background: var(--card-bg, rgba(255, 255, 255, 0.7));
   backdrop-filter: blur(10px);
-  padding: 1px;
+  padding: 25px;
+  margin-top: 30px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 15px 40px rgba(0,0,0,0.15);
 }
-
+
+.premium-report-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 25px;
+    padding: 10px 15px;
+    background: rgba(255,255,255,0.02);
+    border-radius: 12px;
+    border-left: 4px solid #3b82f6;
+}
+
+.title-icon-wrap {
+    width: 38px;
+    height: 38px;
+    background: rgba(59, 130, 246, 0.15);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #60a5fa;
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
+}
+
+.premium-report-header h3 {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--text-main);
+}
+
+/* Amount Highlight */
+.amt-blue {
+    color: #3b82f6;
+    font-weight: 700;
+}
+
+/* Table Style Refinement */
+#reportTable th {
+    padding: 15px 10px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    border-bottom: 2px solid var(--border-color);
+}
+
+#reportTable td {
+    padding: 14px 10px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.status-badge {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.status-badge.paid {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.status-badge.pending {
+    background: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
+    border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.status-badge.failed {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+

@@ -72,7 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     custMobile.addEventListener("input", (e) => {
       let val = e.target.value;
-      
+
       // Ensure +91 remains
       if (!val.startsWith("+91 ")) {
         val = "+91 " + val.replace(/^\+91\s?/, "");
@@ -88,8 +88,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const customers = JSON.parse(localStorage.getItem("customers")) || [];
         // Lookup using raw digits or formatted value
         const existingCust = customers.find(c => {
-            const clean = c.mobile.replace(/^\+91\s?/, "").replace(/\D/g, "");
-            return clean === digits;
+          const clean = c.mobile.replace(/^\+91\s?/, "").replace(/\D/g, "");
+          return clean === digits;
         });
 
         if (existingCust) {
@@ -184,36 +184,58 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    // A. Save/Update Customer
-    let customers = JSON.parse(localStorage.getItem("customers")) || [];
-    
-    // Normalize current input for lookup
+    // A. Smart Customer Identity Logic
     const currentMobileClean = custMobile.value.replace(/^\+91\s?/, "").replace(/\D/g, "");
-    
-    // Lookup using cleaned number
-    const custIdx = customers.findIndex(c => {
-        const cleanExisting = c.mobile.replace(/^\+91\s?/, "").replace(/\D/g, "");
-        return cleanExisting === currentMobileClean;
-    });
+    const currentAadharClean = custAadhar.value.replace(/-/g, "");
+    let finalName = custName.value.trim();
 
-    // Default Name if none provided (e.g. Mobile recharge)
-    const finalName = custName.value.trim() || "Walk-in Customer";
+    // 1. Generate / Find Unique Customer ID
+    let customerId = "";
+    let isWalkIn = false;
 
-    const customerData = {
-      id: custIdx >= 0 ? customers[custIdx].id : Date.now(),
-      name: finalName,
-      mobile: custMobile.value.trim(), // Save with prefix for display
-      aadhar: custAadhar.value.trim(),
-      address: custAddress.value.trim(),
-      lastVisit: new Date().toISOString() // Useful for Directory/Profile
-    };
-
-    if (custIdx >= 0) {
-        customers[custIdx] = customerData;
+    if (currentAadharClean.length === 12) {
+      customerId = "CID-A-" + currentAadharClean; // Aadhar based
+    } else if (currentMobileClean.length === 10) {
+      customerId = "CID-M-" + currentMobileClean; // Mobile based
+    } else if (finalName && finalName !== "Walk-in Customer") {
+      customerId = "CID-N-" + finalName.replace(/\s+/g, "").toUpperCase(); // Name based fallback
     } else {
-        customers.push(customerData);
+      // QUICK WALK-IN: No identity provided
+      customerId = "CID-WALKIN";
+      finalName = "Walk-in Customer";
+      isWalkIn = true;
     }
-    localStorage.setItem("customers", JSON.stringify(customers));
+
+    let customers = JSON.parse(localStorage.getItem("customers")) || [];
+
+    // Only save to Directory if it's NOT a generic Walk-in
+    if (!isWalkIn) {
+      const custIdx = customers.findIndex(c => c.id === customerId);
+      const customerData = {
+        id: customerId,
+        name: finalName,
+        mobile: custMobile.value.trim() || "N/A",
+        aadhar: custAadhar.value.trim() || "N/A",
+        address: custAddress.value.trim() || "N/A",
+        lastVisit: new Date().toISOString()
+      };
+
+      if (custIdx >= 0) {
+        customers[custIdx] = { ...customers[custIdx], ...customerData };
+      } else {
+        customers.push(customerData);
+      }
+      localStorage.setItem("customers", JSON.stringify(customers));
+    }
+
+    // B. Transaction Data Preparation
+    const customerDataForTxn = {
+      id: customerId,
+      name: finalName,
+      mobile: custMobile.value.trim() || "N/A",
+      aadhar: custAadhar.value.trim() || "N/A",
+      address: custAddress.value.trim() || "N/A"
+    };
 
     // B. Save Transaction
     const allTxns = JSON.parse(localStorage.getItem("transactions")) || [];
@@ -258,7 +280,13 @@ document.addEventListener("DOMContentLoaded", () => {
       const opName = document.getElementById("operatorName")?.value;
       const shortUS = shortNames[uService] || uService;
       if (uService && uService !== "-- Select --") {
-        subService = (opName && opName !== "-- Select --") ? `${opName} ${shortUS}` : shortUS;
+        if (uService === "Money Transfer (PhonePe/UPI)") {
+          const tType = document.getElementById("transferType")?.value;
+          const tTypeText = tType === "Withdraw" ? "(Withdraw)" : "(Send)";
+          subService = `${shortUS} ${tTypeText}`;
+        } else {
+          subService = (opName && opName !== "-- Select --") ? `${opName} ${shortUS}` : shortUS;
+        }
       }
     } else if (category === "Printing & Document Services") {
       const pService = document.getElementById("printService")?.value;
@@ -270,11 +298,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const currentTime = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
     const transaction = {
+      customerId: customerDataForTxn.id, // Fixed Link
       date: `${txnDate.value} ${currentTime}`,
-      customerName: customerData.name,
-      mobileNumber: customerData.mobile,
-      aadharNumber: customerData.aadhar,
-      address: customerData.address,
+      customerName: customerDataForTxn.name,
+      mobileNumber: customerDataForTxn.mobile,
+      aadharNumber: customerDataForTxn.aadhar,
+      address: customerDataForTxn.address,
       serviceName: fullServiceName,
       amount: unformat(document.getElementById("amount")?.value),
       charge: unformat(document.getElementById("charge")?.value),
@@ -282,9 +311,6 @@ document.addEventListener("DOMContentLoaded", () => {
       netPayable: unformat(document.getElementById("netPayable")?.value),
       paymentMode: document.getElementById("paymentMode")?.value || "Cash",
       status: document.getElementById("status")?.value || "Success",
-      targetId: document.getElementById("targetId")?.value || "",
-      receiverName: document.getElementById("receiverName")?.value || "",
-      externalRefNo: document.getElementById("externalRefNo")?.value || "",
       receivedCharge: unformat(document.getElementById("receivedCharge")?.value),
       pendingCharge: unformat(document.getElementById("pendingCharge")?.value),
       transactionId
@@ -296,17 +322,17 @@ document.addEventListener("DOMContentLoaded", () => {
     // C. Auto-handle Pending Payment Record
     const pendingVal = parseFloat(transaction.pendingCharge) || 0;
     if (pendingVal > 0) {
-        const pendingCustomers = JSON.parse(localStorage.getItem("pendingCustomers") || "[]");
-        pendingCustomers.push({
-            id: Date.now().toString(),
-            date: transaction.date.split(' ')[0],
-            name: transaction.customerName,
-            mobile: transaction.mobileNumber.includes("+91") ? transaction.mobileNumber : "+91 " + transaction.mobileNumber,
-            work: `Bal: ${transaction.serviceName} (${transaction.transactionId})`,
-            charge: pendingVal.toString(),
-            status: "Pending"
-        });
-        localStorage.setItem("pendingCustomers", JSON.stringify(pendingCustomers));
+      const pendingCustomers = JSON.parse(localStorage.getItem("pendingCustomers") || "[]");
+      pendingCustomers.push({
+        id: Date.now().toString(),
+        date: transaction.date.split(' ')[0],
+        name: transaction.customerName,
+        mobile: transaction.mobileNumber.includes("+91") ? transaction.mobileNumber : "+91 " + transaction.mobileNumber,
+        work: `Bal: ${transaction.serviceName} (${transaction.transactionId})`,
+        charge: pendingVal.toString(),
+        status: "Pending"
+      });
+      localStorage.setItem("pendingCustomers", JSON.stringify(pendingCustomers));
     }
 
     // B. Generate Notification for New Transaction
@@ -326,18 +352,21 @@ document.addEventListener("DOMContentLoaded", () => {
     // D. Show Loader for Effect
     if (window.AppLoader) window.AppLoader.show(shouldPrint ? "Generating Receipt..." : "Saving Transaction...");
 
-    setTimeout(async () => {
+    setTimeout(() => {
       // Final Success & Reset
       if (window.AppLoader) window.AppLoader.hide();
 
+      const onDone = () => {
+        loadTransactionsToTable();
+        resetTransactionForm();
+      };
+
       if (typeof showToast === "function") {
         showToast(shouldPrint ? "Transaction Saved & Receipt Generated! 🖨️" : "Transaction Saved Successfully! ✅");
+        onDone();
       } else {
-        await AuraDialog.success("Saved!", "Success");
+        AuraDialog.success("Saved!", "Success").then(onDone);
       }
-
-      loadTransactionsToTable();
-      resetTransactionForm();
     }, 800);
   }
 
@@ -483,18 +512,45 @@ document.addEventListener("DOMContentLoaded", () => {
       const val = this.value;
       const needsOperator = ["Mobile Recharge"];
       const isTransfer = val === "Money Transfer (PhonePe/UPI)";
-      const isGooglePlay = val === "Google Play Recharge";
 
       blocks.operator.style.display = needsOperator.includes(val) ? "block" : "none";
       if (mobileStar) mobileStar.style.display = (val === "Mobile Recharge") ? "inline" : "none";
       blocks.electricity.style.display = (val === "Electricity Bill Payment") ? "block" : "none";
-      blocks.transfer.style.display = isTransfer ? "grid" : "none";
-      blocks.externalRef.style.display = (isTransfer || isGooglePlay) ? "block" : "none";
+      if (isTransfer) {
+        blocks.transfer.style.display = "block";
+        // Default to Send logic
+        if (blocks.netPayableGroup) blocks.netPayableGroup.style.display = "none";
+        if (blocks.totalGroup) blocks.totalGroup.style.display = "block";
+        if (blocks.paymentModeGroup) blocks.paymentModeGroup.style.display = "block";
+      } else {
+        blocks.transfer.style.display = "none";
+      }
 
       if (!needsOperator.includes(val) && val !== "-- Select --" && val !== "Electricity Bill Payment") {
         blocks.amount.style.display = "grid";
       } else if (val === "-- Select --") {
         blocks.amount.style.display = "none";
+      }
+    });
+  }
+
+  // Transfer Type Change (PhonePe/UPI Sub-type)
+  const transferTypeSelect = document.getElementById("transferType");
+  if (transferTypeSelect) {
+    transferTypeSelect.addEventListener("change", function () {
+      const val = this.value;
+      const isWithdraw = val === "Withdraw";
+
+      // Toggle Labels & Groups
+      if (blocks.netPayableGroup) blocks.netPayableGroup.style.display = isWithdraw ? "block" : "none";
+      if (blocks.totalGroup) blocks.totalGroup.style.display = isWithdraw ? "none" : "block";
+
+      // Show Denomination for Withdrawal
+      if (blocks.denomination) {
+        blocks.denomination.style.display = isWithdraw ? "block" : "none";
+        if (isWithdraw && typeof window.refreshDenominations === "function") {
+          window.refreshDenominations();
+        }
       }
     });
   }
@@ -628,9 +684,9 @@ window.loadTransactionsToTable = function () {
       return isNaN(n) ? "0" : new Intl.NumberFormat('en-IN').format(n);
     };
 
-    row.insertCell(7).innerText = f(txn.amount);
+    row.insertCell(7).innerHTML = `<span class="amt-blue">${f(txn.amount)}</span>`;
     row.insertCell(8).innerText = f(txn.charge);
-    row.insertCell(9).innerText = f(txn.totalAmount);
+    row.insertCell(9).innerHTML = `<span class="amt-blue">${f(txn.totalAmount)}</span>`;
     row.insertCell(10).innerText = txn.paymentMode;
 
     const statusClass = (txn.status || "").toLowerCase() === "success" ? "paid" : ((txn.status || "").toLowerCase() === "failed" ? "failed" : "pending");
@@ -639,8 +695,20 @@ window.loadTransactionsToTable = function () {
     row.insertCell(12).innerText = txn.transactionId;
     row.insertCell(13).innerHTML = `
       <div class="row-actions">
-        <button class="btn-edit-s" onclick="openEditModal('${txn.transactionId}')">Edit</button>
-        <button class="btn-delete-s" onclick="deleteTransactionById('${txn.transactionId}')">Delete</button>
+        <button class="btn-edit-s" title="Edit" onclick="openEditModal('${txn.transactionId}')">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+          </svg>
+        </button>
+        <button class="btn-delete-s" title="Delete" onclick="deleteTransactionById('${txn.transactionId}')">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            <line x1="10" y1="11" x2="10" y2="17"></line>
+            <line x1="14" y1="11" x2="14" y2="17"></line>
+          </svg>
+        </button>
       </div>
     `;
   });
@@ -713,7 +781,8 @@ window.openEditModal = function (id) {
 
   if (document.getElementById("editNetPayable")) {
     document.getElementById("editNetPayable").value = f(t.netPayable || (Number(t.amount || 0) - Number(t.charge || 0)));
-    document.getElementById("editNetPayableGroup").style.display = (t.serviceName || "").includes("Cash Withdrawal") ? "block" : "none";
+    const isWithdraw = (t.serviceName || "").includes("Cash Withdrawal") || (t.serviceName || "").includes("(Withdraw)");
+    document.getElementById("editNetPayableGroup").style.display = isWithdraw ? "block" : "none";
   }
 
   const paymentModeEl = document.getElementById("editPaymentMode");

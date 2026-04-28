@@ -34,7 +34,7 @@
                     <svg class="svg-lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                         <path class="shield-path" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
                         <path class="shackle" d="M9 12V9a3 3 0 0 1 6 0v3"></path>
-                        <rect class="lock-body" x="7" i="12" width="10" height="7" rx="1" ry="1" fill="currentColor" fill-opacity="0.1"></rect>
+                        <rect class="lock-body" x="7" y="12" width="10" height="7" rx="1" ry="1" fill="currentColor" fill-opacity="0.1"></rect>
                     </svg>
                     <h2 class="admin-title">Administrator</h2>
                     <p class="admin-subtitle">Enter administrator passcode to resume operation.</p>
@@ -44,6 +44,7 @@
                 </div>
             `;
             document.body.appendChild(overlay);
+            document.body.style.overflow = "hidden"; // Hide scrollbar
             localStorage.setItem("jc_isLocked", "true");
 
             const input = document.getElementById("lockPassword");
@@ -55,6 +56,7 @@
                 const storedPass = localStorage.getItem("jc_password") || "123";
                 if (pass === storedPass) {
                     overlay.remove();
+                    document.body.style.overflow = ""; // Restore scrollbar
                     localStorage.removeItem("jc_isLocked");
                     if (window.showToast) window.showToast("Welcome back! 🔓", "success");
                 } else {

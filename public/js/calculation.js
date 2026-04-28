@@ -45,6 +45,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const received = parseCommas(receivedChargeInput?.value || "0");
 
         if (totalInput) totalInput.value = formatWithCommas(amount + charge);
+        
+        // Net Payable logic: For Withdrawal, it's Amount - Charge
+        // For others, it might be different, but keeping existing logic
         if (netPayableInput) netPayableInput.value = formatWithCommas(amount - charge);
         
         if (pendingChargeInput) {
@@ -53,9 +56,61 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    if (amountInput) amountInput.addEventListener("input", calculateTotal);
+    // Auto-fill charge from Service Rates
+    function autoFillCharge() {
+        const serviceType = document.getElementById("txnService")?.value;
+        const amount = parseCommas(amountInput.value);
+        if (!serviceType) return;
+
+        let subService = "";
+        if (serviceType === "Banking & Financial Services") {
+            subService = document.getElementById("bankService")?.value;
+        } else if (serviceType === "Mobile & Utility Services") {
+            subService = document.getElementById("serviceName")?.value;
+        } else if (serviceType === "Printing & Document Services") {
+            subService = document.getElementById("printService")?.value;
+        }
+
+        if (!subService || subService.includes("-- Select")) return;
+
+        const rates = JSON.parse(localStorage.getItem("serviceRates") || "[]");
+        // Try to match by sub-service name exactly, or if it's in the full name
+        const rate = rates.find(r => 
+            r.name.toLowerCase() === subService.toLowerCase() || 
+            subService.toLowerCase().includes(r.name.toLowerCase())
+        );
+
+        if (rate) {
+            let charge = 0;
+            if (rate.chargeType === "range") {
+                const range = (rate.chargeRanges || []).find(rng => amount >= rng.min && amount <= rng.max);
+                if (range) charge = range.charge;
+            } else {
+                charge = rate.charge || 0;
+            }
+            
+            if (chargeInput) {
+                chargeInput.value = formatWithCommas(charge);
+                calculateTotal();
+            }
+        }
+    }
+
+    if (amountInput) {
+        amountInput.addEventListener("input", () => {
+            autoFillCharge();
+            calculateTotal();
+        });
+    }
     if (chargeInput) chargeInput.addEventListener("input", calculateTotal);
     if (receivedChargeInput) receivedChargeInput.addEventListener("input", calculateTotal);
+
+    // Also trigger on service changes
+    const serviceSelectors = ["txnService", "bankService", "serviceName", "printService"];
+    serviceSelectors.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener("change", autoFillCharge);
+    });
 
     /***************************************
      * EDIT MODAL CALCULATIONS

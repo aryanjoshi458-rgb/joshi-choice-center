@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
             "ok": "Perfect! Let me know if you have any other questions about the software.",
             "who are you": "I am Aura, the built-in Intelligent Assistant for Joshi Choice Center. I can help you with settings, transactions, and navigating the app.",
             "your name": "My name is Aura. I'm designed to be your smart companion while you work.",
-            
+
             "reset": "To reset the software, go to Settings -> Reset. You will need to enter a random 4-digit verification code to confirm the 'System Purge'. Warning: This will delete everything!",
             "wipe": "The System Purge module in the Reset tab allows you to clear all data. It features a terminal-style animation for security monitoring.",
             "delete": "Deleting data is a permanent action. Use the Reset tab in Settings for a full purge, or manually delete transactions in the History section.",
@@ -31,45 +31,50 @@ document.addEventListener("DOMContentLoaded", () => {
             "shortcut": "Fast navigation! Alt+D (Dash), Alt+S (Settings), Alt+N (New), Alt+C (Direct), Alt+R (Reports), Alt+T (Theme), Alt+I (Notifications). You can change these in Settings -> Keys.",
             "hotkey": "You can customize all your hotkeys! Go to Settings -> Keys to map any action to your favorite global shortcut.",
             "alt": "Most shortcuts use the Alt key. For example, Alt+T toggles the theme, and Alt+S opens Settings instantly.",
-            
-            "software": "Joshi Choice Center is a total solution for shop transactions, digital services, and financial tracking. It's built with premium Aura design.",
+
+            "software": "Joshi Choice Center is a total solution for shop transactions, digital services, and financial tracking. It's built with premium Aura design and features the AURA & CYRUS Analytics Engine v4.0.",
             "dashboard": "The Dashboard shows your today's stats, including total transactions, business volume, and your commissions. Check the graphs for weekly trends!",
-            "new customer": "On the New Customer page, you can enter details for services. It automatically calculates charges and cash-to-customer amounts for you.",
+            "new customer": "On the New Customer page, you can enter details for services. It features a premium 'Today's Report Summary' at the bottom with high-fidelity action buttons and blue amount highlights.",
             "calculate": "The system features an 'Auto-Math' engine. For example, for Cash Withdrawals, it automatically subtracts the charge from the total to show exactly how much to hand to the customer.",
             "cash": "Handling cash transactions is easy! The software calculates the 'Cash to Customer' amount instantly so you never make a mistake at the counter.",
-            
+            "aura & cyrus": "AURA & CYRUS is our Next-Gen Intelligence Engine used in Customer Profiles to analyze transaction history and provide deep insights into customer behavior.",
+            "cyrus": "Aura and Cyrus are the brains behind our analytics. You can see the 'AURA & CYRUS Analytics Engine v4.0' active on the Customer Profile page.",
+
             "print": "You can print professional high-fidelity thermal receipts. Customize your shop logo and branding labels in the 'Print' tab of settings.",
             "receipt": "Receipts are generated instantly. You can search old receipts in the 'Print Receipt' section and even send them via WhatsApp.",
-            
+
             "settings": "Settings is where the magic happens! You can change languages, business profile, sidebar animations, and global UI scaling.",
             "zoom": "You can now scale the entire software UI! Go to Settings -> Display and use the Viewport Zoom slider to find your perfect fit.",
             "theme": "I have multiple skins! Try 'Midnight Slate', 'Royal Amethyst', 'Emerald Haven', or 'Cyberpunk Neon' in the Themes tab.",
-            "dark": "Dark mode is great for eyes! Use Alt+T or the toggle at the top to switch to a sleek dark look.",
+            "dark": "Dark mode is great for eyes! We've fixed all input fields to look perfect in dark mode, including readonly and autofill states.",
             "light": "Light mode is crisp and clean for bright environments. You can switch back anytime!",
             "sakura": "Sakura is a premium pink theme available in the Themes section of Settings.",
 
             "update": "To check for updates, go to Settings -> About. We support GitHub-based professional updates with real-time download tracking.",
-            "version": "Current version info is available in Settings -> About. You are running Joshi Choice Center Version 2.0.0.",
-            
+            "version": "Current version info is available in Settings -> About. You are running Joshi Choice Center Version 3.0 (AURA & CYRUS Edition).",
+
             "privacy shield": "The Privacy Shield is a premium security feature in Settings -> Security. It automatically blurs the screen when the window loses focus and masks sensitive data to keep your records safe.",
-            "security": "Your privacy is our priority. With features like the Privacy Shield and Local Storage, your data never leaves your machine.",
+            "security": "Your privacy is our priority. We've added a 'Close Confirmation' system that asks you before exiting the app to prevent data loss.",
+            "close": "If you accidentally click the close button, the software will show a professional 'Exit Confirmation' popup to make sure you really want to leave.",
+            "exit": "To exit the app, you'll see a confirmation dialog. This safety feature ensures you don't close the software during a transaction by mistake.",
             "mouse": "Custom cursors are here! Choose from MacBook Pro, Neon Gaming, Phantom Stealth, or Minimal Luxe in Settings -> Themes.",
             "cursor": "Personalize your experience! Change your mouse cursor style in the Themes tab of Settings.",
             "title bar": "We use a native title bar for a professional look. You can toggle the Menu Bar (File, Edit) in the main configuration.",
             "pending delete": "In Pending Payments, we use a modern GSAP-animated confirmation popup to ensure you never delete important records by mistake.",
-            "delete": "Deleting data is a permanent action. We've added modern confirmation popups in key areas like Pending Payments to keep your data safe.",
+            "delete": "Deleting data is a permanent action. We've updated action buttons to 'EDIT' and 'DELETE' text buttons in reports for better visibility.",
+            "auradialog": "AuraDialog is our custom high-fidelity modal system that handles all alerts and confirmations with premium animations.",
             "author": "Joshi Choice Center is developed by Aryan Joshi, designed for maximum efficiency and premium aesthetics.",
-            
+
             "profile": "In the Shop Profile tab, you can update your Shop Name, Owner Name, and Address. It automatically capitalizes each word for a professional look!",
             "logo": "Add your own branding! Upload your shop logo in Settings -> Shop Profile to see it on all thermal receipts.",
             "phone": "The Shop profile supports smart phone formatting with automatic +91 prefixing.",
 
             "sidebar": "Sidebar FX lets you choose premium entrance animations for your menu. Try 'Elastic Swing' or '3D Perspective' for a wow factor!",
             "bg": "Background effects like 'Animated Mesh', 'Aurora Glow', and 'Glass Ripples' can be enabled in Settings -> Sidebar FX.",
-            "report": "Stay on top of your business! The Reports tab provides detailed weekly analytics, commission tracking, and total business logs.",
+            "report": "Today's Report Summary is now more premium! Amounts are highlighted in blue, and we use high-visibility text buttons for actions.",
+            "blue": "In the new Reports design, all transaction amounts are colored blue to match the premium 'Quantum' analytics style.",
             "expense": "Keep track of shop costs in the Expenses tab. Every rupee spent can be logged and categorized to see your actual net profit.",
             "rate": "The Service Rates page lets you pre-set charges for every service, so you don't have to enter them manually each time.",
-            "security": "Your privacy is our priority. All data is stored locally on your machine for maximum speed and security. No cloud account is required for main operations.",
             "privacy": "We take privacy seriously. Your transaction data and customer profiles never leave your local machine.",
             "about": "Joshi Choice Center is designed by Joshi for maximum efficiency. It's optimized for high-speed counter operations with a premium 'Aura Gloss' UI."
         },
@@ -79,16 +84,16 @@ document.addEventListener("DOMContentLoaded", () => {
     // ===== VOICE PORTAL =====
     function speak(text, onComplete) {
         if (!window.speechSynthesis) return;
-        
+
         // Stop current speaking
         window.speechSynthesis.cancel();
 
         const msg = new SpeechSynthesisUtterance(text);
         msg.lang = "en-IN"; // Indian English
         msg.rate = 1.05; // Slightly faster for responsiveness
-        
+
         if (onComplete) msg.onend = onComplete;
-        
+
         window.speechSynthesis.speak(msg);
     }
 
@@ -122,7 +127,7 @@ document.addEventListener("DOMContentLoaded", () => {
             bubble.className = "chat-bubble user";
             bubble.textContent = text;
             chatHistory.appendChild(bubble);
-            
+
             // Thinking state
             const thinking = document.createElement("div");
             thinking.className = "chat-bubble assistant thinking-indicator";
@@ -130,13 +135,13 @@ document.addEventListener("DOMContentLoaded", () => {
             chatHistory.appendChild(thinking);
             chatHistory.scrollTop = chatHistory.scrollHeight;
 
-            setTimeout(async () => {
+            setTimeout(() => {
                 thinking.remove();
-                
+
                 // Find Answer
                 let query = text.toLowerCase();
                 let answer = AuraBrain.fallback;
-                
+
                 for (let key in AuraBrain.keywords) {
                     if (query.includes(key)) {
                         answer = AuraBrain.keywords[key];
@@ -146,12 +151,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 // Voice + Type Sync
                 speak(answer);
-                await typeText(chatHistory, answer);
-            }, 600);
+                typeText(chatHistory, answer);
+            }, 1500);
         } else {
             // Initial/System Message
             speak(text);
-            await typeText(chatHistory, text);
+            return typeText(chatHistory, text);
         }
         chatHistory.scrollTop = chatHistory.scrollHeight;
     }
@@ -169,7 +174,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         chatPanel.classList.toggle("active");
         voiceBtn.classList.toggle("active");
-        
+
         if (chatPanel.classList.contains("active")) {
             if (chatHistory.children.length === 0) {
                 addMessage("Hello! I am Aura. I know everything about this software. What would you like to know?");

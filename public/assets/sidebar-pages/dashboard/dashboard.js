@@ -2,7 +2,7 @@ window.updateTodayDashboard = function () {
   const txns = JSON.parse(localStorage.getItem("transactions")) || [];
   const expenses = JSON.parse(localStorage.getItem("expenses")) || [];
   const pending = JSON.parse(localStorage.getItem("pendingCustomers")) || [];
-  const widgets = JSON.parse(localStorage.getItem("jc_dashboard_widgets") || '{"today":true,"earnings":true,"expenses":true,"pending":true}');
+  const widgets = JSON.parse(localStorage.getItem("jc_dashboard_widgets") || '{"today":true,"earnings":false,"expenses":false,"pending":false}');
   
   const today = new Date();
   const currentD = today.getDate();
@@ -98,7 +98,7 @@ window.updateTodayDashboard = function () {
           <div style="display: flex; align-items: flex-end; gap: 15px; height: 150px; padding: 20px 0; border-bottom: 1px solid var(--border-color);">
             ${[40, 70, 45, 90, 65, 85, 100].map((h, i) => `
               <div style="flex: 1; background: ${i === 6 ? 'var(--primary-color)' : 'var(--hover-bg)'}; height: ${h}%; border-radius: 8px 8px 0 0; position: relative;">
-                <div style="absolute; top: -25px; left: 50%; transform: translateX(-50%); font-size: 10px; font-weight: 700;" class="privacy-sensitive">${Math.floor(h * totalCommission / 100)}</div>
+                <div style="position: absolute; top: -25px; left: 50%; transform: translateX(-50%); font-size: 10px; font-weight: 700;" class="privacy-sensitive">${Math.floor(h * totalCommission / 100)}</div>
               </div>
             `).join('')}
           </div>

@@ -1,0 +1,201 @@
+/* 
+ * AURA DESIGN SYSTEM v1.0
+ * Premium UI Architecture for Joshi Choice Center
+ * Handles global variables, standard button components, and theme-sync.
+ */
+
+:root {
+    /* --- Core Palette (Light Mode Defaults) --- */
+    --aura-primary: #4f46e5;
+    --aura-primary-hover: #4338ca;
+    --aura-success: #10b981;
+    --aura-success-hover: #059669;
+    --aura-danger: #f43f5e;
+    --aura-danger-hover: #e11d48;
+    --aura-warning: #f59e0b;
+    --aura-warning-hover: #d97706;
+    --aura-info: #0ea5e9;
+    
+    /* Neutral Tones */
+    --aura-bg: #f8fafc;
+    --aura-card-bg: #ffffff;
+    --aura-text-main: #1e293b;
+    --aura-text-muted: #64748b;
+    --aura-border: #e2e8f0;
+    --aura-glass: rgba(255, 255, 255, 0.7);
+    
+    /* Shadows */
+    --aura-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --aura-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --aura-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    
+    /* Transitions */
+    --aura-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* --- Dark Mode Overrides --- */
+body.dark-mode, .dark-mode {
+    --aura-bg: #0f172a;
+    --aura-card-bg: #1e293b;
+    --aura-text-main: #f8fafc;
+    --aura-text-muted: #94a3b8;
+    --aura-border: rgba(255, 255, 255, 0.05);
+    --aura-glass: rgba(15, 23, 42, 0.7);
+}
+
+/* --- Global Base Styles --- */
+body {
+    background-color: transparent;
+    color: var(--aura-text-main);
+    transition: background-color 0.4s ease, color 0.4s ease;
+    font-family: 'Poppins', 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+/* --- Standard Button Components --- */
+.aura-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: var(--aura-transition);
+    border: 1px solid transparent;
+    gap: 8px;
+    outline: none;
+    user-select: none;
+}
+
+.aura-btn:active {
+    transform: scale(0.96);
+}
+
+/* Button Variants */
+.aura-btn-primary {
+    background: var(--aura-primary);
+    color: white;
+    box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35);
+}
+.aura-btn-primary:hover {
+    background: var(--aura-primary-hover);
+    box-shadow: 0 6px 20px rgba(79, 70, 229, 0.45);
+    transform: translateY(-2px);
+}
+
+.aura-btn-save, .aura-btn-success {
+    background: var(--aura-success);
+    color: white;
+    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+}
+.aura-btn-save:hover {
+    background: var(--aura-success-hover);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.45);
+    transform: translateY(-2px);
+}
+
+.aura-btn-delete, .aura-btn-danger {
+    background: var(--aura-danger);
+    color: white;
+    box-shadow: 0 4px 14px rgba(244, 63, 94, 0.35);
+}
+.aura-btn-delete:hover {
+    background: var(--aura-danger-hover);
+    box-shadow: 0 6px 20px rgba(244, 63, 94, 0.45);
+    transform: translateY(-2px);
+}
+
+.aura-btn-outline {
+    background: transparent;
+    border: 1px solid var(--aura-border);
+    color: var(--aura-text-main);
+}
+.aura-btn-outline:hover {
+    background: var(--aura-border);
+}
+
+/* --- Professional Card Styling --- */
+.aura-card {
+    background: var(--aura-card-bg);
+    border: 1px solid var(--aura-border);
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: var(--aura-shadow-md);
+    transition: var(--aura-transition);
+}
+
+.aura-card:hover {
+    box-shadow: var(--aura-shadow-lg);
+    border-color: var(--aura-primary);
+}
+
+/* --- Shared Status Badges --- */
+.aura-badge {
+    padding: 4px 12px;
+    border-radius: 100px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.badge-success { background: rgba(16, 185, 129, 0.1); color: var(--aura-success); border: 1px solid rgba(16, 185, 129, 0.2); }
+.badge-danger { background: rgba(244, 63, 94, 0.1); color: var(--aura-danger); border: 1px solid rgba(244, 63, 94, 0.2); }
+
+/* --- PROFESSIONAL NO DATA UI (GLOBAL) --- */
+.no-data-container {
+    padding: 60px 20px;
+    text-align: center;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    animation: auraFadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes auraFadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.no-data-icon-wrap {
+    width: 100px;
+    height: 100px;
+    background: rgba(79, 70, 229, 0.1);
+    border-radius: 50%;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin-bottom: 24px;
+    border: 1px solid rgba(79, 70, 229, 0.2);
+    box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.1);
+}
+
+.no-data-icon-wrap svg {
+    width: 48px;
+    height: 48px;
+    color: var(--aura-primary);
+}
+
+.no-data-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--aura-text-main);
+    margin-bottom: 10px;
+}
+
+.no-data-subtitle {
+    font-size: 0.9rem;
+    color: var(--aura-text-muted);
+    max-width: 320px;
+    line-height: 1.6;
+}
+
+body.dark-mode .no-data-icon-wrap {
+    background: rgba(139, 92, 246, 0.15);
+    border-color: rgba(139, 92, 246, 0.25);
+}
+
+body.dark-mode .no-data-icon-wrap svg {
+    color: #8b5cf6;
+}

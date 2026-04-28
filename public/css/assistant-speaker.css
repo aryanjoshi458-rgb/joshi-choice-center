@@ -5,7 +5,7 @@
 
 .assistant-speaker {
   position: fixed;
-  top: 10px;
+  top: 55px; /* 35px titlebar + 20px padding */
   left: 20px;
   display: flex;
   align-items: center;

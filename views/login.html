@@ -2,18 +2,29 @@
 <html lang="en" data-no-auto-loader="true">
 
 <head>
+    <script>
+        (function() {
+            const theme = localStorage.getItem('theme');
+            if (theme === 'dark' || !theme) {
+                document.documentElement.classList.add('dark-mode');
+                
+            }
+        })();
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login | Joshi Choice Center</title>
     <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
     <!-- CSS -->
     <link rel="stylesheet" href="../public/css/login.css">
     <link rel="stylesheet" href="../public/css/loader.css">
     <link rel="stylesheet" href="../public/assets/sidebar-pages/global/global-background-animation.css">
     <link rel="stylesheet" href="../public/css/aura-modals.css">
     <link rel="stylesheet" href="../public/assets/features/scroll-toggle.css">
+    <link rel="stylesheet" href="../public/css/aura-titlebar.css">
     <script src="../public/js/loader.js"></script>
+    <script src="../public/js/aura-window.js"></script>
 </head>
 
 <body class="login-page">
@@ -84,8 +95,18 @@
         <div class="login-card">
             <div class="login-logo">JC</div>
             <div class="login-header">
+                <div class="signature-container">
+                    <svg class="signature-svg" viewBox="0 0 280 80">
+                        <defs>
+                            <mask id="signatureMask">
+                                <path class="signature-mask-path" d="M0,40 L280,40" fill="none" stroke="white" stroke-width="100" />
+                            </mask>
+                        </defs>
+                        <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" class="signature-text" mask="url(#signatureMask)">Welcome</text>
+                    </svg>
+                </div>
                 <h1>Welcome Back</h1>
-                <p>Login to manage your business</p>
+                <p>Welcome to the premium choice center experience</p>
             </div>
 
             <form id="loginForm">

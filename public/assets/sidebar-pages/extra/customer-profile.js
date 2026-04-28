@@ -1,100 +1,154 @@
-/* TRENDY CUSTOMER PROFILE & TRACK TREE LOGIC */
+/* 
+   AURA QUANTUM - CUSTOMER INTELLIGENCE LOGIC 
+   Handles Data Fetching, Stat Calculation, and Tree Rendering
+*/
 
 document.addEventListener("DOMContentLoaded", async () => {
-    // 1. Get Mobile Number or Unique Key from URL
     const urlParams = new URLSearchParams(window.location.search);
-    const mobileOrKey = urlParams.get('mobile');
+    const cidFromUrl = urlParams.get('cid') || urlParams.get('mobile');
 
-    if (!mobileOrKey) {
-        await AuraDialog.error("No customer specified!", "Access Error");
+    if (!cidFromUrl) {
+        if (window.AuraDialog) await AuraDialog.error("No customer specified!", "Access Error");
         window.location.href = "customer-directory.html";
         return;
     }
 
-    // 2. Load Data
+    // Load Data from LocalStorage
     const customers = JSON.parse(localStorage.getItem("customers") || "[]");
     const txns = JSON.parse(localStorage.getItem("transactions") || "[]");
     
-    // Normalize input
-    const cleanMobileInput = mobileOrKey.replace(/^\+91\s?/, "").replace(/\D/g, "");
-
-    // Find the customer identity first
-    const customer = customers.find(c => {
-        const cleanC = c.mobile.replace(/^\+91\s?/, "").replace(/\D/g, "");
-        return cleanC === cleanMobileInput || c.id.toString() === mobileOrKey;
-    });
+    // Find Customer
+    let customer = customers.find(c => c.id === cidFromUrl);
+    if (!customer) {
+        const cleanInput = cidFromUrl.replace(/^\+91\s?/, "").replace(/\D/g, "");
+        customer = customers.find(c => {
+            const cleanC = c.mobile.replace(/^\+91\s?/, "").replace(/\D/g, "");
+            return cleanC === cleanInput;
+        });
+    }
 
     if (!customer) {
-        await AuraDialog.warning("Customer not found in database!", "No Data");
+        if (window.AuraDialog) await AuraDialog.warning("Customer not found in database!", "No Data");
         window.location.href = "customer-directory.html";
         return;
     }
 
-    // Filter transactions for stats and timeline
+    // Filter Transactions
     const customerTxns = txns.filter(t => {
+        if (t.customerId && t.customerId === customer.id) return true;
         const tMobile = (t.mobileNumber || t.mobile || "").toString().trim();
         const cleanTMobile = tMobile.replace(/^\+91\s?/, "").replace(/\D/g, "");
-        return cleanTMobile === cleanMobileInput;
+        const cleanCustMobile = customer.mobile.replace(/^\+91\s?/, "").replace(/\D/g, "");
+        return cleanTMobile === cleanCustMobile && cleanCustMobile !== "";
     });
 
-    // Helper for robust date parsing (Supports YYYY-MM-DD, DD-MM-YYYY, and timestamps)
+    // Date Parser Helper
     const parseSafeDate = (dateStr) => {
         if (!dateStr) return new Date(0);
         
+        // Try standard parsing first (handles YYYY-MM-DD HH:mm:ss)
         let d = new Date(dateStr);
-        if (!isNaN(d)) return d;
-
-        // Try manual parsing for DD-MM-YYYY formats
-        if (typeof dateStr === 'string' && dateStr.includes("-")) {
-            const parts = dateStr.split("-");
-            // Case: DD-MM-YYYY...
-            if (parts[0].length === 2 && parts[2].substring(0, 4).length === 4) {
-                const year = parts[2].substring(0, 4);
-                const month = parts[1];
-                const day = parts[0];
-                const time = parts[2].includes(" ") ? parts[2].split(" ")[1] : "";
+        
+        // If it fails, handle the custom DD-MM-YYYY HH:mm:ss format
+        if (isNaN(d)) {
+            const [datePart, timePart] = dateStr.split(" ");
+            const parts = datePart.split("-");
+            if (parts.length === 3) {
+                // If parts[0] is DD (Length 2), convert to ISO YYYY-MM-DD
+                const isoDate = parts[0].length === 2 
+                    ? `${parts[2]}-${parts[1]}-${parts[0]}` 
+                    : datePart;
                 
-                const iso = time ? `${year}-${month}-${day}T${time}` : `${year}-${month}-${day}`;
-                d = new Date(iso);
-                if (!isNaN(d)) return d;
-            }
-            // Case: YYYY-MM-DD... (Sometimes new Date fails on Safari/Old Electron with spaces)
-            if (parts[0].length === 4) {
-                const year = parts[0];
-                const month = parts[1];
-                const day = parts[2].substring(0, 2);
-                const time = parts[2].includes(" ") ? parts[2].split(" ")[1] : "";
-                
-                const iso = time ? `${year}-${month}-${day}T${time}` : `${year}-${month}-${day}`;
-                d = new Date(iso);
-                if (!isNaN(d)) return d;
+                d = timePart ? new Date(`${isoDate}T${timePart}`) : new Date(isoDate);
             }
         }
-        
         return isNaN(d) ? new Date(0) : d;
     };
 
-    // 3. Populate Hero Header
-    const isGuest = customer.mobile === "Guest";
-    
+    // UI Population
+    const isGuest = customer.mobile === "Guest" || customer.id.includes("WALKIN");
     document.getElementById("profileName").innerText = customer.name || "Walk-in Customer";
-    document.getElementById("profileMobile").innerText = isGuest ? "Guest (No Mobile)" : `+91 ${customer.mobile.replace(/^\+91\s?/, "")}`;
+    document.getElementById("profileMobile").innerText = isGuest ? "Not Available" : customer.mobile;
     document.getElementById("avatarLetter").innerText = (customer.name || "C").charAt(0).toUpperCase();
-    document.getElementById("profileAddress").innerText = customer.address || "Location Not Set";
+    document.getElementById("profileAddress").innerText = customer.address || "Location Not Specified";
+    document.getElementById("profileAadhar").innerText = customer.aadhar || "No Identity Linked";
 
-    // 4. Calculate Stats & Bank/Operator Frequency
+    // VIP & Trust Logic
+    const vipTag = document.getElementById("vipTag");
+    const trustPercent = document.getElementById("trustPercent");
+    const trustFill = document.getElementById("trustFill");
+    const trustStatus = document.getElementById("trustStatus");
+
+    // 1. VIP Status
+    if (vipTag) {
+        if (customerTxns.length > 5) {
+            vipTag.innerText = "PREMIUM NODE";
+            vipTag.style.borderColor = "var(--quantum-cyan)";
+            vipTag.style.color = "var(--quantum-cyan)";
+        } else if (customerTxns.length > 0) {
+            vipTag.innerText = "VERIFIED ENTITY";
+        } else {
+            vipTag.innerText = "NEW NODE";
+        }
+    }
+
+    // 2. Trust Score (Based on Pending Payments)
+    const pendingData = JSON.parse(localStorage.getItem("pendingCustomers") || "[]");
+    const customerRecords = pendingData.filter(p => {
+        const cleanP = (p.mobile || "").replace(/^\+91\s?/, "").replace(/\D/g, "");
+        const cleanC = (customer.mobile || "").replace(/^\+91\s?/, "").replace(/\D/g, "");
+        return cleanP === cleanC && cleanC !== "";
+    });
+
+    const unpaidCount = customerRecords.filter(p => p.status === "Pending").length;
+    let score = 100;
+    
+    if (customerRecords.length > 0) {
+        const paidCount = customerRecords.length - unpaidCount;
+        score = Math.round((paidCount / customerRecords.length) * 100);
+    } else {
+        score = customerTxns.length > 0 ? 100 : 50;
+    }
+
+    if (trustPercent && trustFill && trustStatus) {
+        setTimeout(() => {
+            trustPercent.innerText = `${score}%`;
+            trustFill.style.width = `${score}%`;
+            
+            if (score === 100) {
+                trustStatus.innerText = "Elite Trust";
+                trustStatus.style.color = "#22c55e";
+            } else if (score >= 80) {
+                trustStatus.innerText = "Reliable Member";
+                trustStatus.style.color = "#4ade80";
+            } else if (score >= 50) {
+                trustStatus.innerText = "Average Standing";
+                trustStatus.style.color = "#facc15";
+            } else {
+                trustStatus.innerText = "High Risk";
+                trustStatus.style.color = "#ef4444";
+            }
+        }, 500);
+    }
+
+    // Stats Calculation
     let totalSpend = 0;
-    let lastDate = new Date(0);
+    let totalCharges = 0;
+    let lastPulse = new Date(0);
     const bankFreq = {};
     const simFreq = {};
 
     customerTxns.forEach(t => {
-        totalSpend += Number(t.totalAmount || 0);
+        const baseAmt = Number(t.amount || 0);
+        const chargeAmt = Number(t.charge || 0);
+        
+        totalSpend += baseAmt;
+        totalCharges += chargeAmt;
+
         const d = parseSafeDate(t.date);
-        if (d > lastDate) lastDate = d;
+        if (d > lastPulse) lastPulse = d;
 
         const sName = (t.serviceName || "").toString();
-        // Track Banks
         if (sName.includes("Banking")) {
             const parts = sName.split(" - ");
             if (parts.length >= 2) {
@@ -102,132 +156,105 @@ document.addEventListener("DOMContentLoaded", async () => {
                 bankFreq[bank] = (bankFreq[bank] || 0) + 1;
             }
         }
-        // Track SIM Operators from Recharge transactions
         if (sName.includes("Recharge") || sName.includes("Mobile")) {
-            // Check if t.targetId contains operator name or if it's in serviceName
-            // Usually it's in serviceName like "Mobile/Util - Jio Recharge"
-            const operators = ["Jio", "Airtel", "Vi", "BSNL", "Vodafone", "Idea", "VI"];
+            const operators = ["Jio", "Airtel", "Vi", "BSNL"];
             operators.forEach(op => {
-                const opClean = op.toLowerCase();
-                if (sName.toLowerCase().includes(opClean)) {
-                    // Normalizing VI/Vi to "Vi" for display
-                    const displayOp = (op.toUpperCase() === "VI") ? "Vi" : op;
-                    simFreq[displayOp] = (simFreq[displayOp] || 0) + 1;
+                if (sName.toLowerCase().includes(op.toLowerCase())) {
+                    simFreq[op] = (simFreq[op] || 0) + 1;
                 }
             });
         }
     });
 
     const sortedBanks = Object.entries(bankFreq).sort((a,b) => b[1] - a[1]);
-    if (sortedBanks.length > 0) {
-        const primaryBank = sortedBanks[0][0];
-        document.getElementById("profileBank").innerText = primaryBank;
-        document.getElementById("profileBankChip").style.display = "flex";
-    }
+    document.getElementById("profileBank").innerText = sortedBanks.length > 0 ? sortedBanks[0][0] : "None Detected";
 
     const sortedSIMs = Object.entries(simFreq).sort((a,b) => b[1] - a[1]);
-    if (sortedSIMs.length > 0) {
-        const primarySIM = sortedSIMs[0][0];
-        document.getElementById("profileSIM").innerText = primarySIM;
-        document.getElementById("profileSIMChip").style.display = "flex";
-    } else {
-        // Fallback: Don't show chip if unknown, or set to "Not Set"
-        document.getElementById("profileSIMChip").style.display = "none";
-    }
+    document.getElementById("profileSIM").innerText = sortedSIMs.length > 0 ? sortedSIMs[0][0] : "Unknown";
 
     document.getElementById("statVisits").innerText = customerTxns.length;
-    document.getElementById("statSpend").innerText = `₹${new Intl.NumberFormat('en-IN').format(totalSpend.toFixed(0))}`;
-    
-    const lastDateStr = lastDate.getTime() === 0 ? "N/A" : lastDate.toLocaleDateString("en-GB").replace(/\//g, "-");
-    document.getElementById("statLastDate").innerText = lastDateStr;
+    document.getElementById("statSpend").innerText = `₹${new Intl.NumberFormat('en-IN').format(totalSpend)}`;
+    document.getElementById("statCharges").innerText = `₹${new Intl.NumberFormat('en-IN').format(totalCharges)}`;
+    document.getElementById("statLastDate").innerText = lastPulse.getTime() === 0 ? "N/A" : lastPulse.toLocaleDateString("en-GB");
+    document.getElementById("statAvg").innerText = `₹${customerTxns.length ? (totalSpend / customerTxns.length).toFixed(0) : 0}`;
 
-    // 5. Populate Track Tree (Timeline)
-    const timeline = document.getElementById("txnTimeline");
-    let html = "";
+    // Tree Rendering
+    const tree = document.getElementById("txnTimeline");
     
-    // SORTING FIX: Ensure true chronological order (Newest First)
-    // We sort by timestamp descending
-    const sortedTxns = [...customerTxns].sort((a, b) => {
-        const dateA = parseSafeDate(a.date);
-        const dateB = parseSafeDate(b.date);
-        
-        // If timestamps are identical, sort by transaction ID descending
-        if (dateB - dateA === 0) {
-            const idA = (a.transactionId || "").replace(/\D/g, "");
-            const idB = (b.transactionId || "").replace(/\D/g, "");
-            return idB - idA;
-        }
-        return dateB - dateA;
+    // Sort logic: Primary = Date (Newest first), Secondary = Original Index (Newest first)
+    const txnsWithIndex = customerTxns.map((t, idx) => ({ ...t, originalIndex: idx }));
+    const sortedTxns = txnsWithIndex.sort((a, b) => {
+        const dateDiff = parseSafeDate(b.date) - parseSafeDate(a.date);
+        if (dateDiff !== 0) return dateDiff;
+        return b.originalIndex - a.originalIndex;
     });
-
+    
+    let treeHTML = "";
     sortedTxns.forEach(t => {
         const d = parseSafeDate(t.date);
+        const day = d.getDate();
+        const month = d.toLocaleString('en-US', { month: 'short' });
+        const time = d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
         
-        let day = "??";
-        let month = "MMM";
-        let timeStr = "";
-
-        if (d.getTime() !== 0) {
-            day = d.getDate();
-            month = d.toLocaleString('en-US', { month: 'short' });
-            timeStr = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        }
-        
-        const statusClass = (t.status || "Success").toLowerCase();
-        
+        const sName = (t.serviceName || "").toLowerCase();
+        const isWithdrawal = sName.includes("withdrawal") || sName.includes("withdraw");
         const amt = Number(t.amount || 0);
         const charge = Number(t.charge || 0);
-        const total = Number(t.totalAmount || 0);
-        const netCash = amt - charge;
 
-        html += `
-            <div class="timeline-node" style="opacity: 0; transform: translateX(-30px);">
-                <div class="node-dot"></div>
-                <div class="node-content">
-                    <div class="node-left">
-                        <div class="node-date-box">
-                            <div class="date-day">${day}</div>
-                            <div class="date-month">${month}</div>
+        let label1 = "Amount";
+        if (isWithdrawal) label1 = "Withdrawal";
+        else if (sName.includes("recharge")) label1 = "Recharge";
+        else if (sName.includes("deposit")) label1 = "Deposit";
+
+        let label3 = isWithdrawal ? "Cash to Customer" : "Total Received";
+        let val3 = isWithdrawal ? (amt - charge) : (amt + charge);
+        
+        treeHTML += `
+            <div class="tree-node">
+                <div class="node-time">
+                    <span>${day}</span>
+                    <span>${month}</span>
+                </div>
+                <div class="node-card">
+                    <div class="node-main">
+                        <h4>${t.serviceName || "Service Transaction"}</h4>
+                        <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 10px;">
+                            <p style="margin: 0;">ID: ${t.transactionId || "0x-SYNC"}</p>
+                            <span style="font-size: 0.7rem; color: var(--quantum-cyan); opacity: 0.8; font-weight: 700;">🕒 ${time}</span>
                         </div>
-                        <div class="node-info">
-                            <h4>${t.serviceName || t.serviceType || "General Service"}</h4>
-                            <p>${timeStr ? timeStr + ' • ' : ''}ID: ${t.transactionId || t.txnId || "N/A"}</p>
-                            <div class="node-breakdown">
-                                <span>Amt: ₹${amt}</span>
-                                <span>Charge: ₹${charge}</span>
-                                <span>Total: ₹${total}</span>
-                                <span class="net-cash-tag">Cash to Cust: ₹${netCash}</span>
-                            </div>
+                        <div class="node-details">
+                            <span class="detail-pill">${label1}: ₹${amt}</span>
+                            <span class="detail-pill">Charge: ₹${charge}</span>
+                            <span class="detail-pill" style="color: var(--quantum-pink)">${label3}: ₹${val3}</span>
                         </div>
                     </div>
-                    <div class="node-right">
-                        <span class="node-amount">₹${total}</span>
-                        <span class="status-tag tag-${statusClass}">${t.status || "Success"}</span>
+                    <div class="node-price">
+                        <span class="amt">₹${amt}</span>
+                        <span class="status">${t.status || "SUCCESS"}</span>
+                        <div style="font-size: 0.65rem; color: var(--text-secondary); margin-top: 5px;">${label1} Amount</div>
                     </div>
                 </div>
             </div>
         `;
     });
 
-    timeline.innerHTML = html;
+    tree.innerHTML = treeHTML || '<div style="text-align: center; color: var(--text-secondary); padding: 40px;">No transaction history nodes found in the AURA & CYRUS database.</div>';
 
-    // 6. GSAP ANIMATIONS
+    // Animations
     if (window.gsap) {
-        gsap.to(".timeline-node", {
-            opacity: 1,
-            x: 0,
-            duration: 0.6,
-            stagger: 0.15,
-            ease: "power2.out",
-            delay: 0.3
-        });
-
-        gsap.from(".stat-card", {
-            opacity: 0,
-            y: 30,
-            duration: 0.8,
-            stagger: 0.2,
-            ease: "back.out(1.7)"
+        const tl = gsap.timeline();
+        tl.from(".header-meta", { opacity: 0, x: -30, duration: 0.8, ease: "power2.out" })
+          .from(".glass-panel", { opacity: 0, y: 30, duration: 0.6, stagger: 0.1, ease: "power3.out" }, "-=0.4")
+          .from(".tree-node", { opacity: 0, x: -20, duration: 0.5, stagger: 0.05, ease: "power2.out" }, "-=0.2");
+        
+        // Hover effects for cards
+        document.querySelectorAll('.node-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                gsap.to(card, { scale: 1.02, duration: 0.3 });
+            });
+            card.addEventListener('mouseleave', () => {
+                gsap.to(card, { scale: 1, duration: 0.3 });
+            });
         });
     }
 });

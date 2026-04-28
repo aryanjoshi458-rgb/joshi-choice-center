@@ -13,6 +13,9 @@ document.addEventListener("DOMContentLoaded", () => {
         return `${year}-${month}-${day}`;
     }
 
+    // Export for use inside loadExpenses
+    window.getTodayLocal = getTodayLocal;
+
     // Set initial date
     if (expDateInput) {
         expDateInput.value = getTodayLocal();
@@ -114,7 +117,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function loadExpenses() {
         const expenses = JSON.parse(localStorage.getItem("expenses")) || [];
         const transactions = JSON.parse(localStorage.getItem("transactions")) || [];
-        const todayStr = new Date().toISOString().split("T")[0];
+        const todayStr = getTodayLocal();
         const tbody = document.getElementById("expenseTableBody");
         if (!tbody) return;
 
@@ -173,18 +176,17 @@ document.addEventListener("DOMContentLoaded", () => {
         const profitStatBox = document.getElementById("profitStatBox");
 
         if (profitValueEl && profitStatBox) {
+            // Remove previous states
+            profitStatBox.classList.remove("profit-positive-state", "profit-negative-state");
+
             if (netProfit > 0) {
                 profitValueEl.className = "profit-pos";
-                profitStatBox.style.borderColor = "rgba(16, 185, 129, 0.2)";
-                profitStatBox.style.background = "linear-gradient(135deg, #ffffff, #f0fdf4)";
+                profitStatBox.classList.add("profit-positive-state");
             } else if (netProfit < 0) {
                 profitValueEl.className = "profit-neg";
-                profitStatBox.style.borderColor = "rgba(220, 38, 38, 0.2)";
-                profitStatBox.style.background = "linear-gradient(135deg, #ffffff, #fef2f2)";
+                profitStatBox.classList.add("profit-negative-state");
             } else {
                 profitValueEl.className = "";
-                profitStatBox.style.borderColor = "#eef2f6";
-                profitStatBox.style.background = "#ffffff";
             }
         }
     }

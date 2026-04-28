@@ -81,6 +81,30 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
+    // ✅ KEYBOARD NAVIGATION FOR SETTINGS TABS (ALT + 1, 2, 3...)
+    window.addEventListener("keydown", (e) => {
+        // Only trigger if Alt is pressed and it's a number or special nav key
+        if (e.altKey) {
+            const navBtns = document.querySelectorAll(".aura-nav-btn");
+            let targetIndex = -1;
+
+            if (!isNaN(e.key) && e.key !== " ") {
+                const num = parseInt(e.key);
+                // 1-9 -> Index 0-8, 0 -> Index 9 (Security)
+                targetIndex = (num === 0) ? 7 : num - 1;
+            } else if (e.key === "-") {
+                targetIndex = 9; // Advanced
+            } else if (e.key === "=") {
+                targetIndex = 10; // Reset
+            }
+
+            if (targetIndex !== -1 && navBtns[targetIndex]) {
+                e.preventDefault();
+                navBtns[targetIndex].click();
+            }
+        }
+    });
+
     // 3. SHOP PROFILE ENGINE
     const shopInputs = {
         name: document.getElementById("shopName"),
@@ -374,7 +398,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!previewContainer) return;
 
         const ps = {
-            format: receiptInputs.format?.value || "6",
+            format: receiptInputs.format?.value || "1",
             title: receiptInputs.title?.value || "TAX INVOICE",
             header: receiptInputs.header?.value || "OFFICIAL RECEIPT",
             showLogo: receiptInputs.showLogo?.checked,
@@ -494,7 +518,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function loadReceiptSettings() {
         const ps = JSON.parse(localStorage.getItem("printSettings")) || {
-            format: "6",
+            format: "1",
             title: "TAX INVOICE",
             header: "OFFICIAL RECEIPT",
             showLogo: true,
@@ -504,7 +528,7 @@ document.addEventListener("DOMContentLoaded", () => {
             terms: ""
         };
 
-        if (receiptInputs.format) receiptInputs.format.value = ps.format || "6";
+        if (receiptInputs.format) receiptInputs.format.value = ps.format || "1";
         if (receiptInputs.title) receiptInputs.title.value = ps.title || "";
         if (receiptInputs.header) receiptInputs.header.value = ps.header || "";
 
@@ -744,6 +768,13 @@ document.addEventListener("DOMContentLoaded", () => {
         const glitchOverlay = document.querySelector(".glitch-overlay");
 
         if (wipeOverlay && typeof gsap !== 'undefined') {
+            // Hide Theme Toggle & Other UI during wipe
+            gsap.to("#themeToggleV4, #assistantSpeaker, #sidebarToggle, #proSidebar", {
+                opacity: 0,
+                duration: 0.4,
+                pointerEvents: "none"
+            });
+
             // Reset Console for Demo
             if (wipeConsole) wipeConsole.innerHTML = "";
 
@@ -821,6 +852,12 @@ document.addEventListener("DOMContentLoaded", () => {
                             gsap.to(wipeOverlay, {
                                 opacity: 0, duration: 1, onComplete: () => {
                                     gsap.set(wipeOverlay, { display: "none", pointerEvents: "none" });
+                                    // Restore UI
+                                    gsap.to("#themeToggleV4, #assistantSpeaker, #sidebarToggle, #proSidebar", {
+                                        opacity: 1,
+                                        duration: 0.5,
+                                        pointerEvents: "auto"
+                                    });
                                 }
                             });
                         }, 2000);
@@ -835,7 +872,11 @@ document.addEventListener("DOMContentLoaded", () => {
                     gsap.to(glitchOverlay, { opacity: 0.8, duration: 0.1, repeat: 10, yoyo: true });
 
                     setTimeout(() => {
-                        window.location.href = "dashboard.html";
+                        if (window.electronAPI && window.electronAPI.restartApp) {
+                            window.electronAPI.restartApp();
+                        } else {
+                            window.location.href = "login.html";
+                        }
                     }, 1200);
                 }
             });
@@ -846,7 +887,13 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             localStorage.clear();
             showToast("System Wiped! Restarting...", "error");
-            setTimeout(() => location.href = "dashboard.html", 1500);
+            setTimeout(() => {
+                if (window.electronAPI && window.electronAPI.restartApp) {
+                    window.electronAPI.restartApp();
+                } else {
+                    location.href = "login.html";
+                }
+            }, 1500);
         }
     }
     window.startWipeSequence = startWipeSequence;
@@ -1350,8 +1397,8 @@ document.addEventListener("DOMContentLoaded", () => {
         if (advancedInputs.privacy) advancedInputs.privacy.checked = localStorage.getItem("jc_privacy_mode") === "true";
         if (advancedInputs.performance) advancedInputs.performance.checked = localStorage.getItem("jc_performance_mode") === "true";
         if (advancedInputs.lockPassword) advancedInputs.lockPassword.value = localStorage.getItem("jc_password") || "123";
-        
-        const widgets = JSON.parse(localStorage.getItem("jc_dashboard_widgets") || '{"today":true,"earnings":true,"expenses":true,"pending":true}');
+
+        const widgets = JSON.parse(localStorage.getItem("jc_dashboard_widgets") || '{"today":true,"earnings":false,"expenses":false,"pending":false}');
         if (advancedInputs.widgetToday) advancedInputs.widgetToday.checked = widgets.today;
         if (advancedInputs.widgetEarnings) advancedInputs.widgetEarnings.checked = widgets.earnings;
         if (advancedInputs.widgetExpenses) advancedInputs.widgetExpenses.checked = widgets.expenses;
@@ -1361,21 +1408,21 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("saveAdvancedSettings")?.addEventListener("click", () => {
         const privacy = advancedInputs.privacy?.checked || false;
         const performance = advancedInputs.performance?.checked || false;
-        
+
         localStorage.setItem("jc_privacy_mode", privacy);
         localStorage.setItem("jc_performance_mode", performance);
-        
+
         if (advancedInputs.lockPassword) {
             localStorage.setItem("jc_password", advancedInputs.lockPassword.value);
         }
-        
+
         // Apply classes immediately
         document.body.classList.toggle("privacy-mode-active", privacy);
         document.body.classList.toggle("performance-mode", performance);
-        
+
         // Refresh animations if performance mode changed
         if (window.refreshAnimation) window.refreshAnimation();
-        
+
         const widgets = {
             today: advancedInputs.widgetToday?.checked || false,
             earnings: advancedInputs.widgetEarnings?.checked || false,
@@ -1383,7 +1430,7 @@ document.addEventListener("DOMContentLoaded", () => {
             pending: advancedInputs.widgetPending?.checked || false
         };
         localStorage.setItem("jc_dashboard_widgets", JSON.stringify(widgets));
-        
+
         if (window.showToast) window.showToast("Advanced preferences saved! 🚀", "success");
     });
 
@@ -1467,4 +1514,55 @@ styleCards.forEach(card => {
 });
 
 loadSidebarStyle();
+
+// --- COMING SOON ANIMATION ENGINE ---
+function initComingSoonAnim() {
+    if (typeof gsap === 'undefined') return;
+
+    const overlay = document.getElementById("receiptComingSoon");
+    const bar = document.getElementById("csProgress");
+    const text = document.getElementById("csPercentText");
+
+    if (!overlay || !bar || !text) return;
+
+    // 1. Entrance Animation
+    gsap.from(".cs-content-box", {
+        scale: 0.8,
+        opacity: 0,
+        duration: 1.5,
+        ease: "expo.out"
+    });
+
+    gsap.from(".cs-glow-svg", {
+        rotation: -45,
+        duration: 2,
+        ease: "elastic.out(1, 0.5)"
+    });
+
+    // 2. Loop SVG Glow
+    gsap.to(".cs-glow-svg", {
+        filter: "drop-shadow(0 0 20px rgba(168, 85, 247, 0.8))",
+        repeat: -1,
+        yoyo: true,
+        duration: 1.5,
+        ease: "sine.inOut"
+    });
+
+    // 3. Progress Animation
+    let progressObj = { value: 0 };
+    gsap.to(progressObj, {
+        value: 100,
+        duration: 8,
+        repeat: -1,
+        yoyo: true,
+        ease: "power2.inOut",
+        onUpdate: () => {
+            const p = Math.floor(progressObj.value);
+            bar.style.width = p + "%";
+            text.innerText = `SYSTEM_INITIALIZING_${p}%`;
+        }
+    });
+}
+
+initComingSoonAnim();
 

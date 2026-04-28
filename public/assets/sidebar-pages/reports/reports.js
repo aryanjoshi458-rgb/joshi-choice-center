@@ -24,8 +24,30 @@ function loadReports() {
   tbody.innerHTML = "";
 
   if (reports.length === 0) {
-    tbody.innerHTML = `<tr class="no-data-row"><td colspan="14" style="text-align:center;">No Reports Found</td></tr>`;
+    tbody.innerHTML = `
+      <tr class="no-data-row">
+        <td colspan="14">
+          <div class="no-data-container">
+            <div class="no-data-icon-wrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+              </svg>
+            </div>
+            <div class="no-data-title">No Transactions Recorded</div>
+            <div class="no-data-subtitle">We couldn't find any transaction history for this period. Try adjusting your filters or adding a new customer.</div>
+          </div>
+        </td>
+      </tr>
+    `;
     filteredReportsData = []; // ✅ Clear globally
+    // ✅ Trigger Pagination Refresh (to hide it)
+    if (typeof window.refreshPagination === "function") {
+      window.refreshPagination();
+    }
     return;
   }
 
@@ -71,7 +93,7 @@ function loadReports() {
       <td><span class="status ${statusClass}">${statusText}</span></td>
       <td>${txnId}</td>
       <td class="report-actions">
-        <button class="btn btn-profile" title="View Profile" onclick="window.location.href='customer-profile.html?mobile=${mobile}'">
+        <button class="btn btn-profile" title="View Profile" onclick="window.location.href='customer-profile.html?cid=${r.customerId || mobile}'">
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
         </button>
         <button class="btn btn-edit" title="Edit Record" onclick="openEditModal('${txnId}')">
@@ -164,8 +186,6 @@ function formatDate(dateStr) {
   const yyyy = d.getFullYear();
 
   // Show only date
-  return `${dd}-${mm}-${yyyy}`;
-
   return `${dd}-${mm}-${yyyy}`;
 }
 
@@ -268,7 +288,7 @@ function applyFilter() {
     if (dateStr.includes("-")) {
       const parts = dateStr.split("-");
       // Handle dd-mm-yyyy or yyyy-mm-dd
-      rowMonth = (parts[0].length === 2) ? parts[1] : parts[1];
+      rowMonth = parts[1];
     }
     const matchMonth = !selectedMonth || rowMonth === selectedMonth;
 
@@ -303,14 +323,52 @@ function applyFilter() {
     let rowMonth = "";
     if (dateStr.includes("-")) {
       const parts = dateStr.split("-");
-      rowMonth = (parts[0].length === 2) ? parts[1] : parts[1];
+      rowMonth = parts[1];
     }
     const matchMonth = !selectedMonth || rowMonth === selectedMonth;
 
     const matchCat = catFilter === "all" || service.includes(catFilter.toLowerCase());
 
-    row.style.display = (matchSearch && matchStatus && matchMonth && matchCat) ? "" : "none";
+    if (matchSearch && matchStatus && matchMonth && matchCat) {
+      row.setAttribute("data-filtered", "false");
+      row.style.display = "";
+    } else {
+      row.setAttribute("data-filtered", "true");
+      row.style.display = "none";
+    }
   });
+
+  // ✅ Handle "No Search Results" case
+  const tbody = document.getElementById("reportsTableBody");
+  const existingNoData = tbody.querySelector(".no-data-row");
+
+  if (window.filteredReportsData.length === 0) {
+    if (!existingNoData) {
+      const noDataRow = document.createElement("tr");
+      noDataRow.className = "no-data-row";
+      noDataRow.innerHTML = `
+        <td colspan="14">
+          <div class="no-data-container">
+            <div class="no-data-icon-wrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                <line x1="11" y1="8" x2="11" y2="14"></line>
+                <line x1="8" y1="11" x2="14" y2="11"></line>
+              </svg>
+            </div>
+            <div class="no-data-title">No Matching Records</div>
+            <div class="no-data-subtitle">We couldn't find any results matching your current filters. Try searching for something else or clearing filters.</div>
+          </div>
+        </td>
+      `;
+      tbody.appendChild(noDataRow);
+    } else {
+      existingNoData.style.display = "";
+    }
+  } else {
+    if (existingNoData) existingNoData.style.display = "none";
+  }
 
   // Always update metrics after filtering
   updateSummaryMetrics();
@@ -637,7 +695,7 @@ Status : ${status}
         <span>Payment Mode:</span>
         <span style="color: #4f46e5;">${pMode.toUpperCase()}</span>
       </div>` : "";
-    
+
     const termsSection = ps.terms ? `
       <div style="margin-top: 15px; padding: 10px; border-top: 1px solid #f1f5f9; font-size: 0.75em; color: #94a3b8; line-height: 1.4; background: rgba(0,0,0,0.02); border-radius: 8px;">
         <strong style="color: #64748b; display: block; margin-bottom: 3px;">Terms & Conditions:</strong>
@@ -786,13 +844,13 @@ function openInternalPrintWindow(content, size) {
   const isA4 = size.startsWith("a4");
   const orientation = size === "a4-l" ? "landscape" : "portrait";
   const maxWidth = size === "58" ? "260px" : size === "80" ? "340px" : "100%";
-    const doc = iframe.contentWindow.document;
+  const doc = iframe.contentWindow.document;
   const shop = JSON.parse(localStorage.getItem("shopProfile")) || { name: "JOSHI CHOICE CENTER" };
   const ps = JSON.parse(localStorage.getItem("printSettings")) || { logoScale: 100 };
   const fontSize = ps.fontSize || "12px";
   const logoHtml = shop.logo ? `<div style="text-align:center;"><img src="${shop.logo}" style="width:${ps.logoScale || 100}%; max-width:100%; margin-bottom:10px;"></div>` : "";
   const shopNameHeader = `<div style="font-size:1.2em; font-weight:bold; text-align:center; margin-bottom:5px;">${shop.name}</div>`;
-  
+
   // Detect if content is HTML (new formats 6 & 7)
   const isHtml = content.trim().startsWith("<div");
   const bodyStyle = isHtml ? "font-family: sans-serif; margin:0; padding:10px; background:white;" : "font-family: monospace; margin:0; padding:10px; background:white;";
@@ -886,7 +944,7 @@ window.openPdfModal = async function () {
   document.getElementById("pdfModal").style.display = "flex";
 
   // ✅ Hide Top Elements for Immersive Preview
-  const elementsToHide = ["sidebarToggle", "assistantSpeaker", "themeToggleV4", "assistantSpeaker"];
+  const elementsToHide = ["sidebarToggle", "assistantSpeaker", "themeToggleV4", "scrollArrow", "scrollToggleBtn"];
   elementsToHide.forEach(id => {
     const el = document.getElementById(id);
     if (el) el.style.visibility = "hidden";
@@ -900,7 +958,7 @@ window.closePdfModal = function () {
   document.getElementById("pdfModal").style.display = "none";
 
   // ✅ Restore Top Elements
-  const elementsToShow = ["sidebarToggle", "assistantSpeaker", "themeToggleV4"];
+  const elementsToShow = ["sidebarToggle", "assistantSpeaker", "themeToggleV4", "scrollArrow", "scrollToggleBtn"];
   elementsToShow.forEach(id => {
     const el = document.getElementById(id);
     if (el) el.style.visibility = "visible";

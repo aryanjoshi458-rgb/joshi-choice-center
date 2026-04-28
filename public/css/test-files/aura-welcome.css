@@ -1,0 +1,129 @@
+/**
+ * AURA WELCOME ANIMATION - PLAYSTATION STYLE
+ * High-performance entrance for first-time launch.
+ */
+
+.aura-welcome-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    z-index: 999999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    color: white;
+    font-family: 'Poppins', sans-serif;
+    pointer-events: auto;
+}
+
+/* THE GLOWING CORE */
+.welcome-core {
+    position: relative;
+    width: 150px;
+    height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(79, 70, 229, 0.2) 0%, transparent 70%);
+    opacity: 0;
+    transform: scale(0.5);
+}
+
+.welcome-logo {
+    font-size: 60px;
+    font-weight: 800;
+    letter-spacing: 5px;
+    background: linear-gradient(135deg, #fff 30%, #a5b4fc 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 20px rgba(79, 70, 229, 0.8));
+    z-index: 2;
+}
+
+.core-ring {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border: 2px solid rgba(79, 70, 229, 0.5);
+    border-radius: 50%;
+    box-shadow: 0 0 30px rgba(79, 70, 229, 0.3);
+}
+
+/* TEXT ANIMATIONS */
+.welcome-text-group {
+    margin-top: 40px;
+    text-align: center;
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.welcome-title {
+    font-size: 24px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 8px;
+    margin-bottom: 10px;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.welcome-subtitle {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 4px;
+    color: #4f46e5;
+    text-transform: uppercase;
+}
+
+/* PARTICLES */
+.welcome-particles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.w-particle {
+    position: absolute;
+    background: #fff;
+    border-radius: 50%;
+    opacity: 0.5;
+}
+
+/* PROGRESS BAR */
+.welcome-progress-wrap {
+    position: absolute;
+    bottom: 100px;
+    width: 250px;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    opacity: 0;
+}
+
+.welcome-progress-fill {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, #4f46e5, #0ea5e9);
+    box-shadow: 0 0 10px #4f46e5;
+}
+
+/* VIGNETTE */
+.welcome-vignette {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, transparent 40%, #000 100%);
+    pointer-events: none;
+    z-index: 5;
+}

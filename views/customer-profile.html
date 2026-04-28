@@ -2,287 +2,276 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <title>Customer Profile | Joshi Choice Center</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="../public/css/style.css">
-    <link rel="stylesheet" href="../public/assets/features/sidebar/sidebar.css">
-    <link rel="stylesheet" href="../public/css/theme-toggle.css">
-    <link rel="stylesheet" href="../public/css/assistant-speaker.css">
-    <link rel="stylesheet" href="../public/assets/features/notification/notification.css">
-    <link rel="stylesheet" href="../public/assets/sidebar-pages/extra/customer-profile.css">
-    <link rel="stylesheet" href="../public/css/loader.css">
-    <link rel="stylesheet" href="../public/assets/sidebar-pages/global/global-background-animation.css">
-    <link rel="stylesheet" href="../public/assets/features/scroll-toggle.css">
-
-    <script src="../public/js/loader.js"></script>
-    <script src="../public/js/auth.js"></script>
-    <script>Auth.protectPage();</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Customer Profile | Joshi Choice Center</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../public/css/style.css">
+  <link rel="stylesheet" href="../public/assets/sidebar-pages/customer-profile/customer-profile.css">
+  <link rel="stylesheet" href="../public/assets/features/sidebar/sidebar.css">
+  <link rel="stylesheet" href="../public/css/assistant-speaker.css">
+  <link rel="stylesheet" href="../public/css/theme-toggle.css">
+  <link rel="stylesheet" href="../public/css/loader.css">
+  <link rel="stylesheet" href="../public/css/aura-titlebar.css">
+  <link rel="stylesheet" href="../public/css/aura-design-system.css">
+  <script src="../public/js/aura-window.js"></script>
+  <link rel="stylesheet" href="../public/assets/features/notification/notification.css">
+  <link rel="stylesheet" href="../public/assets/sidebar-pages/global/global-background-animation.css">
+  <link rel="stylesheet" href="../public/assets/features/scroll-toggle.css">
+  <script src="../public/js/loader.js"></script>
+  <script src="../public/js/auth.js"></script>
+  <script>Auth.protectPage();</script>
+  <link rel="stylesheet" href="../public/css/aura-modals.css">
+  <link rel="stylesheet" href="../public/css/aura-assistant.css">
 </head>
 
 <body>
-    <div class="animated-bg"></div>
+  <!-- GLOBAL BACKGROUND -->
+  <div class="animated-bg"></div>
 
-    <!-- Sidebar -->
-    <div id="proSidebar">
-        <div class="sidebar-header">
-            <div class="sidebar-logo">JC</div>
-            <span data-i18n="app-title">Joshi Choice Center</span>
-        </div>
-        <div class="sidebar-menu">
-            <a href="dashboard.html">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                    class="sidebar-icon">
-                    <rect width="7" height="9" x="3" y="3" rx="1" />
-                    <rect width="7" height="5" x="14" y="3" rx="1" />
-                    <rect width="7" height="9" x="14" y="12" rx="1" />
-                    <rect width="7" height="5" x="3" y="16" rx="1" />
-                </svg>
-                <span data-i18n="sidebar-dashboard">Dashboard</span>
-            </a>
-            <a href="new-customer.html">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                    class="sidebar-icon">
-                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                    <circle cx="9" cy="7" r="4" />
-                    <line x1="19" y1="8" x2="19" y2="14" />
-                    <line x1="16" y1="11" x2="22" y2="11" />
-                </svg>
-                <span data-i18n="sidebar-new-customer">New Customer</span>
-            </a>
-            <a href="customer-directory.html">
-                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon">
-                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                    <circle cx="9" cy="7" r="4" />
-                    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                </svg>
-                <span data-i18n="sidebar-customer-directory">Customer Directory</span>
-            </a>
-            <a href="notifications.html">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                    class="sidebar-icon">
-                    <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
-                    <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
-                </svg>
-                <span data-i18n="sidebar-notification">Notification</span>
-            </a>
-            <a href="print-receipt.html">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                    class="sidebar-icon">
-                    <polyline points="6 9 6 2 18 2 18 9" />
-                    <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
-                    <rect width="12" height="8" x="6" y="14" />
-                </svg>
-                <span data-i18n="sidebar-print-receipt">Print Receipt</span>
-            </a>
-            <a href="pending-payments.html">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                    class="sidebar-icon">
-                    <circle cx="12" cy="12" r="10" />
-                    <polyline points="12 6 12 12 16 14" />
-                </svg>
-                <span data-i18n="sidebar-pending-payments">Pending Payments</span>
-            </a>
-            <a href="reports.html">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                    class="sidebar-icon">
-                    <line x1="18" y1="20" x2="18" y2="10" />
-                    <line x1="12" y1="20" x2="12" y2="4" />
-                    <line x1="6" y1="20" x2="6" y2="14" />
-                </svg>
-                <span data-i18n="sidebar-reports">Reports</span>
-            </a>
-            <a href="expenses.html">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                    class="sidebar-icon">
-                    <path d="M21 12V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-1" />
-                    <path d="M16 12h5" />
-                </svg>
-                <span data-i18n="sidebar-expenses">Expenses</span>
-            </a>
-            <a href="rate-list.html">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                    class="sidebar-icon">
-                    <path d="M6 3h12" />
-                    <path d="M6 8h12" />
-                    <path d="m6 13 8.5 8" />
-                    <path d="M6 13h3" />
-                    <path d="M9 13c6.667 0 6.667-10 0-10" />
-                </svg>
-                <span data-i18n="sidebar-service-rates">Service Rates</span>
-            </a>
-            <a href="settings.html">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                    class="sidebar-icon">
-                    <path
-                        d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
-                    <circle cx="12" cy="12" r="3" />
-                </svg>
-                <span data-i18n="sidebar-settings">Settings</span>
-            </a>
-            <a href="#" onclick="Auth.logout()"
-                style="color: #f87171; border-top: 1px solid rgba(248, 113, 113, 0.1); margin-top: 10px; padding-top: 15px;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                    class="sidebar-icon">
-                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                    <polyline points="16 17 21 12 16 7" />
-                    <line x1="21" y1="12" x2="9" y2="12" />
-                </svg>
-                <span>Logout</span>
-            </a>
-        </div>
+  <!-- Sidebar -->
+  <div id="proSidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">JC</div>
+      <span data-i18n="app-title">Joshi Choice Center</span>
     </div>
 
-    <!-- Controls -->
-    <button id="sidebarToggle">
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-            stroke-linejoin="round">
-            <line x1="3" y1="12" x2="21" y2="12"></line>
-            <line x1="3" y1="6" x2="21" y2="6"></line>
-            <line x1="3" y1="18" x2="21" y2="18"></line>
+    <div class="sidebar-menu">
+      <a href="dashboard.html">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon">
+                    <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+                </svg>
+        <span data-i18n="sidebar-dashboard">Dashboard</span>
+      </a>
+      <a href="new-customer.html">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="16" y1="11" x2="22" y2="11"/>
+                </svg>
+        <span data-i18n="sidebar-new-customer">New Customer</span>
+      </a>
+      <a href="customer-directory.html">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+        <span data-i18n="sidebar-customer-directory">Customer Directory</span>
+      </a>
+      <a href="notifications.html">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon">
+          <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+          <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
         </svg>
-    </button>
-    <div class="assistant-speaker" id="assistantSpeaker">
-        <svg class="icon" viewBox="0 0 24 24">
-            <path d="M3 10v4h4l5 5V5L7 10H3z" />
+        <span data-i18n="sidebar-notification">Notification</span>
+      </a>
+      <a href="print-receipt.html">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon">
+          <polyline points="6 9 6 2 18 2 18 9" />
+          <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+          <rect width="12" height="8" x="6" y="14" />
         </svg>
-        <span>Speak</span>
-    </div>
-    <div class="slider light" id="themeToggle">
-        <div class="slider-toggle light"></div>
-        <div class="slider-accent light"></div>
-    </div>
-
-    <!-- Main -->
-    <main class="main">
-        <div class="profile-container">
-            <button class="back-btn" onclick="history.back()">
-                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5">
-                    <path d="M19 12H5M12 19l-7-7 7-7" />
+        <span data-i18n="sidebar-print-receipt">Print Receipt</span>
+      </a>
+      <a href="pending-payments.html">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon">
+                    <path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4"></path>
+                    <path d="M4 6v12c0 1.1.9 2 2 2h14v-4"></path>
+                    <path d="M18 12a2 2 0 0 0-2 2c0 1.1.9 2 2 2h4v-4h-4z"></path>
                 </svg>
-                Back to Directory
-            </button>
+        <span data-i18n="sidebar-pending-payments">Pending Payments</span>
+      </a>
+      <a href="reports.html">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon">
+                    <path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/>
+                </svg>
+        <span data-i18n="sidebar-reports">Reports</span>
+      </a>
+      <a href="expenses.html">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon">
+          <path d="M21 12V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-1" />
+          <path d="M16 12h5" />
+        </svg>
+        <span data-i18n="sidebar-expenses">Expenses</span>
+      </a>
+      <a href="rate-list.html">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon">
+                    <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+                    <line x1="7" y1="7" x2="7.01" y2="7"></line>
+                </svg>
+        <span data-i18n="sidebar-service-rates">Service Rates</span>
+      </a>
+      <a href="settings.html">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                </svg>
+        <span data-i18n="sidebar-settings">Settings</span>
+      </a>
+      <a href="#" onclick="Auth.logout()"
+        style="color: #f87171; border-top: 1px solid rgba(248, 113, 113, 0.1); margin-top: 10px; padding-top: 15px;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+          <polyline points="16 17 21 12 16 7" />
+          <line x1="21" y1="12" x2="9" y2="12" />
+        </svg>
+        <span>Logout</span>
+      </a>
+    </div>
+  </div>
 
-            <!-- DESIGNER HERO HEADER -->
-            <div class="profile-hero premium-shadow">
-                <div class="hero-bg"></div>
-                <div class="hero-content">
-                    <div class="profile-avatar-container">
-                        <div class="profile-avatar" id="avatarLetter">-</div>
-                        <div class="status-indicator online"></div>
-                    </div>
-                    <div class="profile-hero-info">
-                        <div class="name-row">
-                            <h2 id="profileName">-</h2>
-                            <span class="badge premium-badge">VIP Customer</span>
-                        </div>
-                        <div class="info-chips">
-                            <div class="info-chip">
-                                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor"
-                                    stroke-width="2.5">
-                                    <rect width="14" height="20" x="5" y="2" rx="2" ry="2" />
-                                    <path d="M12 18h.01" />
-                                </svg>
-                                <span id="profileMobile">-</span>
-                            </div>
-                            <div class="info-chip">
-                                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor"
-                                    stroke-width="2.5">
-                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                                    <circle cx="12" cy="10" r="3" />
-                                </svg>
-                                <span id="profileAddress">-</span>
-                            </div>
-                            <div class="info-chip bank-chip" id="profileBankChip" style="display:none;">
-                                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5">
-                                    <path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v3M12 14v3M16 14v3"/>
-                                </svg>
-                                <span id="profileBank">No Bank Linked</span>
-                            </div>
-                            <div class="info-chip sim-chip" id="profileSIMChip" style="display:none; background: #fff1f2; color: #e11d48;">
-                                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5">
-                                    <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
-                                    <path d="M12 18h.01"></path>
-                                    <path d="M9 7h6"></path>
-                                    <path d="M9 11h6"></path>
-                                </svg>
-                                <span id="profileSIM">No SIM Info</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+  <!-- Toggle Button (Speak ke niche) -->
+  <button id="sidebarToggle">
+    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+      stroke-linejoin="round">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </button>
 
-            <div class="profile-stats">
-                <div class="stat-card glass-premium">
-                    <div class="stat-icon-box">📊</div>
-                    <div class="stat-details">
-                        <h4 data-i18n="total-visits">Visits</h4>
-                        <div class="value" id="statVisits">0</div>
-                    </div>
-                </div>
-                <div class="stat-card glass-premium">
-                    <div class="stat-icon-box">💰</div>
-                    <div class="stat-details">
-                        <h4 data-i18n="total-spend">Spent</h4>
-                        <div class="value" id="statSpend">₹0</div>
-                    </div>
-                </div>
-                <div class="stat-card glass-premium">
-                    <div class="stat-icon-box">🕰️</div>
-                    <div class="stat-details">
-                        <h4 data-i18n="last-txn">Last Used</h4>
-                        <div class="value" id="statLastDate">-</div>
-                    </div>
-                </div>
-            </div>
+  <!-- VOICE + THEME CONTROLS -->
+  <div class="assistant-speaker" id="assistantSpeaker">
+    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+      stroke-linejoin="round">
+      <path d="M11 5L6 9H2v6h4l5 4V5z"></path>
+      <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+    </svg>
+    <span>Speak</span>
+  </div>
 
-            <!-- TRANSACTION TRACK TREE (TIMELINE) -->
-            <div class="track-tree-section">
-                <div class="section-header-box">
-                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor"
-                        stroke-width="2.5">
-                        <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <h3 data-i18n="transaction-history">Transaction Track Tree</h3>
-                </div>
+  <!-- AURA CELESTIAL v4 THEME SLIDER -->
+  <div class="aura-celestial-v4" id="themeToggleV4">
+    <div class="celestial-sky-window"></div>
+    <div class="celestial-knob-v4" id="celestialKnob"></div>
+  </div>
 
-                <div class="timeline-tree" id="txnTimeline">
-                    <!-- Nodes injected by JS -->
-                    <div class="loading-timeline">Loading history tree...</div>
-                </div>
-            </div>
+  <!-- AURA SMART CHAT PANEL -->
+  <div id="auraChatPanel" class="aura-chat-panel">
+    <div class="aura-chat-header">
+      <div class="aura-chat-header-left">
+        <div class="aura-chat-logo">AI</div>
+        <div class="aura-chat-header-info">
+          <h3>Aura Assistant</h3>
+          <p>Your Smart Companion</p>
         </div>
-    </main>
+      </div>
+      <div class="aura-chat-controls">
+        <div class="aura-chat-control min"></div>
+        <div class="aura-chat-control max"></div>
+        <div id="closeAuraChat" class="aura-chat-control close"></div>
+      </div>
+    </div>
+    <div class="aura-chat-history" id="auraChatHistory">
+      <!-- Messages appear here -->
+    </div>
+    <div class="aura-chat-input-area">
+      <input type="text" id="auraChatInput" placeholder="Ask about the software...">
+      <button class="aura-chat-send" id="auraChatSend">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="22" y1="2" x2="11" y2="13" />
+          <polygon points="22 2 15 22 11 13 2 9 22 2" />
+        </svg>
+      </button>
+    </div>
+  </div>
 
-    <!-- JS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-    <script src="../public/js/translations.js"></script>
-    <script src="../public/js/language-manager.js"></script>
-    <script src="../public/assets/sidebar-pages/global/global-background-animation.js"></script>
-    <script src="../public/js/aura-modals.js"></script><script src="../public/js/button-animations.js"></script>
-    <script src="../public/assets/sidebar-pages/extra/customer-profile.js"></script>
-    <script src="../public/assets/features/sidebar/sidebar.js"></script>
-    <script src="../public/js/theme-toggle.js"></script>
-    <script src="../public/js/assistant-speaker.js"></script>
-    <div id="scrollArrow">▲</div>
-    <script src="../public/assets/features/scroll-toggle.js"></script>
-    <script src="../public/js/shortcuts.js"></script>
+  <main class="main">
+    <header class="brand">
+      <div class="brand-box">
+        <div class="logo">JC</div>
+        <h1 class="app-title">Customer Profile</h1>
+      </div>
+    </header>
+
+    <div class="profile-container">
+      <!-- Back Button -->
+      <a href="customer-directory.html" class="back-btn aura-btn aura-btn-secondary">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M19 12H5M12 19l-7-7 7-7" />
+        </svg>
+        Back to Directory
+      </a>
+
+      <div class="profile-layout">
+        <!-- Sidebar: Customer Info -->
+        <div class="profile-card info-card glass">
+          <div class="profile-header-minimal">
+            <div class="avatar-large" id="avatarLetter">?</div>
+            <h2 id="profileName">Loading...</h2>
+            <p class="customer-since">Member since <span id="sinceDate">...</span></p>
+          </div>
+
+          <div class="info-grid">
+            <div class="info-item">
+              <label>Phone Number</label>
+              <div class="value-row">
+                <span id="profileMobile">...</span>
+                <button class="icon-btn" onclick="copyText('profileMobile')">📋</button>
+              </div>
+            </div>
+            <div class="info-item">
+              <label>Default Category</label>
+              <span id="profileCategory" class="badge">...</span>
+            </div>
+          </div>
+
+          <div class="quick-stats">
+            <div class="stat-item">
+              <span class="stat-label">Total Visits</span>
+              <span class="stat-value" id="totalVisits">0</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Total Spent</span>
+              <span class="stat-value" id="totalSpent">₹0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Main: Transaction History -->
+        <div class="profile-card history-card glass">
+          <div class="card-header-minimal">
+            <h3>Transaction History</h3>
+            <div class="header-actions">
+              <input type="text" id="txnSearch" placeholder="Search transactions...">
+            </div>
+          </div>
+
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Service</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="txnHistoryBody">
+                <!-- Rows injected by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- JS -->
+  <script src="../public/js/translations.js"></script>
+  <script src="../public/js/language-manager.js"></script>
+  <script src="../public/assets/features/sidebar/sidebar.js"></script>
+  <script src="../public/js/assistant-speaker.js"></script>
+  <script src="../public/js/theme-toggle.js"></script>
+  <script src="../public/assets/features/notification/notification.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="../public/assets/sidebar-pages/global/global-background-animation.js"></script>
+  <div id="scrollArrow">▲</div>
+  <script src="../public/assets/features/scroll-toggle.js"></script>
+  <script src="../public/assets/sidebar-pages/customer-profile/customer-profile.js"></script>
+  <script src="../public/js/aura-modals.js"></script><script src="../public/js/button-animations.js"></script>
+  <script src="../public/js/shortcuts.js"></script>
 </body>
 
 </html>

@@ -20,14 +20,18 @@
         
         // Rows that are NOT hidden by search/filter logic
         const visibleRows = allRows.filter(r => {
-            // If it's the "No Reports Found" row, don't paginate
-            if (r.innerText.includes("No Reports Found")) return false;
-            // Otherwise check if it's currently hidden by another script
-            return r.getAttribute("data-filtered") !== "true" && r.style.display !== "none";
+            // If it's the "No Reports Found" row or the new professional "no-data-row", don't paginate
+            if (r.innerText.includes("No Reports Found") || r.classList.contains("no-data-row")) return false;
+            // IMPORTANT: Only count rows that are NOT filtered out by the search/month filter
+            // We ignore r.style.display because pagination itself sets display='none'
+            return r.getAttribute("data-filtered") !== "true";
         });
 
         // Remove old pager if exists
         document.getElementById("modernPager")?.remove();
+
+        // If no rows, don't show pagination
+        if (visibleRows.length === 0) return;
 
         const totalPages = Math.ceil(visibleRows.length / rowsPerPage) || 1;
         if (currentPage > totalPages) currentPage = totalPages;

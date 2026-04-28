@@ -246,6 +246,41 @@ body.performance-mode .dashboard-card {
 
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
 
+/* =========================================
+   PREMIUM CUSTOM SCROLLBAR
+   ========================================= */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.2); /* Slate-400 with opacity */
+    border-radius: 20px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+    transition: all 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(148, 163, 184, 0.4);
+    border: 1px solid transparent;
+    background-clip: content-box;
+}
+
+/* Dark Mode Overrides */
+body.dark-mode ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
 :root {
   --primary-color: #2563eb;
   --bg-color: #f5f7fb;
@@ -262,15 +297,17 @@ body.performance-mode .dashboard-card {
 }
 
 /* THEMES */
+html.dark-mode,
 body.dark-mode {
   --primary-color: #3b82f6;
-  --bg-color: #0f172a;
-  --card-bg: #1e293b;
-  --text-main: #f8fafc;
+  --bg-color: #0c0e14;
+  background-color: transparent !important;
+  --card-bg: rgba(30, 41, 59, 0.4);
+  --text-main: #f1f5f9;
   --text-muted: #94a3b8;
-  --sidebar-bg: #111827;
-  --hover-bg: #1f2937;
-  --border-color: #374151;
+  --sidebar-bg: #0f172a;
+  --hover-bg: rgba(255, 255, 255, 0.05);
+  --border-color: rgba(255, 255, 255, 0.08);
   --accent-gradient: linear-gradient(135deg, #1d4ed8, #2563eb);
   --card-1-gradient: linear-gradient(135deg, #1e40af, #1e3a8a);
   --card-2-gradient: linear-gradient(135deg, #b45309, #78350f);
@@ -431,7 +468,7 @@ h3,
 }
 
 body {
-  background: var(--bg-color);
+  background: transparent;
   color: var(--text-main);
   overflow-x: hidden;
   transition: background 0.3s, color 0.3s;
@@ -627,8 +664,30 @@ select {
   padding: 10px 12px;
   margin-top: 6px;
   border-radius: 10px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--border-color, #ccc);
   font-size: 14px;
+  background-color: var(--card-bg, #fff);
+  color: var(--text-main);
+  transition: all 0.3s ease;
+}
+
+/* Fix for white backgrounds in dark mode, including readonly/disabled states */
+body.dark-mode input, 
+body.dark-mode select,
+body.dark-mode input:read-only,
+body.dark-mode input:disabled {
+  background-color: var(--card-bg, #1e293b) !important;
+  color: var(--text-main, #f1f5f9) !important;
+}
+
+/* Fix browser autofill white background */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px var(--card-bg) inset !important;
+  -webkit-text-fill-color: var(--text-main) !important;
+  transition: background-color 5000s ease-in-out 0s;
 }
 
 /* REPORT */

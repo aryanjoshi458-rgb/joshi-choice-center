@@ -2,43 +2,51 @@ document.addEventListener('DOMContentLoaded', () => {
     // 1. CINEMATIC INTRO SEQUENCE (GSAP)
     function playIntro() {
         const tl = gsap.timeline();
-        
+
         // Initial setup
-        gsap.set(".login-card", { visibility: "visible", opacity: 0, scale: 0.9 });
-        gsap.set(".login-logo", { scale: 1.5, y: 50, opacity: 0 });
-        
-        tl.to(".login-logo", { 
-            opacity: 1, 
-            y: 0, 
-            scale: 1, 
-            duration: 1.2, 
-            ease: "expo.out" 
+        gsap.set(".login-card", { visibility: "visible", opacity: 0, scale: 0.95, y: 20 });
+        gsap.set(".login-logo", { scale: 0.5, opacity: 0, rotate: -10 });
+        gsap.set(".signature-mask-path", { strokeDashoffset: 1200 });
+
+        tl.to(".login-logo", {
+            opacity: 1,
+            scale: 1,
+            rotate: 0,
+            duration: 1.2,
+            ease: "elastic.out(1, 0.8)"
         })
-        .to(".login-card", { 
-            opacity: 1, 
-            scale: 1, 
-            duration: 0.8, 
-            ease: "power3.out" 
-        }, "-=0.6")
-        .from(".login-header h1, .login-header p", { 
-            y: 30, 
-            opacity: 0, 
-            stagger: 0.2, 
-            duration: 0.8, 
-            ease: "power3.out" 
-        }, "-=0.4")
-        .to(".form-group", { 
-            y: 0, 
-            opacity: 1, 
-            stagger: 0.15, 
-            duration: 0.6, 
-            ease: "back.out(1.7)" 
-        }, "-=0.4")
-        .to(".login-btn, .forgot-password-link, .login-card-footer", { 
-            opacity: 1, 
-            duration: 0.5, 
-            stagger: 0.1 
-        }, "-=0.2");
+            .to(".login-card", {
+                opacity: 1,
+                scale: 1,
+                y: 0,
+                duration: 1,
+                ease: "expo.out"
+            }, "-=0.8")
+            .to(".signature-mask-path", {
+                strokeDashoffset: 0,
+                duration: 2.5,
+                ease: "power1.inOut"
+            }, "-=0.5")
+            .from(".login-header p", {
+                y: 10,
+                opacity: 0,
+                duration: 0.8,
+                ease: "power3.out"
+            }, "-=1.5")
+            .to(".form-group", {
+                y: 0,
+                opacity: 1,
+                stagger: 0.1,
+                duration: 0.6,
+                ease: "power2.out"
+            }, "-=1.2")
+            .to(".login-btn, .forgot-password-link, .login-card-footer", {
+                opacity: 1,
+                y: 0,
+                duration: 0.6,
+                stagger: 0.1,
+                ease: "power2.out"
+            }, "-=0.8");
     }
 
     // Play intro
@@ -101,12 +109,12 @@ document.addEventListener('DOMContentLoaded', () => {
         forgotPasswordBtn.addEventListener('click', () => {
             recoveryModal.classList.add('show');
             // GSAP Premium Opening Animation
-            gsap.fromTo(".recovery-card", 
-                { scale: 0.8, opacity: 0, y: 20 }, 
+            gsap.fromTo(".recovery-card",
+                { scale: 0.8, opacity: 0, y: 20 },
                 { scale: 1, opacity: 1, y: 0, duration: 0.6, ease: "back.out(1.7)" }
             );
-            gsap.fromTo(".recovery-modal", 
-                { backgroundColor: "rgba(0,0,0,0)" }, 
+            gsap.fromTo(".recovery-modal",
+                { backgroundColor: "rgba(0,0,0,0)" },
                 { backgroundColor: "rgba(0,0,0,0.8)", duration: 0.4 }
             );
         });
@@ -114,11 +122,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (closeRecovery) {
         closeRecovery.addEventListener('click', () => {
-            gsap.to(".recovery-card", { 
-                scale: 0.9, 
-                opacity: 0, 
-                y: 10, 
-                duration: 0.3, 
+            gsap.to(".recovery-card", {
+                scale: 0.9,
+                opacity: 0,
+                y: 10,
+                duration: 0.3,
                 ease: "power2.in",
                 onComplete: () => {
                     recoveryModal.classList.remove('show');

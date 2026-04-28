@@ -39,25 +39,30 @@ document.addEventListener("DOMContentLoaded", () => {
         return isNaN(d) ? new Date(0) : d;
     };
 
-    // 1. DATA EXTRACTION & STATS (Optimized to use 'customers' database)
+    // 1. DATA EXTRACTION & STATS (Optimized for CID System)
     function loadCustomers() {
         const savedCustomers = JSON.parse(localStorage.getItem("customers") || "[]");
         const txns = JSON.parse(localStorage.getItem("transactions") || "[]");
         let totalBusiness = 0;
 
-        // Create a map of customer stats from transactions
+        // Create a map of customer stats using the Unique CID
         const statsMap = new Map();
         txns.forEach(t => {
-            const mobile = (t.mobileNumber || t.mobile || "").toString().trim();
-            const cleanMobile = mobile.replace(/^\+91\s?/, "").replace(/\D/g, "");
-            
-            if (!cleanMobile) return;
+            // Priority: Transaction CID -> Derived CID (Backward compatibility)
+            let cid = t.customerId;
+            if (!cid) {
+                const aadhar = (t.aadharNumber || "").replace(/-/g, "");
+                const mobile = (t.mobileNumber || t.mobile || "").replace(/^\+91\s?/, "").replace(/\D/g, "");
+                cid = aadhar.length === 12 ? "CID-A-" + aadhar : (mobile.length === 10 ? "CID-M-" + mobile : null);
+            }
+
+            if (!cid) return; // Skip guest txns with no ID
 
             const txnAmount = Number(t.totalAmount || 0);
             totalBusiness += txnAmount;
 
-            if (!statsMap.has(cleanMobile)) {
-                statsMap.set(cleanMobile, {
+            if (!statsMap.has(cid)) {
+                statsMap.set(cid, {
                     totalVisits: 0,
                     totalSpend: 0,
                     lastSeen: new Date(0),
@@ -66,7 +71,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
             }
 
-            const s = statsMap.get(cleanMobile);
+            const s = statsMap.get(cid);
             s.totalVisits += 1;
             s.totalSpend += txnAmount;
 
@@ -91,10 +96,9 @@ document.addEventListener("DOMContentLoaded", () => {
             if (txnDate > s.lastSeen) s.lastSeen = txnDate;
         });
 
-        // Build the display list from savedCustomers
+        // Build the display list
         allCustomers = savedCustomers.map(c => {
-            const cleanMobile = c.mobile.replace(/^\+91\s?/, "").replace(/\D/g, "");
-            const s = statsMap.get(cleanMobile) || {
+            const s = statsMap.get(c.id) || {
                 totalVisits: 0,
                 totalSpend: 0,
                 lastSeen: parseSafeDate(c.lastVisit),
@@ -102,11 +106,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 history: []
             };
 
-            const sortedBanks = Object.entries(s.banks).sort((a,b) => b[1] - a[1]);
-            
+            const sortedBanks = Object.entries(s.banks).sort((a, b) => b[1] - a[1]);
+
             return {
                 ...c,
-                mobile: cleanMobile, // Keep clean for logic
                 totalVisits: s.totalVisits,
                 totalSpend: s.totalSpend,
                 lastSeen: s.lastSeen.getTime() === 0 ? parseSafeDate(c.lastVisit) : s.lastSeen,
@@ -114,9 +117,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 primaryBank: sortedBanks.length > 0 ? sortedBanks[0][0] : null
             };
         });
-        
+
         // Mark Top 3 with stars (on cards only)
-        const sortedBySpend = [...allCustomers].sort((a,b) => b.totalSpend - a.totalSpend);
+        const sortedBySpend = [...allCustomers].sort((a, b) => b.totalSpend - a.totalSpend);
         allCustomers.forEach(c => c.isTop = false);
         sortedBySpend.slice(0, 3).filter(c => c.totalSpend > 0).forEach(c => c.isTop = true);
 
@@ -136,7 +139,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const starHtml = c.isTop ? `<div class="star-badge" title="Top 3 Customer">★</div>` : "";
         const topClass = c.isTop ? "is-top-elite" : "";
         const isGuest = c.mobile === "Guest";
-        
+
         const bankHtml = c.primaryBank ? `
             <div class="preferred-bank">
                 <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v3M12 14v3M16 14v3"/></svg>
@@ -160,13 +163,13 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         return `
-            <div class="customer-card premium-shadow ${topClass}" onclick="viewProfile('${isGuest ? c.key : c.mobile}')" style="opacity: 1;">
+            <div class="customer-card premium-shadow ${topClass}" onclick="viewProfile('${c.id}')" style="opacity: 1;">
                 ${starHtml}
                 <div class="card-top">
                     <div class="avatar ${isGuest ? 'guest-avatar' : ''}">${initial}</div>
                     <div class="info">
                         <h3>${c.name}</h3>
-                        <div class="mobile">${isGuest ? 'Guest User' : '+91 ' + c.mobile}</div>
+                        <div class="mobile">${(c.mobile && c.mobile !== "Guest") ? c.mobile : '<span style="opacity:0.6; font-size:0.9em;">No Mobile</span>'}</div>
                         ${bankHtml}
                     </div>
                 </div>
@@ -204,7 +207,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (currentFilter === "all") return true;
             if (currentFilter === "regular") return c.totalVisits >= 3;
             if (currentFilter === "top") return c.isTop;
-            if (currentFilter === "new") return c.firstSeen > thirtyDaysAgo;
+            if (currentFilter === "new") return c.lastVisit > thirtyDaysAgo;
             return true;
         });
 
@@ -227,7 +230,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         customerGrid.innerHTML = data.map(c => createCustomerCard(c)).join('');
-        
+
         if (window.gsap) {
             gsap.to("#customerGrid .customer-card", {
                 opacity: 1,
@@ -257,6 +260,6 @@ document.addEventListener("DOMContentLoaded", () => {
     loadCustomers();
 });
 
-function viewProfile(mobileOrKey) {
-    window.location.href = `customer-profile.html?mobile=${encodeURIComponent(mobileOrKey)}`;
+function viewProfile(cid) {
+    window.location.href = `customer-profile.html?cid=${encodeURIComponent(cid)}`;
 }

@@ -4,21 +4,49 @@
   margin-top: -40px;
 }
 
-.page-title {
-  font-size: 26px;
-  font-weight: 600;
-  margin-bottom: 10px;
+.page-title-aura {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.page-title-aura h2 {
+  font-size: 28px;
+  font-weight: 700;
   color: var(--text-main);
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+
+.aura-badge-glow {
+  background: rgba(99, 102, 241, 0.1);
+  color: #818cf8;
+  padding: 4px 12px;
+  border-radius: 30px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  box-shadow: 0 0 15px rgba(99, 102, 241, 0.1);
 }
 
 .form-card {
-  background: var(--card-bg);
-  padding: 25px;
-  border-radius: 12px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  background: var(--card-bg, rgba(30, 41, 59, 0.4));
+  backdrop-filter: blur(20px);
+  padding: 30px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
   margin-bottom: 30px;
   max-width: 1500px;
   color: var(--text-main);
+  transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.form-card:hover {
+  border-color: rgba(99, 102, 241, 0.3);
 }
 
 .form-grid {
@@ -28,11 +56,20 @@
 }
 
 .form-grid input {
-  padding: 12px;
-  border: 1px solid var(--border-color, #ddd);
-  border-radius: 8px;
-  background: var(--card-bg, #ffffff);
+  padding: 14px;
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  background: rgba(15, 23, 42, 0.3);
   color: var(--text-main);
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.form-grid input:focus {
+  border-color: var(--primary-color, #6366f1);
+  background: rgba(15, 23, 42, 0.5);
+  box-shadow: 0 0 15px rgba(99, 102, 241, 0.2);
+  outline: none;
 }
 
 .add-btn {
@@ -46,10 +83,12 @@
 }
 
 .table-card {
-  background: var(--card-bg);
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  background: var(--card-bg, rgba(30, 41, 59, 0.4));
+  backdrop-filter: blur(20px);
+  padding: 25px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
   color: var(--text-main);
 }
 
@@ -59,58 +98,84 @@ table {
 }
 
 th {
-  background: var(--hover-bg, #f5f6fa);
-  padding: 14px;
+  background: rgba(99, 102, 241, 0.1);
+  padding: 16px;
   text-align: left;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--text-main);
-  border-bottom: 1px solid var(--border-color, #eee);
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 1px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 td {
-  padding: 12px;
-  border-top: 1px solid var(--border-color, #eee);
+  padding: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   color: var(--text-main);
+  font-size: 14px;
+}
+
+tr:hover td {
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .status {
-  padding: 5px 10px;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-block;
 }
 
 .pending {
-  background: #fff3cd;
-  color: #856404;
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.1);
 }
 
 .paid {
-  background: #10b981;
-  color: #fff;
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.1);
 }
 
 .btn {
-  padding: 6px 12px;
+  padding: 8px 12px;
   border: none;
-  border-radius: 6px;
+  border-radius: 10px;
   cursor: pointer;
   margin-right: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.3s ease;
 }
 
 .btn-paid {
-  background: #2196F3;
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
   color: white;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
 }
 
 .btn-pending {
-  background: #ff9800;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
   color: white;
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
 }
 
 .btn-delete {
-  background: #f44336;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
   color: white;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
 }
 
 /* FLOATING INPUT HOLDER KA CSS */
@@ -241,54 +306,93 @@ td {
   color: red;
 }
 
-/* STATUS FILTER KA CSS CODE */
-/* 🎯 STATUS FILTER */
+/* 🎯 STATUS FILTER (Reports Style Integration) */
+.aura-select-container {
+  margin-left: 20px !important;
+  min-width: 140px;
+}
+
 #onlyStatusFilter {
-  width: auto;
-  min-width: 100px;
-  max-width: 110px;
-  margin-left: 8px;
-  margin-top: -4px;
-  padding: 0 10px;
-  font-size: 13px;
-  border: 1px solid var(--border-color, #d1d5db);
-  border-radius: 10px;
-  height: 32px;
-  background: var(--card-bg, #ffffff);
-  color: var(--text-main, #111827);
-  cursor: pointer;
-  transition: all 0.25s ease;
+  display: none; /* AuraSelect will handle the UI */
 }
 
-#onlyStatusFilter:hover {
-  border-color: #4CAF50;
-}
-
-#onlyStatusFilter:focus {
-  border-color: #007bff;
-}
-
-/* 🔥 SEARCH EXPAND PE MOVE EFFECT */
-.search-expand.active+#onlyStatusFilter {
-  transform: translateX(10px);
+/* 🔥 SEARCH EXPAND PE MOVE EFFECT REMOVED FOR CLEANER LOOK */
+.search-expand.active + .aura-select-container {
+  transform: none;
 }
 
 /* PENDING CSS AMOUNT WALA CODE HAI JO TOTAL AMOUNT PENDING DIKHATA HAI REPORT HEADER ME */
-/* 💰 PENDING AMOUNT BOX */
-#pendingAmountBox {
-  font-size: 13px;
-  padding: 6px 12px;
-  border-radius: 20px;
-  background: var(--hover-bg, #fff3cd);
-  color: var(--text-main, #856404);
-  border: 1px solid var(--border-color, #ffeeba);
-  font-weight: 500;
-  white-space: nowrap;
+.aura-table-row {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* 📐 TOP ALIGN FIX */
+.aura-table-row:hover {
+  background: rgba(99, 102, 241, 0.05) !important;
+  transform: scale(1.002);
+}
+
+.aura-index {
+  background: rgba(255, 255, 255, 0.05);
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.aura-mobile-tag {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 13px;
+  color: var(--text-main);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.aura-action-group {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+#pendingAmountBox {
+  background: rgba(245, 158, 11, 0.1);
+  padding: 8px 18px;
+  border-radius: 50px;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  font-weight: 700;
+  color: #f59e0b;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: fit-content;
+  white-space: nowrap;
+  backdrop-filter: blur(10px);
+}
+
+#pendingAmountBox span:first-child {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  opacity: 0.7;
+}
+
+#pendingAmountBox span#totalPendingAmount {
+  font-size: 16px;
+  letter-spacing: 0.5px;
+  color: #fbbf24;
+}
+
 #customSearchContainer {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 20px;
+  gap: 15px;
 }

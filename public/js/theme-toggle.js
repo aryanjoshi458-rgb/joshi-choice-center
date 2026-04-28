@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
   console.log("Aura V4: Initializing Seasonal Sync Engine...");
-  
+
   const themeToggle = document.getElementById("themeToggleV4");
   const knob = document.getElementById("celestialKnob");
   const skyWindow = document.querySelector(".celestial-sky-window");
@@ -11,9 +11,9 @@ document.addEventListener("DOMContentLoaded", () => {
   lightSound.volume = 0.5;
 
   const ALL_THEME_CLASSES = [
-    "dark-mode", "eye-protector-mode", "ocean-mode", "business-mode", 
-    "midnight-slate-mode", "royal-amethyst-mode", "emerald-haven-mode", 
-    "sunset-horizon-mode", "cyberpunk-mode", "sakura-mode", 
+    "dark-mode", "eye-protector-mode", "ocean-mode", "business-mode",
+    "midnight-slate-mode", "royal-amethyst-mode", "emerald-haven-mode",
+    "sunset-horizon-mode", "cyberpunk-mode", "sakura-mode",
     "summer-mode", "monsoon-mode", "winter-mode"
   ];
 
@@ -29,53 +29,58 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const currentMode = mode || (document.body.classList.contains("dark-mode") ? "dark" : "light");
     const currentSeason = season || getAutoSeason();
-    
+
     // Clear old atmosphere
-    skyWindow.innerHTML = ""; 
-    
+    skyWindow.innerHTML = "";
+
     // Sync Seasonal Class to Container
     themeToggle.classList.remove("season-summer", "season-winter", "season-monsoon");
     themeToggle.classList.add(`season-${currentSeason}`);
-    
+
     console.log(`Aura V4: Atmosphere Sync -> ${currentMode} | ${currentSeason}`);
 
     // Create 16 atmospheric slots
-    for(let i=0; i<16; i++) {
-        const particle = document.createElement("span");
-        particle.className = "celestial-fx-particle";
-        
-        if (currentMode === "light" || currentMode === "theme-light") { // Handle any light variant
-            if (currentSeason === "summer") particle.classList.add("fx-day-ray");
-            else if (currentSeason === "monsoon") particle.classList.add("fx-day-rain");
-            else particle.classList.add("fx-day-cloud");
-        } else {
-            if (currentSeason === "summer") particle.classList.add("fx-night-star");
-            else if (currentSeason === "monsoon") particle.classList.add("fx-night-rain");
-            else particle.classList.add("fx-night-snow");
-        }
+    for (let i = 0; i < 16; i++) {
+      const particle = document.createElement("span");
+      particle.className = "celestial-fx-particle";
 
-        particle.style.left = `${Math.random() * 95}%`;
-        particle.style.top = `${Math.random() * 90}%`;
-        particle.style.animationDelay = `${Math.random() * 8}s`;
-        particle.style.animationDuration = `${Math.random() * 4 + 2}s`;
-        
-        skyWindow.appendChild(particle);
+      if (currentMode === "light" || currentMode === "theme-light") { // Handle any light variant
+        if (currentSeason === "summer") particle.classList.add("fx-day-ray");
+        else if (currentSeason === "monsoon") particle.classList.add("fx-day-rain");
+        else particle.classList.add("fx-day-cloud");
+      } else {
+        if (currentSeason === "summer") particle.classList.add("fx-night-star");
+        else if (currentSeason === "monsoon") particle.classList.add("fx-night-rain");
+        else particle.classList.add("fx-night-snow");
+      }
+
+      particle.style.left = `${Math.random() * 95}%`;
+      particle.style.top = `${Math.random() * 90}%`;
+      particle.style.animationDelay = `${Math.random() * 8}s`;
+      particle.style.animationDuration = `${Math.random() * 4 + 2}s`;
+
+      skyWindow.appendChild(particle);
     }
   }
 
   function applyTheme(isUserAction = false) {
     const savedTheme = localStorage.getItem("theme") || "light";
-    
+
     document.body.classList.remove(...ALL_THEME_CLASSES);
+    document.documentElement.classList.remove(...ALL_THEME_CLASSES);
+
     if (savedTheme !== "light") {
       document.body.classList.add(`${savedTheme}-mode`);
+      document.documentElement.classList.add(`${savedTheme}-mode`);
+    } else {
+      document.documentElement.style.backgroundColor = ""; // Clear anti-flash override
     }
-    
+
     // Update Slider UI if it exists
-    initSkyAtmosphere(); 
-    
+    initSkyAtmosphere();
+
     if (isUserAction) {
-        window.dispatchEvent(new Event("themeChanged"));
+      window.dispatchEvent(new Event("themeChanged"));
     }
   }
 
@@ -109,10 +114,10 @@ document.addEventListener("DOMContentLoaded", () => {
     themeToggle.addEventListener("click", () => {
       const isNowDark = !document.body.classList.contains("dark-mode");
       localStorage.setItem("theme", isNowDark ? "dark" : "light");
-      
-      if (isNowDark) { darkSound.play().catch(()=>{}); } 
-      else { lightSound.play().catch(()=>{}); }
-      
+
+      if (isNowDark) { darkSound.play().catch(() => { }); }
+      else { lightSound.play().catch(() => { }); }
+
       applyTheme(true);
     });
   }

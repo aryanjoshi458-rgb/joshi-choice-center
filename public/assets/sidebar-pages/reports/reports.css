@@ -692,22 +692,24 @@
 }
 
 #totalTransactionsBox {
-  background: linear-gradient(135deg, #fff9f0, #fff2e0);
-  color: #ea580c;
-  border: 1px solid #ffedd5;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+  box-shadow: 0 8px 20px rgba(217, 119, 6, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 #totalBusinessBox {
-  background: linear-gradient(135deg, #f0fdf4, #dcfce7);
-  color: #15803d;
-  border: 1px solid #bbf7d0;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 #totalCommissionBox {
-  background: linear-gradient(135deg, #4f46e5, #3730a3);
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
   color: white;
   margin-left: auto;
-  box-shadow: 0 8px 20px rgba(79, 70, 229, 0.3);
+  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -730,19 +732,16 @@
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
 }
 
-/* Dark Mode Overrides for Boxes */
-body.dark-mode .commission-box:not(#totalCommissionBox) {
-  background: rgba(30, 41, 59, 0.7);
-  border-color: rgba(255, 255, 255, 0.1);
-  color: #f8fafc;
+/* Dark Mode Overrides for Boxes - Keep gradients vibrant */
+body.dark-mode .commission-box {
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
-body.dark-mode #totalBusinessValue {
-  color: #4ade80;
-}
-
-body.dark-mode #totalTransactionsValue {
-  color: #fb923c;
+body.dark-mode #totalBusinessValue,
+body.dark-mode #totalTransactionsValue,
+body.dark-mode #commissionValue {
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
 /* Modal styles removed in favor of modals-shared.css */
@@ -919,3 +918,4 @@ body.dark-mode .service-badge.recharge {
 body.dark-mode .service-badge.printing {
   color: #fbbf24;
 }
+

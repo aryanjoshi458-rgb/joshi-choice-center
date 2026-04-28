@@ -19,7 +19,17 @@ document.addEventListener("DOMContentLoaded", () => {
             // Set initial transforms
             gsap.set(btn, { transformPerspective: 1000, transformStyle: "preserve-3d" });
             
-            // 1. MAGNETIC + 3D TILT HOVER
+            // 1. MODERN LIFT + GLOW HOVER (Replacing Magnet)
+            btn.addEventListener("mouseenter", () => {
+                gsap.to(btn, {
+                    y: -4,
+                    scale: 1.02,
+                    duration: 0.4,
+                    ease: "power2.out",
+                    overwrite: "auto"
+                });
+            });
+            
             btn.addEventListener("mousemove", (e) => {
                 const rect = btn.getBoundingClientRect();
                 const x = e.clientX - rect.left;
@@ -28,17 +38,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 const centerX = rect.width / 2;
                 const centerY = rect.height / 2;
                 
-                const rotateX = ((y - centerY) / centerY) * -10; // Max 10 deg
-                const rotateY = ((x - centerX) / centerX) * 10;  // Max 10 deg
-                
-                const moveX = (x - centerX) * 0.15; // Magnetic move
-                const moveY = (y - centerY) * 0.15;
+                const rotateX = ((y - centerY) / centerY) * -5;
+                const rotateY = ((x - centerX) / centerX) * 5;
                 
                 gsap.to(btn, {
                     rotationX: rotateX,
                     rotationY: rotateY,
-                    x: moveX,
-                    y: moveY,
                     duration: 0.4,
                     ease: "power2.out",
                     overwrite: "auto"

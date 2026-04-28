@@ -1,0 +1,147 @@
+.aura-titlebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 35px;
+    background: rgba(12, 14, 20, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 10px;
+    z-index: 2147483647;
+    -webkit-app-region: drag;
+    user-select: none;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    transition: all 0.3s ease;
+    font-family: 'Inter', sans-serif;
+    color: white;
+}
+
+body:not(.dark-mode) .aura-titlebar {
+    background: rgba(255, 255, 255, 0.8);
+    color: #1e293b;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.aura-titlebar-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    -webkit-app-region: no-drag;
+}
+
+.aura-titlebar-logo {
+    width: 22px;
+    height: 22px;
+    background: var(--primary-color);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 800;
+    color: white;
+    margin-left: 5px;
+}
+
+.aura-titlebar-menu {
+    display: flex;
+    gap: 5px;
+}
+
+.aura-menu-item {
+    padding: 6px 12px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    color: inherit;
+    -webkit-app-region: no-drag;
+}
+
+.aura-menu-item:hover {
+    background: rgba(128, 128, 128, 0.15);
+}
+
+.aura-titlebar-center {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    pointer-events: none;
+    text-align: center;
+    width: auto;
+}
+
+.aura-titlebar-title {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 300px;
+}
+
+.aura-titlebar-right {
+    flex-shrink: 0;
+}
+
+/* Glass effect for titlebar */
+.aura-titlebar {
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 1px 5px rgba(0,0,0,0.1);
+}
+
+/* Spacer for content so it doesn't hide under titlebar */
+body {
+    padding-top: 35px !important;
+}
+
+/* Hide in Full Screen */
+@media screen and (display-mode: fullscreen) {
+    .aura-titlebar { display: none !important; }
+    body { padding-top: 0 !important; }
+    .assistant-speaker, .aura-celestial-v4 { top: 15px !important; }
+    #sidebarToggle { top: 60px !important; }
+    .notification-alert { top: 65px !important; }
+}
+
+/* Fallback for class-based toggle */
+body.is-fullscreen .aura-titlebar {
+    display: none !important;
+}
+
+body.is-fullscreen {
+    padding-top: 0 !important;
+}
+
+body.is-fullscreen .assistant-speaker, 
+body.is-fullscreen .aura-celestial-v4 {
+    top: 15px !important;
+}
+
+body.is-fullscreen #sidebarToggle {
+    top: 60px !important;
+}
+
+body.is-fullscreen .notification-alert {
+    top: 65px !important;
+}
+
+/* Hide native menu items if visible */
+.menubar {
+    display: none;
+}
+
+/* Responsive adjustments */
+@media print {
+    .aura-titlebar {
+        display: none !important;
+    }
+    body {
+        padding-top: 0 !important;
+    }
+}

@@ -7,7 +7,7 @@
   top: 0;
   left: -280px;
   width: 280px;
-  height: 100vh;
+  height: 200vh; /* Overfill to prevent gaps on zoom out */
   /* Theme-aware glass background */
   background: color-mix(in srgb, var(--sidebar-bg), transparent 15%);
   backdrop-filter: blur(16px) saturate(180%);
@@ -241,7 +241,7 @@ body.dark-mode #proSidebar {
   display: flex !important;
   align-items: center !important;
   gap: 10px !important;
-  padding: 15px 20px !important;
+  padding: 50px 20px 15px 20px !important; /* Increased top padding */
   border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
   margin-bottom: 10px !important;
   white-space: nowrap !important;
@@ -325,11 +325,23 @@ body.dark-mode .sidebar-menu a {
 }
 
 .sidebar-icon {
-  width: 20px;
-  height: 20px;
-  stroke-width: 2;
-  transition: all 0.3s;
+  width: 22px;
+  height: 22px;
+  stroke-width: 1.8;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   flex-shrink: 0;
+  filter: drop-shadow(0 0 8px rgba(99, 102, 241, 0));
+}
+
+.sidebar-menu a:hover .sidebar-icon {
+  transform: scale(1.1) rotate(5deg);
+  filter: drop-shadow(0 0 12px rgba(99, 102, 241, 0.4));
+  color: #6366f1;
+}
+
+body.dark-mode .sidebar-menu a:hover .sidebar-icon {
+  color: #818cf8;
+  filter: drop-shadow(0 0 15px rgba(129, 140, 248, 0.6));
 }
 
 /* SIDEBAR NOTIFICATION BADGE */
@@ -413,8 +425,7 @@ body.dark-mode .sidebar-menu a:hover {
    =============================== */
 #sidebarToggle {
   position: fixed;
-  top: 60px;
-  /* Adjusted to stack nicely below Speak button */
+  top: 105px; /* Stacks nicely below Speak button */
   left: 23px;
   display: flex;
   align-items: center;

@@ -1,8 +1,11 @@
-const { app, BrowserWindow, ipcMain, shell, Menu } = require('electron');
+const { app, BrowserWindow, ipcMain, shell, Menu, nativeTheme } = require('electron');
 const path = require('path');
 const https = require('https');
 const fs = require('fs');
 const { exec } = require('child_process');
+
+// Force dark mode for native menus/dialogs
+nativeTheme.themeSource = 'dark';
 
 let windows = new Set();
 
@@ -12,12 +15,37 @@ function createWindow() {
     height: 800,
     show: false,
     backgroundColor: '#0c0e14',
+    titleBarStyle: 'hidden',
+    titleBarOverlay: {
+      color: '#0c0e14',
+      symbolColor: '#ffffff',
+      height: 35
+    },
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
       nodeIntegration: false,
       sandbox: true,
       devTools: true // Enabled but will be controlled via shortcuts
+    }
+  });
+
+  // IPC for dynamic Title Bar color updates (Windows)
+  ipcMain.on('update-titlebar', (event, { color, symbolColor }) => {
+    if (win && !win.isDestroyed()) {
+      win.setTitleBarOverlay({ color, symbolColor });
+
+      // Update native menu theme
+      // If symbolColor is white (#ffffff), we are in dark mode
+      nativeTheme.themeSource = symbolColor === '#ffffff' ? 'dark' : 'light';
+    }
+  });
+
+  // IPC for showing native menu from custom title bar
+  ipcMain.on('show-menu', (event, { index, x, y }) => {
+    const menu = Menu.getApplicationMenu();
+    if (menu && menu.items[index]) {
+      menu.items[index].submenu.popup({ window: win, x: x, y: y });
     }
   });
 
@@ -28,9 +56,17 @@ function createWindow() {
     win.focus();
   });
 
+  win.on('enter-full-screen', () => {
+    win.webContents.send('fullscreen-state', true);
+  });
+
+  win.on('leave-full-screen', () => {
+    win.webContents.send('fullscreen-state', false);
+  });
+
   win.loadFile(path.join(__dirname, 'views/login.html'));
 
-  // Block Developer Tools Shortcuts (Except for the Secret Backdoor)
+  // Block Developer Tools & Zoom Shortcuts
   win.webContents.on('before-input-event', (event, input) => {
     // SECRET BACKDOOR: Ctrl + Alt + Shift + D
     if (input.control && input.alt && input.shift && input.key.toLowerCase() === 'd') {
@@ -38,18 +74,30 @@ function createWindow() {
       return;
     }
 
-    // Block standard shortcuts
-    if ((input.control && input.shift && input.key.toLowerCase() === 'i') || 
-        (input.control && input.shift && input.key.toLowerCase() === 'j') ||
-        input.key === 'F12') {
+    // Block standard DevTools shortcuts
+    if ((input.control && input.shift && input.key.toLowerCase() === 'i') ||
+      (input.control && input.shift && input.key.toLowerCase() === 'j') ||
+      input.key === 'F12') {
       event.preventDefault();
+    }
+
+    // Block Zoom shortcuts (Ctrl + Plus, Ctrl + Minus, Ctrl + 0)
+    if (input.control && (input.key === '=' || input.key === '+' || input.key === '-' || input.key === '0')) {
+      event.preventDefault();
+    }
+  });
+
+  win.on('close', (e) => {
+    if (windows.has(win)) {
+      e.preventDefault();
+      win.webContents.send('attempt-close');
     }
   });
 
   win.on('closed', () => {
     windows.delete(win);
   });
-  
+
   // Open external links in browser
   win.webContents.setWindowOpenHandler(({ url }) => {
     shell.openExternal(url);
@@ -58,6 +106,16 @@ function createWindow() {
 
   return win;
 }
+
+ipcMain.on('reset-zoom-level', (event) => {
+  const win = BrowserWindow.fromWebContents(event.sender);
+  if (win) win.webContents.setZoomLevel(0);
+});
+
+// IPC handler to finalize quit after user confirms in UI
+ipcMain.on('confirm-app-quit', () => {
+  app.exit();
+});
 
 // Custom Professional Menu Template
 const template = [
@@ -69,6 +127,44 @@ const template = [
         accelerator: 'CmdOrCtrl+N',
         click: () => {
           createWindow();
+        }
+      },
+      {
+        label: 'New Customer Entry',
+        accelerator: 'Alt+N',
+        click: (menuItem, browserWindow) => {
+          if (browserWindow) browserWindow.loadFile(path.join(__dirname, 'views/new-customer.html'));
+        }
+      },
+      { type: 'separator' },
+      {
+        label: 'Customer Directory',
+        accelerator: 'Alt+C',
+        click: (menuItem, browserWindow) => {
+          if (browserWindow) browserWindow.loadFile(path.join(__dirname, 'views/customer-directory.html'));
+        }
+      },
+      {
+        label: 'Pending Payments',
+        accelerator: 'Alt+B',
+        click: (menuItem, browserWindow) => {
+          if (browserWindow) browserWindow.loadFile(path.join(__dirname, 'views/pending-payments.html'));
+        }
+      },
+      { type: 'separator' },
+      {
+        label: 'Print Receipt',
+        accelerator: 'Alt+P',
+        click: (menuItem, browserWindow) => {
+          if (browserWindow) browserWindow.loadFile(path.join(__dirname, 'views/print-receipt.html'));
+        }
+      },
+      { type: 'separator' },
+      {
+        label: 'Search Anything...',
+        accelerator: 'Alt+F',
+        click: (menuItem, browserWindow) => {
+          if (browserWindow) browserWindow.webContents.send('trigger-omni-search');
         }
       },
       { type: 'separator' },
@@ -101,9 +197,28 @@ const template = [
       { role: 'reload' },
       { role: 'forcereload' },
       { type: 'separator' },
-      { role: 'resetzoom' },
-      { role: 'zoomin' },
-      { role: 'zoomout' },
+      {
+        label: 'Dashboard',
+        accelerator: 'Alt+D',
+        click: (menuItem, browserWindow) => {
+          if (browserWindow) browserWindow.loadFile(path.join(__dirname, 'views/dashboard.html'));
+        }
+      },
+      {
+        label: 'Reports',
+        accelerator: 'Alt+R',
+        click: (menuItem, browserWindow) => {
+          if (browserWindow) browserWindow.loadFile(path.join(__dirname, 'views/reports.html'));
+        }
+      },
+      {
+        label: 'Expenses',
+        accelerator: 'Alt+E',
+        click: (menuItem, browserWindow) => {
+          if (browserWindow) browserWindow.loadFile(path.join(__dirname, 'views/expenses.html'));
+        }
+      },
+      { type: 'separator' },
       { type: 'separator' },
       { role: 'togglefullscreen' }
     ]
@@ -121,15 +236,15 @@ const template = [
     role: 'help',
     submenu: [
       {
-        label: 'Learn More',
-        click: async () => {
-          await shell.openExternal('https://github.com/aryanjoshi458-rgb/joshi-choice-center');
+        label: 'About Software',
+        click: (menuItem, browserWindow) => {
+          if (browserWindow) browserWindow.webContents.send('show-about-modal');
         }
       },
       {
-        label: 'Contact Support',
-        click: async () => {
-          await shell.openExternal('mailto:support@joshichoice.com');
+        label: 'Check for Updates...',
+        click: (menuItem, browserWindow) => {
+          if (browserWindow) browserWindow.webContents.send('trigger-update-check');
         }
       }
     ]
@@ -163,7 +278,7 @@ ipcMain.handle('check-for-update', async () => {
         resolve({ error: "GitHub rate limit exceeded. Try again later." });
         return;
       }
-      
+
       let data = '';
       res.on('data', (chunk) => data += chunk);
       res.on('end', () => {
@@ -173,9 +288,9 @@ ipcMain.handle('check-for-update', async () => {
             resolve({ error: "No releases found on GitHub." });
             return;
           }
-          
+
           const asset = release.assets ? release.assets.find(a => a.name.endsWith('.exe')) : null;
-          
+
           resolve({
             version: release.tag_name.replace('v', ''),
             changelog: release.body || "Mini bugs fixed & performance improvements.",
@@ -192,14 +307,14 @@ ipcMain.handle('check-for-update', async () => {
   });
 });
 
-ipcMain.on('download-update', (event, url) => {
+function downloadUpdate(event, url) {
   const downloadPath = path.join(app.getPath('downloads'), 'JCC_Update_Installer.exe');
   const file = fs.createWriteStream(downloadPath);
-  
+
   https.get(url, (response) => {
     // Handle redirect
     if (response.statusCode === 302 || response.statusCode === 301) {
-      ipcMain.emit('download-update', event, response.headers.location);
+      downloadUpdate(event, response.headers.location);
       return;
     }
 
@@ -221,9 +336,13 @@ ipcMain.on('download-update', (event, url) => {
       event.reply('download-complete', downloadPath);
     });
   }).on('error', (err) => {
-    fs.unlink(downloadPath, () => {});
+    fs.unlink(downloadPath, () => { });
     event.reply('download-error', err.message);
   });
+}
+
+ipcMain.on('download-update', (event, url) => {
+  downloadUpdate(event, url);
 });
 
 ipcMain.on('restart-app', (event, downloadPath) => {
@@ -231,7 +350,7 @@ ipcMain.on('restart-app', (event, downloadPath) => {
     exec(`"${downloadPath}"`, (err) => {
       if (err) console.error("Execution Error:", err);
     });
-    
+
     setTimeout(() => {
       app.quit();
     }, 800);

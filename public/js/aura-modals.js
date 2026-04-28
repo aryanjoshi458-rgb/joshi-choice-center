@@ -45,6 +45,16 @@ window.AuraDialog = (() => {
         } = options;
 
         return new Promise((resolve) => {
+            const keyHandler = (e) => {
+                if (e.key === "Enter" && !input) {
+                    btnConfirm.click();
+                }
+                if (e.key === "Escape" && showCancel) {
+                    close(false, resolve, keyHandler);
+                }
+            };
+            window.addEventListener("keydown", keyHandler);
+
             const titleEl = document.getElementById("auraModalTitle");
             const msgEl = document.getElementById("auraModalMsg");
             const iconEl = document.getElementById("auraModalIcon");
@@ -76,7 +86,7 @@ window.AuraDialog = (() => {
                 const btnCancel = document.createElement("button");
                 btnCancel.className = "aura-modal-btn cancel";
                 btnCancel.textContent = cancelText;
-                btnCancel.onclick = () => close(false, resolve);
+                btnCancel.onclick = () => close(false, resolve, keyHandler);
                 actionsEl.appendChild(btnCancel);
             }
 
@@ -90,7 +100,7 @@ window.AuraDialog = (() => {
                         return;
                     }
                 }
-                close(true, resolve);
+                close(true, resolve, keyHandler);
             };
             actionsEl.appendChild(btnConfirm);
 
@@ -100,6 +110,16 @@ window.AuraDialog = (() => {
 
             if (inputRef) {
                 setTimeout(() => inputRef.focus(), 300);
+                
+                // ✅ ENTER KEY SUPPORT
+                inputRef.addEventListener("keydown", (e) => {
+                    if (e.key === "Enter") {
+                        if (!btnConfirm.disabled) {
+                            btnConfirm.click();
+                        }
+                    }
+                });
+
                 if (input.verifyText) {
                     btnConfirm.disabled = true;
                     btnConfirm.style.opacity = "0.5";
@@ -113,7 +133,8 @@ window.AuraDialog = (() => {
         });
     }
 
-    function close(result, resolve) {
+    function close(result, resolve, keyHandler) {
+        if (keyHandler) window.removeEventListener("keydown", keyHandler);
         gsap.to(card, {
             scale: 0.9, opacity: 0, y: 10, duration: 0.3, ease: "power2.in", onComplete: () => {
                 overlay.classList.remove("active");

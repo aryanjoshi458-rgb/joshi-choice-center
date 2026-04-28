@@ -1,0 +1,151 @@
+/* Aura Select - Premium Custom Dropdown System */
+
+.aura-select-container {
+    position: relative;
+    width: auto;
+    min-width: 140px;
+    user-select: none;
+    font-family: 'Poppins', sans-serif;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.aura-select-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    height: 32px;
+    background: rgba(30, 41, 59, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 13.5px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+.aura-select-trigger:hover {
+    background: rgba(30, 41, 59, 0.8);
+    border-color: rgba(99, 102, 241, 0.4);
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.15);
+    transform: translateY(-1px);
+    color: #fff;
+}
+
+.aura-select-container.open .aura-select-trigger {
+    border-color: #6366f1;
+    background: rgba(15, 23, 42, 0.9);
+    box-shadow: 0 0 25px rgba(99, 102, 241, 0.4);
+    color: #fff;
+}
+
+.aura-select-trigger .arrow {
+    width: 12px;
+    height: 12px;
+    margin-left: 12px;
+    transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    opacity: 0.6;
+}
+
+.aura-select-container.open .aura-select-trigger .arrow {
+    transform: rotate(180deg);
+    opacity: 1;
+    stroke: #6366f1;
+}
+
+.aura-select-dropdown {
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 0;
+    width: 100%;
+    min-width: 200px;
+    background: rgba(15, 23, 42, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    z-index: 10001;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-15px) scale(0.92);
+    transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+    overflow: hidden;
+}
+
+.aura-select-container.open .aura-select-dropdown {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+}
+
+.aura-select-options {
+    max-height: 70vh; /* Responsive Full Show for 12 months */
+    overflow-y: auto;
+    padding: 8px;
+    scrollbar-width: none;
+}
+
+.aura-select-options::-webkit-scrollbar {
+    display: none;
+}
+
+.aura-select-option {
+    padding: 12px 16px;
+    border-radius: 10px;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 2px;
+}
+
+.aura-select-option:hover {
+    background: rgba(99, 102, 241, 0.15);
+    color: #fff;
+    padding-left: 20px;
+}
+
+.aura-select-option.selected {
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    color: #fff;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.month-icon {
+    font-size: 14px;
+}
+
+/* Animation for items */
+.aura-select-container.open .aura-select-option {
+    animation: slideIn 0.3s ease forwards;
+    opacity: 0;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.aura-select-native {
+    display: none !important;
+}
