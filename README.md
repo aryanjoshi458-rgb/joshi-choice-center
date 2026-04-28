@@ -1,5 +1,12 @@
 Joshi Choice Center
 <br>
-Author - Aryan Joshi
+Author        - Aryan Joshi
 <br>
+Developer     - Aryan Joshi
+<br>
+System Status - Licensed & Active
+<br>
+Engine        - Aura Core & Cyrus v2.0
+<br>
+Environment   - Electron x64
 © 2026 Joshi Choice Center. All rights reserved.
