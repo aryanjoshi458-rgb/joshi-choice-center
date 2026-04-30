@@ -257,6 +257,13 @@ document.addEventListener("DOMContentLoaded", () => {
         applyFiltersAndSearch();
     });
 
+    // Listen for Disk Sync Completion
+    const refreshDirectory = () => {
+        loadCustomers();
+    };
+    window.addEventListener('auraDataSynced', refreshDirectory);
+    if (window.auraSyncComplete) refreshDirectory();
+
     loadCustomers();
 });
 

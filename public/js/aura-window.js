@@ -3,6 +3,88 @@
  * Handles custom title bar, professional menu bar, and theme syncing
  */
 (function () {
+    // --- 0. DATA SYNC ENGINE (Bridges localStorage with Disk) ---
+    const isElectron = window.electronAPI !== undefined;
+    if (isElectron && !window.auraSyncInitialized) {
+        window.auraSyncInitialized = true;
+
+        window.auraSyncComplete = false;
+        async function syncFromDisk() {
+            try {
+                const diskData = await window.electronAPI.getAllData();
+                if (diskData && Object.keys(diskData).length > 0) {
+                    for (const [key, value] of Object.entries(diskData)) {
+                        const localValue = localStorage.getItem(key);
+                        const diskValueStr = typeof value === 'string' ? value : JSON.stringify(value);
+                        if (localValue !== diskValueStr) {
+                            localStorage.setItem(key, diskValueStr);
+                        }
+                    }
+                    console.log("Aura Sync: Disk data successfully merged.");
+                    
+                    window.auraSyncComplete = true;
+                    
+                    // Re-apply zoom if handler exists
+                    if (window.applyAuraZoom) {
+                        window.applyAuraZoom();
+                    } else {
+                        // Fallback manual apply
+                        const z = localStorage.getItem("appZoom") || "1.0";
+                        if (document.body) {
+                            document.body.style.zoom = parseFloat(z);
+                        } else {
+                            window.addEventListener('DOMContentLoaded', () => {
+                                if (document.body) document.body.style.zoom = parseFloat(z);
+                            });
+                        }
+                    }
+
+                    // Re-apply theme if possible
+                    window.dispatchEvent(new Event('themeChanged'));
+                    
+                    window.dispatchEvent(new CustomEvent('auraDataSynced', { detail: diskData }));
+                } else {
+                    window.auraSyncComplete = true;
+                    window.dispatchEvent(new CustomEvent('auraDataSynced', { detail: {} }));
+                }
+            } catch (err) { 
+                console.error("Aura Sync Error:", err);
+                window.auraSyncComplete = true; 
+            }
+        }
+
+        // Intercept setItem for real-time backup
+        const originalSetItem = localStorage.setItem;
+        localStorage.setItem = function (key, value) {
+            originalSetItem.apply(this, arguments);
+            try {
+                let dataToSave = value;
+                try { dataToSave = JSON.parse(value); } catch (e) { }
+                window.electronAPI.saveToDisk(key, dataToSave);
+            } catch (err) { }
+        };
+
+        // Intercept removeItem for real-time deletion
+        const originalRemoveItem = localStorage.removeItem;
+        localStorage.removeItem = function (key) {
+            originalRemoveItem.apply(this, arguments);
+            try {
+                window.electronAPI.deleteFromDisk(key);
+            } catch (err) { }
+        };
+
+        // Intercept clear for full disk wipe
+        const originalClear = localStorage.clear;
+        localStorage.clear = function () {
+            originalClear.apply(this, arguments);
+            try {
+                window.electronAPI.clearDisk();
+            } catch (err) { }
+        };
+
+        syncFromDisk();
+    }
+
     function injectTitleBar() {
         if (document.querySelector('.aura-titlebar')) return;
 
@@ -130,11 +212,11 @@
         injectTitleBar();
         injectOmniSearch();
 
-        // Reset zoom level to 100% to fix any distortion
-        if (window.electronAPI && window.electronAPI.resetZoom) {
-            window.electronAPI.resetZoom();
+        // Sync theme immediately if data is already here
+        if (window.auraSyncComplete) {
+            syncThemeWithMain();
         }
-
+        
         // Listen for About Modal from native menu
         if (window.electronAPI && window.electronAPI.onShowAboutModal) {
             window.electronAPI.onShowAboutModal(() => {
@@ -149,9 +231,9 @@
             });
         }
 
-        syncThemeWithMain();
+        // Multiple syncs for safety
         setTimeout(syncThemeWithMain, 100);
-        setTimeout(syncThemeWithMain, 500); // Triple check
+        setTimeout(syncThemeWithMain, 500); 
     }
 
     if (document.readyState === 'loading') {

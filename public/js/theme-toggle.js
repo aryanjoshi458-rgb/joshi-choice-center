@@ -140,5 +140,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Initial load zoom
   window.applyAuraZoom();
+
+  // Listen for Disk Sync Completion
+  const refreshUI = () => {
+    console.log("Aura Sync: Refreshing UI Components...");
+    applyTheme(false);
+    applyMouseStyle();
+    window.applyAuraZoom();
+  };
+  window.addEventListener('auraDataSynced', refreshUI);
+  if (window.auraSyncComplete) refreshUI();
 });
 

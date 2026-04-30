@@ -58,7 +58,7 @@
 
 .mdp-header select {
   background: var(--hover-bg);
-  border: none;
+  border: 1px solid var(--border-color);
   border-radius: 10px;
   padding: 6px 10px;
   font-size: 14px;
@@ -67,12 +67,29 @@
   cursor: pointer;
   width: auto;
   margin-top: 0;
+  appearance: none; /* Remove default arrow for custom look if possible */
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  padding-right: 28px;
+}
+
+.mdp-header select option {
+  background: #1e293b; /* Dark background for options */
+  color: #f8fafc; /* Light text for options */
+  padding: 10px;
+}
+
+body.dark-mode .mdp-header select option {
+  background: #1e293b;
+  color: #f8fafc;
 }
 
 .mdp-header select:focus {
   outline: none;
-  background: var(--primary-color);
-  color: #fff;
+  border-color: var(--primary-color);
+  background-color: var(--hover-bg);
 }
 
 /* Navigation Arrows */

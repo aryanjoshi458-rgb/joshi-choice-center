@@ -5,7 +5,13 @@ window.filteredReportsData = [];
 
 document.addEventListener("DOMContentLoaded", () => {
   loadReports();
-  initSearchAndFilter();
+  // Listen for Disk Sync Completion
+  const refreshReports = () => {
+    loadReports();
+    initSearchAndFilter();
+  };
+  window.addEventListener('auraDataSynced', refreshReports);
+  if (window.auraSyncComplete) refreshReports();
 });
 /* =========================
    LOAD REPORTS

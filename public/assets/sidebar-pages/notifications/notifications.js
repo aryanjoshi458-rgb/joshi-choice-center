@@ -216,4 +216,12 @@ function initNotificationCenter() {
     // Initial Load
     renderFeed();
     updateDailySummary();
+
+    // Listen for Disk Sync Completion
+    const refreshNotifs = () => {
+        renderFeed();
+        updateDailySummary();
+    };
+    window.addEventListener('auraDataSynced', refreshNotifs);
+    if (window.auraSyncComplete) refreshNotifs();
 }

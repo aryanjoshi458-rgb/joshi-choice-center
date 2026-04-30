@@ -180,6 +180,14 @@ document.addEventListener('DOMContentLoaded', () => {
             updateThemeUI(newTheme);
             window.dispatchEvent(new Event('themeChanged'));
         });
+
+        // Update when data is synced from disk
+        const refresh = () => {
+            const syncedTheme = localStorage.getItem("theme") || "dark";
+            updateThemeUI(syncedTheme);
+        };
+        window.addEventListener('auraDataSynced', refresh);
+        if (window.auraSyncComplete) refresh();
     }
 
     async function showError(message) {

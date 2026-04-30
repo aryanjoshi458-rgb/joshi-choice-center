@@ -24,6 +24,13 @@ document.addEventListener("DOMContentLoaded", () => {
     // Initial Load
     loadExpenses();
 
+    // Listen for Disk Sync Completion
+    const refreshExpenses = () => {
+        loadExpenses();
+    };
+    window.addEventListener('auraDataSynced', refreshExpenses);
+    if (window.auraSyncComplete) refreshExpenses();
+
     // Toggle Conditional Fields
     const expCategory = document.getElementById("expCategory");
     const conditionalFields = document.getElementById("conditionalFields");

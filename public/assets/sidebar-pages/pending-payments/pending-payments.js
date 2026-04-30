@@ -245,6 +245,13 @@ document.addEventListener("DOMContentLoaded", function () {
 // ===== INIT =====
 loadCustomers();
 
+// Listen for Disk Sync Completion
+const refreshPending = () => {
+    loadCustomers();
+};
+window.addEventListener('auraDataSynced', refreshPending);
+if (window.auraSyncComplete) refreshPending();
+
 
 // SEARCH BAR JS CODE HAI IMP
 const searchBox = document.getElementById("searchExpand");

@@ -33,6 +33,15 @@ document.addEventListener("DOMContentLoaded", () => {
   loadTransactionsToTable();
   if (typeof updateNextTransactionId === "function") updateNextTransactionId();
 
+  // Listen for Disk Sync Completion
+  const refreshData = () => {
+    console.log("Aura Sync: Refreshing Business Data...");
+    loadTransactionsToTable();
+    if (typeof updateNextTransactionId === "function") updateNextTransactionId();
+  };
+  window.addEventListener('auraDataSynced', refreshData);
+  if (window.auraSyncComplete) refreshData();
+
   // --- Core Elements ---
   const custName = document.getElementById("custName");
   const custMobile = document.getElementById("custMobile");
@@ -162,8 +171,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Banking or PAN-Specific Validation
-    const isPAN = category === "Online Form & Government Services" && 
-                 document.getElementById("govService")?.value === "PAN Card Services";
+    const isPAN = category === "Online Form & Government Services" &&
+      document.getElementById("govService")?.value === "PAN Card Services";
 
     if (isBanking || isPAN) {
       const serviceName = isBanking ? "Banking" : "PAN Card";
@@ -747,8 +756,24 @@ window.loadTransactionsToTable = function () {
 
   const todayTxns = txns.filter(t => {
     if (!t.date) return false;
-    // Check if date matches today (using startsWith to handle time part)
-    return t.date.startsWith(todayStr) || t.date.startsWith(todayStrAlt);
+    const datePart = t.date.split(" ")[0].trim();
+    const parts = datePart.split("-");
+    if (parts.length !== 3) return false;
+
+    let ty, tm, td;
+    if (parts[0].length === 4) { // YYYY-MM-DD
+      ty = parseInt(parts[0]); 
+      tm = parseInt(parts[1]); 
+      td = parseInt(parts[2]);
+    } else { // DD-MM-YYYY
+      td = parseInt(parts[0]); 
+      tm = parseInt(parts[1]); 
+      ty = parseInt(parts[2]);
+    }
+
+    return ty === today.getFullYear() && 
+           tm === (today.getMonth() + 1) && 
+           td === today.getDate();
   });
 
   // Display newest first

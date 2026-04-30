@@ -246,6 +246,13 @@ function parseDateString(str) {
     if (!str) return null;
     const parts = str.split("-");
     if (parts.length !== 3) return null;
-    // Expecting DD-MM-YYYY
-    return new Date(parts[2], parts[1] - 1, parts[0]);
+
+    // Check if it's YYYY-MM-DD (Native/Script reset format)
+    if (parts[0].length === 4) {
+        const d = new Date(parts[0], parts[1] - 1, parts[2]);
+        return isNaN(d.getTime()) ? null : d;
+    }
+    // Else assume DD-MM-YYYY (Display format)
+    const d = new Date(parts[2], parts[1] - 1, parts[0]);
+    return isNaN(d.getTime()) ? null : d;
 }

@@ -24,5 +24,11 @@ contextBridge.exposeInMainWorld('electronAPI', {
     onTriggerUpdateCheck: (callback) => ipcRenderer.on('trigger-update-check', () => callback()),
 
     // Zoom Control
-    resetZoom: () => ipcRenderer.send('reset-zoom-level')
+    resetZoom: () => ipcRenderer.send('reset-zoom-level'),
+
+    // Persistence Bridge
+    getAllData: () => ipcRenderer.invoke('storage:get-all'),
+    saveToDisk: (key, data) => ipcRenderer.send('storage:save', { key, data }),
+    deleteFromDisk: (key) => ipcRenderer.send('storage:delete', key),
+    clearDisk: () => ipcRenderer.send('storage:clear')
 });

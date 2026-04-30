@@ -4,8 +4,71 @@ const https = require('https');
 const fs = require('fs');
 const { exec } = require('child_process');
 
+// --- STORAGE PERSISTENCE ENGINE ---
+const storagePath = path.join(app.getPath('userData'), 'storage');
+if (!fs.existsSync(storagePath)) {
+  fs.mkdirSync(storagePath, { recursive: true });
+}
+
+class StorageManager {
+  static save(key, data) {
+    try {
+      const filePath = path.join(storagePath, `${key}.json`);
+      fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+      return true;
+    } catch (err) {
+      console.error(`Storage Error (Save): ${key}`, err);
+      return false;
+    }
+  }
+
+  static get(key) {
+    try {
+      const filePath = path.join(storagePath, `${key}.json`);
+      if (!fs.existsSync(filePath)) return null;
+      const data = fs.readFileSync(filePath, 'utf8');
+      return JSON.parse(data);
+    } catch (err) {
+      console.error(`Storage Error (Get): ${key}`, err);
+      return null;
+    }
+  }
+
+  static getAll() {
+    const data = {};
+    try {
+      const files = fs.readdirSync(storagePath);
+      files.forEach(file => {
+        if (file.endsWith('.json')) {
+          const key = file.replace('.json', '');
+          data[key] = this.get(key);
+        }
+      });
+    } catch (err) {
+      console.error('Storage Error (GetAll)', err);
+    }
+    return data;
+  }
+}
+
 // Force dark mode for native menus/dialogs
 nativeTheme.themeSource = 'dark';
+
+// --- SINGLE INSTANCE LOCK ---
+const gotTheLock = app.requestSingleInstanceLock();
+
+if (!gotTheLock) {
+  app.quit();
+} else {
+  app.on('second-instance', (event, commandLine, workingDirectory) => {
+    // Someone tried to run a second instance, we should focus our window.
+    if (windows.size > 0) {
+      const mainWin = [...windows][0];
+      if (mainWin.isMinimized()) mainWin.restore();
+      mainWin.focus();
+    }
+  });
+}
 
 let windows = new Set();
 
@@ -47,6 +110,33 @@ function createWindow() {
     if (menu && menu.items[index]) {
       menu.items[index].submenu.popup({ window: win, x: x, y: y });
     }
+  });
+
+  // --- NEW PERSISTENCE IPC HANDLERS ---
+  ipcMain.handle('storage:get-all', () => {
+    return StorageManager.getAll();
+  });
+
+  ipcMain.on('storage:save', (event, { key, data }) => {
+    StorageManager.save(key, data);
+  });
+
+  ipcMain.on('storage:delete', (event, key) => {
+    try {
+      const filePath = path.join(storagePath, `${key}.json`);
+      if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+    } catch (err) { }
+  });
+
+  ipcMain.on('storage:clear', () => {
+    try {
+      const files = fs.readdirSync(storagePath);
+      files.forEach(file => {
+        if (file.endsWith('.json')) {
+          fs.unlinkSync(path.join(storagePath, file));
+        }
+      });
+    } catch (err) { }
   });
 
   windows.add(win);
