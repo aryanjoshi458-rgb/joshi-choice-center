@@ -209,11 +209,12 @@
             <section class="card unified-card premium-shadow">
                 <div class="card-header glass-header">
                     <div class="title-with-icon">
-                        <svg class="icon-m" viewBox="0 0 24 24">
-                            <path
-                                d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" />
+                        <svg class="icon-m" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                            <polyline points="2 17 12 22 22 17"></polyline>
+                            <polyline points="2 12 12 17 22 12"></polyline>
                         </svg>
-                        <h2 data-i18n="unified-entry-title">Integrated Transaction Ledger</h2>
+                        <h2 data-i18n="unified-entry-title">Aura Quantum | Transaction Hub</h2>
                     </div>
                     <div class="header-badges">
                         <span class="badge premium-badge" id="nextTxnIdBadge">ID: <span
@@ -273,7 +274,7 @@
                                 <option>Banking & Financial Services</option>
                                 <option>Mobile & Utility Services</option>
                                 <option>Printing & Document Services</option>
-                                <option disabled>Online Form & Government Services</option>
+                                <option>Online Form & Government Services</option>
                                 <option disabled>Education & Exam Services</option>
                                 <option disabled>Others</option>
                             </select>
@@ -325,6 +326,38 @@
                                 <option>Black & White Photocopy</option>
                                 <option>PDF Print Out</option>
                                 <option>Document Lamination</option>
+                            </select>
+                        </div>
+
+                        <div id="onlineGovBlock" class="form-group" style="display:none;">
+                            <label>Government Service</label>
+                            <select id="govService">
+                                <option>-- Select --</option>
+                                <option>PAN Card Services</option>
+                                <option>Voter ID Services</option>
+                                <option disabled>Aadhar Card Update</option>
+                                <option disabled>Ration Card Services</option>
+                            </select>
+                        </div>
+
+                        <div id="panCardBlock" class="form-group" style="display:none; margin-top: 15px;">
+                            <label>Specific PAN Service</label>
+                            <select id="panService">
+                                <option>-- Select --</option>
+                                <option>New PAN Card Application</option>
+                                <option>Correction in PAN Card</option>
+                                <option>PAN Card Reprint / Lost</option>
+                            </select>
+                        </div>
+
+                        <div id="voterIdBlock" class="form-group" style="display:none; margin-top: 15px;">
+                            <label>Specific Voter Service</label>
+                            <select id="voterService">
+                                <option>-- Select --</option>
+                                <option>New Voter ID Registration</option>
+                                <option>Correction in Voter ID</option>
+                                <option>Replacement / Lost Voter ID</option>
+                                <option>Aadhaar Linking (Voter)</option>
                             </select>
                         </div>
 

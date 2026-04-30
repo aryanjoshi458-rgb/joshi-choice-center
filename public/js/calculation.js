@@ -20,9 +20,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const chargeInput = document.getElementById("charge");
     const totalInput = document.getElementById("totalAmount");
     const netPayableInput = document.getElementById("netPayable");
-
     const receivedChargeInput = document.getElementById("receivedCharge");
     const pendingChargeInput = document.getElementById("pendingCharge");
+
 
     // Helper to apply formatting live to an input
     const applyLiveFormatting = (input) => {
@@ -69,6 +69,15 @@ document.addEventListener("DOMContentLoaded", () => {
             subService = document.getElementById("serviceName")?.value;
         } else if (serviceType === "Printing & Document Services") {
             subService = document.getElementById("printService")?.value;
+        } else if (serviceType === "Online Form & Government Services") {
+            const gService = document.getElementById("govService")?.value;
+            if (gService === "PAN Card Services") {
+                subService = document.getElementById("panService")?.value;
+            } else if (gService === "Voter ID Services") {
+                subService = document.getElementById("voterService")?.value;
+            } else {
+                subService = gService;
+            }
         }
 
         if (!subService || subService.includes("-- Select")) return;
@@ -106,7 +115,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (receivedChargeInput) receivedChargeInput.addEventListener("input", calculateTotal);
 
     // Also trigger on service changes
-    const serviceSelectors = ["txnService", "bankService", "serviceName", "printService"];
+    const serviceSelectors = ["txnService", "bankService", "serviceName", "printService", "govService", "panService", "voterService"];
     serviceSelectors.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.addEventListener("change", autoFillCharge);

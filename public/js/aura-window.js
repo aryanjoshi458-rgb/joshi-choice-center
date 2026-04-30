@@ -339,7 +339,7 @@
                     </div>
 
                     <h2 style="font-size: 1.8rem; font-weight: 800; color: #1e293b; margin: 0;" class="theme-text">Joshi Choice Center</h2>
-                    <div style="font-size: 0.8rem; font-weight: 700; color: #6366f1; margin-top: 5px; text-transform: uppercase; letter-spacing: 1px;">PREMIUM V2.1.1 PRO</div>
+                    <div id="aboutAppVersion" style="font-size: 0.8rem; font-weight: 700; color: #6366f1; margin-top: 5px; text-transform: uppercase; letter-spacing: 1px;">PREMIUM V... PRO</div>
 
                     <div style="margin: 30px 0; border-top: 1px solid rgba(0,0,0,0.05); border-bottom: 1px solid rgba(0,0,0,0.05); padding: 25px 0;" class="theme-divider">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
@@ -409,6 +409,14 @@
 
         updateTheme();
         window.addEventListener('themeChanged', updateTheme);
+
+        // Set Dynamic Version
+        if (window.electronAPI && window.electronAPI.getAppVersion) {
+            window.electronAPI.getAppVersion().then(version => {
+                const versionEl = document.getElementById('aboutAppVersion');
+                if (versionEl) versionEl.innerText = `PREMIUM V${version} PRO`;
+            });
+        }
     }
 
     // --- UPDATE SYSTEM ---

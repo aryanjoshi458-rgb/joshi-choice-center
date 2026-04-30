@@ -29,14 +29,14 @@ body.aura-centric-theme {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
     z-index: -1;
-    background: radial-gradient(circle at 0% 0%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 100% 100%, rgba(236, 72, 153, 0.1) 0%, transparent 50%);
+    background: radial-gradient(circle at 0% 0%, rgba(99, 102, 241, 0.15) 0%, transparent 50%);
 }
 
 .aura-main {
     margin-left: 80px;
     padding: 30px;
     min-height: 100vh;
+    zoom: 0.85;
     transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -48,7 +48,7 @@ body.aura-centric-theme {
     border: 1px solid var(--quantum-border);
     border-radius: 24px;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-    padding: 24px;
+    padding: 18px;
     transition: transform 0.3s ease, border-color 0.3s ease;
 }
 
@@ -58,12 +58,11 @@ body.aura-centric-theme {
 
 /* Header Section */
 .profile-header {
-    position: relative; /* Ye zaruri hai back button ke liye */
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
-    margin-bottom: 40px;
+    margin-bottom: 20px;
 }
 
 .header-meta {
@@ -73,7 +72,7 @@ body.aura-centric-theme {
 }
 
 .header-meta h1 {
-    font-size: 3rem;
+    font-size: 2.2rem;
     font-weight: 800;
     margin: 0;
     letter-spacing: -0.02em;
@@ -89,39 +88,13 @@ body.aura-centric-theme {
     letter-spacing: 0.05em;
 }
 
-.aura-back-btn {
-    position: absolute; /* Ise absolute kar dein */
-    right: 1000px;        /* Right side se 40px door */
-    top: 90px;          /* Top se 40px door */
-    width: 45px;
-    height: 45px;
-    background: var(--quantum-glass);
-    border: 1px solid var(--quantum-border);
-    border-radius: 14px;
-    color: var(--text-primary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 10;
-}
-
-/* Hover effect ko right side ke hisaab se set karein */
-.aura-back-btn:hover {
-    background: var(--quantum-accent);
-    border-color: var(--quantum-accent);
-    transform: translateX(5px); /* Right side move hoga hover par */
-    box-shadow: 0 0 20px var(--quantum-glow);
-}
-
 
 /* Hero Profile Grid */
 .profile-grid {
     display: grid;
     grid-template-columns: 1.2fr 1.8fr;
     gap: 30px;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
 }
 
 .identity-card {
@@ -199,9 +172,9 @@ body.aura-centric-theme {
 }
 
 .info-box {
-    background: var(--quantum-glass);
+    background: var(--quantum-surface);
     border: 1px solid var(--quantum-border);
-    padding: 20px;
+    padding: 10px;
     border-radius: 18px;
     display: flex;
     align-items: center;
@@ -209,14 +182,24 @@ body.aura-centric-theme {
 }
 
 .info-icon {
-    width: 45px;
-    height: 45px;
-    background: rgba(255,255,255,0.05);
-    border-radius: 12px;
+    width: 48px;
+    height: 48px;
+    background: rgba(99, 102, 241, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.2rem;
+    color: var(--quantum-cyan);
+    transition: all 0.3s ease;
+}
+
+.info-box:hover .info-icon {
+    background: rgba(99, 102, 241, 0.15);
+    border-color: rgba(99, 102, 241, 0.3);
+    color: #fff;
+    transform: rotate(-5deg) scale(1.1);
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.2);
 }
 
 .info-text label {
@@ -238,7 +221,7 @@ body.aura-centric-theme {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     gap: 15px;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
 }
 
 .stat-card {
@@ -329,7 +312,7 @@ body.aura-centric-theme {
 
 .node-card {
     flex: 1;
-    background: var(--quantum-glass);
+    background: var(--quantum-surface);
     border: 1px solid var(--quantum-border);
     border-radius: 20px;
     padding: 24px;
@@ -413,73 +396,103 @@ body.aura-centric-theme {
 }
 
 /* Modern Trust Score Styling - Indigo Premium Edition */
+/* --- PREMIUM TRUST INDEX OVERHAUL --- */
 .trust-score-box {
     display: flex;
     align-items: center;
-    gap: 15px !important;
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(0, 0, 0, 0) 100%) !important;
-    border: 1px solid rgba(99, 102, 241, 0.1) !important;
+    gap: 20px !important;
+    background: rgba(15, 23, 42, 0.4) !important;
+    border: 1px solid rgba(99, 102, 241, 0.15) !important;
+    padding: 15px 20px !important;
+    border-radius: 20px !important;
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+}
+
+.trust-score-box::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, transparent 100%);
+    pointer-events: none;
 }
 
 .trust-icon-aura {
-    width: 48px;
-    height: 48px;
+    width: 44px;
+    height: 44px;
     background: rgba(99, 102, 241, 0.1);
-    border: 1px solid rgba(99, 102, 241, 0.2);
-    border-radius: 14px;
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.5rem;
-    box-shadow: 0 0 20px rgba(99, 102, 241, 0.2);
-    color: #818cf8;
+    color: var(--quantum-cyan);
+    box-shadow: 0 0 15px rgba(99, 102, 241, 0.2);
+}
+
+.trust-label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: 0.5px;
+}
+
+.trust-value {
+    font-size: 0.9rem;
+    font-weight: 900;
+    color: var(--quantum-cyan);
+    text-shadow: 0 0 10px rgba(34, 211, 238, 0.4);
+}
+
+.trust-bar-wrapper {
+    width: 100%;
+    margin-bottom: 8px;
 }
 
 .trust-bar-bg {
     width: 100%;
-    height: 12px;
-    background: rgba(0, 0, 0, 0.4);
-    border-radius: 4px;
-    padding: 2px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    overflow: hidden;
+    height: 6px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
     position: relative;
-    /* Segmented Look */
-    background-image: linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
-    background-size: 10% 100%;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .trust-bar-fill {
     height: 100%;
     width: 0%;
-    background: linear-gradient(90deg, #6366f1, #a855f7, #ec4899);
-    background-size: 200% 100%;
-    border-radius: 2px;
+    background: linear-gradient(90deg, #6366f1 0%, #22d3ee 100%);
+    border-radius: 10px;
     position: relative;
-    transition: width 2s cubic-bezier(0.34, 1.56, 0.64, 1);
-    box-shadow: 0 0 15px rgba(99, 102, 241, 0.5);
+    transition: width 1.5s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.trust-bar-glow {
+.trust-bar-glow-pulse {
     position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
+    top: 0; right: 0; bottom: 0; width: 40px;
     background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-    animation: barShimmer 2s infinite linear;
+    animation: barPulse 2s infinite linear;
 }
 
-@keyframes barShimmer {
+@keyframes barPulse {
     0% { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
+    100% { transform: translateX(250%); }
 }
 
 .trust-status-text {
-    font-size: 0.65rem;
-    margin-top: 8px;
+    font-size: 0.75rem;
     font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 2px;
+    letter-spacing: 1.5px;
     display: flex;
     align-items: center;
-    gap: 6px;
-    color: #a5b4fc; /* Indigo 300 */
+    gap: 8px;
+}
+
+/* Enhancing existing tree-node for consistency */
+.node-card:hover {
+    box-shadow: 0 10px 30px -10px rgba(99, 102, 241, 0.3);
+    background: rgba(255, 255, 255, 0.04);
 }

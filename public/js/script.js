@@ -161,24 +161,35 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // Banking-Specific Validation
-    if (isBanking) {
+    // Banking or PAN-Specific Validation
+    const isPAN = category === "Online Form & Government Services" && 
+                 document.getElementById("govService")?.value === "PAN Card Services";
+
+    if (isBanking || isPAN) {
+      const serviceName = isBanking ? "Banking" : "PAN Card";
       if (!custName.value.trim()) {
         if (window.AppLoader) window.AppLoader.hide();
-        await AuraDialog.error("Customer Name is MANDATORY for Banking services.", "Validation Error");
+        await AuraDialog.error(`Customer Name is MANDATORY for ${serviceName} services.`, "Validation Error");
         custName.focus();
+        return;
+      }
+      const cleanMobile = custMobile.value.replace(/^\+91\s?/, "").replace(/\D/g, "");
+      if (cleanMobile && cleanMobile.length !== 10) {
+        if (window.AppLoader) window.AppLoader.hide();
+        await AuraDialog.error(`Mobile Number must be 10 digits if provided for ${serviceName} services.`, "Validation Error");
+        custMobile.focus();
         return;
       }
       const aadharDigits = custAadhar.value.replace(/-/g, "");
       if (aadharDigits.length !== 12) {
         if (window.AppLoader) window.AppLoader.hide();
-        await AuraDialog.error("Aadhar Card is MANDATORY (12 digits) for Banking services.", "Validation Error");
+        await AuraDialog.error(`Aadhar Card is MANDATORY (12 digits) for ${serviceName} services.`, "Validation Error");
         custAadhar.focus();
         return;
       }
       if (!custAddress.value.trim()) {
         if (window.AppLoader) window.AppLoader.hide();
-        await AuraDialog.error("Address is MANDATORY for Banking services.", "Validation Error");
+        await AuraDialog.error(`Address is MANDATORY for ${serviceName} services.`, "Validation Error");
         custAddress.focus();
         return;
       }
@@ -249,6 +260,7 @@ document.addEventListener("DOMContentLoaded", () => {
       "Banking & Financial Services": "Banking",
       "Mobile & Utility Services": "Mobile/Util",
       "Printing & Document Services": "Printing",
+      "Online Form & Government Services": "Gov/Form",
       "Cash Withdrawal": "Withdrawal",
       "Cash Deposit": "Deposit",
       "Balance Enquiry": "Enquiry",
@@ -261,7 +273,14 @@ document.addEventListener("DOMContentLoaded", () => {
       "Electricity Bill Payment": "Electricity",
       "Black & White Photocopy": "B&W Copy",
       "PDF Print Out": "PDF Print",
-      "Document Lamination": "Lamination"
+      "Document Lamination": "Lamination",
+      "New PAN Card Application": "New PAN",
+      "Correction in PAN Card": "PAN Correction",
+      "PAN Card Reprint / Lost": "PAN Reprint",
+      "New Voter ID Registration": "New Voter",
+      "Correction in Voter ID": "Voter Correction",
+      "Replacement / Lost Voter ID": "Voter Replace",
+      "Aadhaar Linking (Voter)": "Voter-Aadhar"
     };
 
     const shortCat = shortNames[category] || category;
@@ -292,6 +311,19 @@ document.addEventListener("DOMContentLoaded", () => {
       const pService = document.getElementById("printService")?.value;
       const shortPS = shortNames[pService] || pService;
       if (pService && pService !== "-- Select --") subService = shortPS;
+    } else if (category === "Online Form & Government Services") {
+      const gService = document.getElementById("govService")?.value;
+      const panService = document.getElementById("panService")?.value;
+      if (gService === "PAN Card Services") {
+        const shortPAN = shortNames[panService] || panService;
+        subService = (panService && panService !== "-- Select --") ? `PAN (${shortPAN})` : "PAN Card";
+      } else if (gService === "Voter ID Services") {
+        const vService = document.getElementById("voterService")?.value;
+        const shortVOTER = shortNames[vService] || vService;
+        subService = (vService && vService !== "-- Select --") ? `Voter (${shortVOTER})` : "Voter ID";
+      } else if (gService && gService !== "-- Select --") {
+        subService = gService;
+      }
     }
 
     const fullServiceName = subService ? `${shortCat} - ${subService}` : shortCat;
@@ -396,7 +428,12 @@ document.addEventListener("DOMContentLoaded", () => {
     operator: document.getElementById("operatorBlock"),
     electricity: document.getElementById("electricityBlock"),
     transfer: document.getElementById("transferBlock"),
+    pan: document.getElementById("panCardBlock"),
+    voter: document.getElementById("voterIdBlock"),
+    onlineGov: document.getElementById("onlineGovBlock"),
     externalRef: document.getElementById("externalRefBlock"),
+    receivedChargeGroup: document.getElementById("receivedChargeGroup"),
+    pendingChargeGroup: document.getElementById("pendingChargeGroup"),
     amount: document.getElementById("amountBlock"),
     // Sub-groups for conditional visibility
     amountGroup: document.getElementById("amountGroup"),
@@ -416,7 +453,7 @@ document.addEventListener("DOMContentLoaded", () => {
       hideAllBlocks();
 
       // Reset Sub-groups visibility to default (shown)
-      ["amountGroup", "chargeGroup", "totalGroup", "paymentModeGroup"].forEach(id => {
+      ["amountGroup", "chargeGroup", "totalGroup", "paymentModeGroup", "receivedChargeGroup", "pendingChargeGroup"].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.style.display = "block";
       });
@@ -428,7 +465,7 @@ document.addEventListener("DOMContentLoaded", () => {
       nameStar.style.display = isBanking ? "inline" : "none";
       aadharStar.style.display = isBanking ? "inline" : "none";
       addrStar.style.display = isBanking ? "inline" : "none";
-      if (mobileStar) mobileStar.style.display = "none"; // Hide by default
+      if (mobileStar) mobileStar.style.display = "none";
 
       if (isBanking) {
         blocks.bank.style.display = "block";
@@ -442,7 +479,69 @@ document.addEventListener("DOMContentLoaded", () => {
         } else if (val === "Printing & Document Services") {
           blocks.print.style.display = "block";
           if (blocks.chargeGroup) blocks.chargeGroup.style.display = "none"; // Hide Charge for Printing
+        } else if (val === "Online Form & Government Services") {
+          blocks.onlineGov.style.display = "block";
         }
+      }
+    });
+  }
+
+  // Government Service Flow
+  const govServiceSelect = document.getElementById("govService");
+  if (govServiceSelect) {
+    govServiceSelect.addEventListener("change", function () {
+      const val = this.value;
+      const isPAN = val === "PAN Card Services";
+
+      // Update Asterisks for PAN
+      nameStar.style.display = isPAN ? "inline" : "none";
+      aadharStar.style.display = isPAN ? "inline" : "none";
+      addrStar.style.display = isPAN ? "inline" : "none";
+      if (mobileStar) mobileStar.style.display = "none"; // Never mandatory for PAN
+
+      if (isPAN) {
+        blocks.pan.style.display = "block";
+        blocks.voter.style.display = "none";
+        blocks.amount.style.display = "none";
+      } else if (val === "Voter ID Services") {
+        blocks.voter.style.display = "block";
+        blocks.pan.style.display = "none";
+        blocks.amount.style.display = "none";
+        // Hide Charges for Voter ID
+        if (blocks.receivedChargeGroup) blocks.receivedChargeGroup.style.display = "none";
+        if (blocks.pendingChargeGroup) blocks.pendingChargeGroup.style.display = "none";
+      } else if (val !== "-- Select --") {
+        blocks.pan.style.display = "none";
+        blocks.voter.style.display = "none";
+        blocks.amount.style.display = "grid";
+      } else {
+        blocks.pan.style.display = "none";
+        blocks.voter.style.display = "none";
+        blocks.amount.style.display = "none";
+      }
+    });
+  }
+
+  // Voter ID Selection Flow (Nested)
+  const voterServiceSelect = document.getElementById("voterService");
+  if (voterServiceSelect) {
+    voterServiceSelect.addEventListener("change", function () {
+      if (this.value !== "-- Select --") {
+        blocks.amount.style.display = "grid";
+      } else {
+        blocks.amount.style.display = "none";
+      }
+    });
+  }
+
+  // Pan Card Selection Flow (Nested)
+  const panServiceSelect = document.getElementById("panService");
+  if (panServiceSelect) {
+    panServiceSelect.addEventListener("change", function () {
+      if (this.value !== "-- Select --") {
+        blocks.amount.style.display = "grid";
+      } else {
+        blocks.amount.style.display = "none";
       }
     });
   }
@@ -476,6 +575,8 @@ document.addEventListener("DOMContentLoaded", () => {
         blocks.amountGroup.style.display = amountDisplay;
         blocks.chargeGroup.style.display = amountDisplay;
         blocks.totalGroup.style.display = amountDisplay;
+        if (blocks.receivedChargeGroup) blocks.receivedChargeGroup.style.display = amountDisplay;
+        if (blocks.pendingChargeGroup) blocks.pendingChargeGroup.style.display = amountDisplay;
 
         // If enquiry, Payment Mode should also be hidden as no payment occurs
         if (isEnquiry) blocks.paymentModeGroup.style.display = "none";

@@ -89,9 +89,21 @@ document.addEventListener("DOMContentLoaded", () => {
             return matchesSearch && matchesCat;
         });
 
+        const categoryIcons = {
+            "Govt Services": `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"></path><path d="M3 7v1a3 3 0 0 0 6 0V7m0 1a3 3 0 0 0 6 0V7m0 1a3 3 0 0 0 6 0V7H3"></path><path d="M5 21V10"></path><path d="M9 21V10"></path><path d="M15 21V10"></path><path d="M19 21V10"></path><path d="M2 7l10-5 10 5"></path></svg>`,
+            "Photography": `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>`,
+            "Document": `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>`,
+            "Banking": `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>`,
+            "Mobile & Utility": `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>`,
+            "Printing": `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>`,
+            "Default": `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>`
+        };
+
         filtered.forEach(rate => {
             const card = document.createElement("div");
             card.className = "service-card";
+
+            const icon = categoryIcons[rate.category] || categoryIcons["Default"];
 
             let chargeHtml = "";
             if (rate.chargeType === "range") {
@@ -101,8 +113,15 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             card.innerHTML = `
-                <h3 class="service-name">${rate.name}</h3>
-                <span class="cat-badge">${rate.category}</span>
+                <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 12px;">
+                    <div class="header-icon" style="width: 38px; height: 38px; background: rgba(99, 102, 241, 0.1); color: var(--accent); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        ${icon}
+                    </div>
+                    <div style="overflow: hidden;">
+                        <h3 class="service-name" style="margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${rate.name}</h3>
+                        <span class="cat-badge" style="margin: 0;">${rate.category}</span>
+                    </div>
+                </div>
                 <div class="card-stats">
                     <div class="stat-box">
                         <span class="stat-label">Base Price</span>

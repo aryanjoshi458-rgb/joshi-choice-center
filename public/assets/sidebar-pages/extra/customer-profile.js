@@ -225,7 +225,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                         <div class="node-details">
                             <span class="detail-pill">${label1}: ₹${amt}</span>
                             <span class="detail-pill">Charge: ₹${charge}</span>
-                            <span class="detail-pill" style="color: var(--quantum-pink)">${label3}: ₹${val3}</span>
+                            <span class="detail-pill" style="color: var(--quantum-cyan)">${label3}: ₹${val3}</span>
                         </div>
                     </div>
                     <div class="node-price">

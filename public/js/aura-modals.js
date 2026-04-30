@@ -110,7 +110,7 @@ window.AuraDialog = (() => {
 
             if (inputRef) {
                 setTimeout(() => inputRef.focus(), 300);
-                
+
                 // ✅ ENTER KEY SUPPORT
                 inputRef.addEventListener("keydown", (e) => {
                     if (e.key === "Enter") {

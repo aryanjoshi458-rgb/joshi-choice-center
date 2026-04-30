@@ -123,6 +123,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
         tbody.innerHTML = "";
         
+        const categoryIcons = {
+            "Stationery": `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>`,
+            "Electricity": `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>`,
+            "Rent": `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>`,
+            "Salary": `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>`,
+            "Refreshment": `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line></svg>`,
+            "Maintenance": `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>`,
+            "Internet": `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"></path><path d="M1.42 9a16 16 0 0 1 21.16 0"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20"></line></svg>`,
+            "Others": `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>`
+        };
+
         // Sort by date (newest first)
         expenses.sort((a, b) => new Date(b.date) - new Date(a.date));
 
@@ -135,17 +146,23 @@ document.addEventListener("DOMContentLoaded", () => {
                 todayExpenses += exp.amount;
             }
 
+            const icon = categoryIcons[exp.category] || categoryIcons["Others"];
+
             // Table Row Rendering
             const row = document.createElement("tr");
-            row.className = "expense-row";
             row.innerHTML = `
                 <td>${formatDate(exp.date)}</td>
-                <td><span class="category-pill">${exp.category}</span></td>
-                <td class="desc-cell">${exp.description}</td>
-                <td class="amount-cell">₹${exp.amount.toFixed(2)}</td>
                 <td>
-                    <button class="delete-btn-premium" onclick="deleteExpense('${exp.id}')">
-                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+                    <div class="category-pill">
+                        ${icon}
+                        <span>${exp.category}</span>
+                    </div>
+                </td>
+                <td style="color: #94a3b8; font-weight: 400;">${exp.description}</td>
+                <td class="amount-text">₹${exp.amount.toFixed(2)}</td>
+                <td>
+                    <button class="delete-btn-q" onclick="deleteExpense('${exp.id}')" title="Remove Entry">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
                     </button>
                 </td>
             `;
@@ -171,22 +188,15 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("todayTotal").innerText = `₹${todayExpenses.toFixed(2)}`;
         document.getElementById("netProfit").innerText = `₹${netProfit.toFixed(2)}`;
 
-        // Dynamic Profit Styling (Attractive & Clear)
+        // Dynamic Profit Styling
         const profitValueEl = document.getElementById("netProfit");
-        const profitStatBox = document.getElementById("profitStatBox");
-
-        if (profitValueEl && profitStatBox) {
-            // Remove previous states
-            profitStatBox.classList.remove("profit-positive-state", "profit-negative-state");
-
+        
+        if (profitValueEl) {
+            profitValueEl.classList.remove("profit-positive", "profit-negative");
             if (netProfit > 0) {
-                profitValueEl.className = "profit-pos";
-                profitStatBox.classList.add("profit-positive-state");
+                profitValueEl.classList.add("profit-positive");
             } else if (netProfit < 0) {
-                profitValueEl.className = "profit-neg";
-                profitStatBox.classList.add("profit-negative-state");
-            } else {
-                profitValueEl.className = "";
+                profitValueEl.classList.add("profit-negative");
             }
         }
     }
