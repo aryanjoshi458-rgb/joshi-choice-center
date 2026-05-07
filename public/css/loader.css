@@ -1,155 +1,161 @@
-/* Global Loader Styles */
+/* 
+ * JC Loader Style 3: "Quantum Phase"
+ * High-performance, lightning-fast loading experience
+ */
+
+:root {
+    --q-bg: rgba(15, 23, 42, 0.85);
+    --q-accent: #6366f1;
+    --q-glow: rgba(99, 102, 241, 0.5);
+    --q-text: #f8fafc;
+    --q-surface: rgba(30, 41, 59, 0.7);
+}
+
 .loader-wrapper {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(255, 255, 255, 0.75);
+    background: var(--q-bg);
     backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 9999;
-    transition: opacity 0.5s ease, visibility 0.5s ease;
-}
-
-.loader-content-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 25px;
-    padding: 50px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 32px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-    backdrop-filter: blur(5px);
-    transition: all 0.3s ease;
-}
-
-/* Fix for dark mode box visibility */
-body.dark-mode .loader-content-wrapper {
-    background: rgba(0, 0, 0, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
-}
-
-.loader-status-text {
-    font-family: 'Poppins', sans-serif;
-    color: #1e293b;
-    font-weight: 600;
-    font-size: 1.1rem;
-    letter-spacing: 0.5px;
-    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-    animation: pulseText 2s infinite ease-in-out;
-}
-
-@keyframes pulseText {
-
-    0%,
-    100% {
-        opacity: 1;
-        transform: scale(1);
-    }
-
-    50% {
-        opacity: 0.7;
-        transform: scale(0.98);
-    }
-}
-
-/* Dark mode compatibility */
-body.dark-mode .loader-status-text {
-    color: #f8fafc;
-}
-
-/* Dark mode compatibility */
-body.dark-mode .loader-wrapper {
-    background: rgba(0, 0, 0, 0.75);
+    z-index: 99999;
+    perspective: 1000px;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 .loader-wrapper.loader-hidden {
     opacity: 0;
     visibility: hidden;
+    transform: scale(1.05);
 }
 
-
-/* YouTube Style Shimmer Loader */
-:root {
-    --skeleton-bg: #e2e8f0;
-    --skeleton-shimmer: linear-gradient(
-        90deg, 
-        rgba(255, 255, 255, 0) 0%, 
-        rgba(255, 255, 255, 0.5) 50%, 
-        rgba(255, 255, 255, 0) 100%
-    );
-}
-
-body.dark-mode {
-    --skeleton-bg: #1e293b;
-    --skeleton-shimmer: linear-gradient(
-        90deg, 
-        rgba(255, 255, 255, 0) 0%, 
-        rgba(255, 255, 255, 0.05) 50%, 
-        rgba(255, 255, 255, 0) 100%
-    );
-}
-
-.skeleton-loader {
-    display: flex;
-    flex-direction: row;
-    gap: 16px;
-    align-items: center;
-    padding: 20px;
-}
-
-.skeleton-circle, .skeleton-line {
-    background-color: var(--skeleton-bg);
+/* QUANTUM PHASE VISUALS */
+.quantum-system {
     position: relative;
+    width: 200px;
+    height: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.quantum-ring {
+    position: absolute;
+    width: 150px;
+    height: 150px;
+    border: 2px solid rgba(255, 255, 255, 0.05);
+    border-radius: 50%;
+}
+
+.quantum-ring::after {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    border: 2px solid transparent;
+    border-top-color: var(--q-accent);
+    border-radius: 50%;
+    animation: quantumSpin 0.6s linear infinite;
+}
+
+.quantum-core {
+    width: 100px;
+    height: 100px;
+    background: var(--q-surface);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 0 30px var(--q-glow);
+    animation: corePulse 1.5s ease-in-out infinite;
+    z-index: 10;
+}
+
+.quantum-core span {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 900;
+    color: white;
+    letter-spacing: -1px;
+}
+
+/* DATA STREAM PARTICLES */
+.data-stream {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.stream-node {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: var(--q-accent);
+    border-radius: 50%;
+    opacity: 0;
+}
+
+/* STATUS CONTAINER */
+.loader-status-container {
+    position: absolute;
+    bottom: 15%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.loader-status-text {
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--q-text);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    opacity: 0.8;
+}
+
+.loader-progress-bar {
+    width: 180px;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
     overflow: hidden;
 }
 
-.skeleton-circle::after, .skeleton-line::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
+.loader-progress-inner {
+    width: 40%;
     height: 100%;
-    background: var(--skeleton-shimmer);
-    animation: shimmer 1.5s infinite;
-    transform: translateX(-100%);
+    background: var(--q-accent);
+    box-shadow: 0 0 10px var(--q-accent);
+    animation: progressFlow 1.2s cubic-bezier(0.65, 0, 0.35, 1) infinite;
 }
 
-.skeleton-circle {
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    flex-shrink: 0;
+@keyframes quantumSpin {
+    to { transform: rotate(360deg); }
 }
 
-.skeleton-lines {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+@keyframes corePulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(0.95); opacity: 0.8; }
 }
 
-.skeleton-line {
-    height: 14px;
-    border-radius: 4px;
+@keyframes progressFlow {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(250%); }
 }
 
-.skeleton-line.short {
-    width: 120px;
-}
-
-.skeleton-line.long {
-    width: 180px;
-}
-
-@keyframes shimmer {
-    100% {
-        transform: translateX(100%);
-    }
+/* Hiding background particles from old version */
+.loader-bg-particles {
+    display: none;
 }

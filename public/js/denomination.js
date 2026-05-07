@@ -61,13 +61,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Listen for changes in the main Cash to Customer field
     if (cashToCustomerInput) {
-        // MutationObserver or simple interval as it's modified via calculation.js
-        const observer = new MutationObserver(calculateDenominations);
-        // Since netPayable is an input, we can also use 'change' or 'input' if triggered manually
-        // But calculation.js sets .value directly, so we need a hook.
+        // Since netPayable is an input, and calculation.js sets .value directly,
+        // we use a MutationObserver to watch for attribute changes if needed,
+        // but for <input> values, we can't observe .value easily.
+        // However, I added window.refreshDenominations call in calculation.js 
+        // which is the most reliable way.
         
-        // Let's also wrap the calculateTotal in calculation.js if possible, 
-        // or just poll/listen to inputs that trigger it.
+        // We still keep an observer for style/class changes if needed
+        const observer = new MutationObserver(() => {
+            calculateDenominations();
+        });
+        
+        observer.observe(cashToCustomerInput, { attributes: true, childList: false, subtree: false });
+
         const amountEl = document.getElementById("amount");
         const chargeEl = document.getElementById("charge");
 

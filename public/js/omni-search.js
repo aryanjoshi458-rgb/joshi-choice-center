@@ -63,18 +63,30 @@
         if (e.key === 'Escape') hide();
     };
 
+    let searchCache = { transactions: [], customers: [] };
+    let searchTimeout = null;
+
     const toggle = () => {
         if (overlay.classList.contains('active')) hide();
         else show();
     };
 
     const show = () => {
+        try {
+            searchCache.transactions = JSON.parse(localStorage.getItem('transactions') || '[]');
+            searchCache.customers = JSON.parse(localStorage.getItem('customers') || '[]');
+        } catch (e) {
+            console.error("Omni-Search: Data corruption detected.", e);
+            searchCache = { transactions: [], customers: [] };
+        }
+
         overlay.style.opacity = '1';
         overlay.style.pointerEvents = 'all';
         overlay.style.visibility = 'visible';
         overlay.classList.add('active');
         input.value = '';
         resultsArea.style.display = 'none';
+        currentResults = [];
         selectedIndex = -1;
         setTimeout(() => input.focus(), 100);
     };
@@ -85,59 +97,61 @@
         overlay.style.visibility = 'hidden';
         overlay.classList.remove('active');
         input.blur();
+        currentResults = [];
+        searchCache = { transactions: [], customers: [] };
     };
 
     const handleSearch = () => {
-        const query = input.value.trim().toLowerCase();
-        if (!query) {
-            resultsArea.style.display = 'none';
-            currentResults = [];
-            return;
-        }
-
-        const transactions = JSON.parse(localStorage.getItem('transactions') || '[]');
-        const customers = JSON.parse(localStorage.getItem('customers') || '[]');
-
-        const results = [];
-
-        // Search Customers
-        customers.forEach(c => {
-            const name = (c.name || "").toLowerCase();
-            const mobile = (c.mobile || c.mobileNumber || "").toString();
-            const aadhar = (c.aadhar || c.aadharNumber || "").toString();
-            
-            if (name.includes(query) || mobile.includes(query) || aadhar.includes(query)) {
-                results.push({
-                    type: 'customer',
-                    title: c.name || "Unknown Customer",
-                    subtitle: `Mobile: ${mobile} | ${c.address || 'N/A'}`,
-                    icon: '👤',
-                    id: c.id,
-                    data: c
-                });
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            const rawQuery = input.value.trim().toLowerCase();
+            if (!rawQuery) {
+                resultsArea.style.display = 'none';
+                currentResults = [];
+                return;
             }
-        });
 
-        // Search Transactions
-        transactions.forEach(t => {
-            const txnId = (t.transactionId || t.txnId || t.id || "").toString().toLowerCase();
-            const custName = (t.customerName || t.name || "").toLowerCase();
-            const sName = (t.serviceName || t.serviceType || t.service || "").toLowerCase();
+            const queryWords = rawQuery.split(/\s+/);
+            const results = [];
 
-            if (txnId.includes(query) || custName.includes(query) || sName.includes(query)) {
-                results.push({
-                    type: 'txn',
-                    title: t.serviceName || t.serviceType || "Service",
-                    subtitle: `${txnId} | ${t.customerName || 'Walk-in'} | ₹${t.totalAmount || t.total || 0}`,
-                    icon: '📄',
-                    id: txnId,
-                    data: t
-                });
-            }
-        });
+            // Search Cached Customers (Multi-keyword AND)
+            searchCache.customers.forEach(c => {
+                const searchString = `${c.name} ${c.mobile || c.mobileNumber || ""} ${c.aadhar || c.aadharNumber || ""} ${c.address || ""}`.toLowerCase();
+                const isMatch = queryWords.every(word => searchString.includes(word));
+                
+                if (isMatch) {
+                    results.push({
+                        type: 'customer',
+                        title: c.name || "Unknown Customer",
+                        subtitle: `Mobile: ${c.mobile || c.mobileNumber || 'N/A'} | ${c.address || 'N/A'}`,
+                        icon: '👤',
+                        id: c.id,
+                        data: c
+                    });
+                }
+            });
 
-        currentResults = results.slice(0, 8); // Limit to 8 results
-        renderResults();
+            // Search Cached Transactions (Multi-keyword AND)
+            searchCache.transactions.forEach(t => {
+                const searchString = `${t.transactionId || t.txnId || ""} ${t.customerName || ""} ${t.serviceName || t.serviceType || ""} ${t.totalAmount || ""}`.toLowerCase();
+                const isMatch = queryWords.every(word => searchString.includes(word));
+
+                if (isMatch) {
+                    const txnId = (t.transactionId || t.txnId || t.id || "").toString();
+                    results.push({
+                        type: 'txn',
+                        title: t.serviceName || t.serviceType || "Service",
+                        subtitle: `${txnId} | ${t.customerName || 'Walk-in'} | ₹${t.totalAmount || 0}`,
+                        icon: '📄',
+                        id: txnId,
+                        data: t
+                    });
+                }
+            });
+
+            currentResults = results.slice(0, 10); // Increased limit slightly
+            renderResults();
+        }, 150);
     };
 
     const renderResults = () => {
@@ -202,9 +216,8 @@
     const executeResult = (res) => {
         hide();
         if (res.type === 'customer') {
-            // Navigate to customer profile (if exists) or directory with highlight
-            // For now, let's go to directory
-            window.location.href = `customer-directory.html?search=${encodeURIComponent(res.title)}`;
+            // Navigate to high-fidelity customer profile
+            window.location.href = `customer-profile.html?cid=${encodeURIComponent(res.id)}`;
         } else if (res.type === 'txn') {
             // Navigate to reports with txn id highlight
             window.location.href = `reports.html?txnId=${res.id}`;

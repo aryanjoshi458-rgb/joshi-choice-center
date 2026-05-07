@@ -5,20 +5,64 @@ window.filteredReportsData = [];
 
 document.addEventListener("DOMContentLoaded", () => {
   loadReports();
+  initEditModalFormatters(); // Initialize formatting logic
   // Listen for Disk Sync Completion
   const refreshReports = () => {
     loadReports();
     initSearchAndFilter();
+    handleUrlParams(); // Deep link check
   };
   window.addEventListener('auraDataSynced', refreshReports);
   if (window.auraSyncComplete) refreshReports();
+  handleUrlParams();
 });
+
+function handleUrlParams() {
+  const params = new URLSearchParams(window.location.search);
+  const txnId = params.get('txnId');
+  if (txnId) {
+    setTimeout(() => {
+      const input = document.getElementById("bestInput");
+      const box = document.getElementById("bestSearch");
+      if (input && box) {
+        // 1. Activate search box and inject ID
+        box.classList.add("active");
+        input.value = txnId;
+
+        // 2. Trigger filter
+        input.dispatchEvent(new Event('input'));
+        applyFilter();
+
+        // 3. Highlight the result row
+        setTimeout(() => {
+          const row = document.querySelector('#reportsTableBody tr:not(.no-data-row)');
+          if (row) {
+            row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            row.classList.add('highlight-aura-row');
+            setTimeout(() => row.classList.remove('highlight-aura-row'), 4000);
+          }
+
+          // ✅ CLEAR URL PARAMETER so refresh doesn't trigger it again
+          const newUrl = window.location.pathname;
+          window.history.replaceState({}, document.title, newUrl);
+
+        }, 500); // Wait for filter and render
+      }
+    }, 800); // Slightly longer delay to ensure DOM and logic are ready
+  }
+}
 /* =========================
    LOAD REPORTS
 ========================= */
 function loadReports() {
   // latest data first
-  const reports = (JSON.parse(localStorage.getItem("transactions")) || []).reverse();
+  let reports = [];
+  try {
+    reports = (JSON.parse(localStorage.getItem("transactions")) || []).reverse();
+  } catch (e) {
+    console.error("Database corruption detected in Transactions:", e);
+    reports = [];
+  }
   window.allReportsData = reports; // ✅ Store globally
   const tbody = document.getElementById("reportsTableBody");
 
@@ -58,7 +102,7 @@ function loadReports() {
   }
 
   reports.forEach((r, index) => {
-    const customer = r.customerName || r.name || "-";
+    const customer = r.customerName || r.name || "Walk-in Customer";
     const mobile = r.mobileNumber || r.mobile || "-";
     const aadhar = r.aadharNumber || r.aadhar || "-";
     const address = r.address || "-";
@@ -77,15 +121,15 @@ function loadReports() {
     else if (service.toLowerCase().includes("recharge") || service.toLowerCase().includes("mobile")) { catClass = "recharge"; catIcon = "📱"; }
     else if (service.toLowerCase().includes("print")) { catClass = "printing"; catIcon = "🖨️"; }
 
-    let statusClass = "pending";
-    if (status === "success") statusClass = "paid";
-    else if (status === "failed") statusClass = "failed";
+    let statusClass = "status-pending";
+    if (status === "success") statusClass = "status-success";
+    else if (status === "failed") statusClass = "status-failed";
 
     const statusText = status.charAt(0).toUpperCase() + status.slice(1);
 
     const row = document.createElement("tr");
     row.innerHTML = `
-      <td>${reports.length - index}</td>
+      <td><span class="aura-index">${reports.length - index}</span></td>
       <td>${date}</td>
       <td>${customer}</td>
       <td>${mobile}</td>
@@ -152,9 +196,20 @@ async function deleteReport(id) {
   );
 
   if (reports.length < initialCount) {
-    localStorage.setItem("transactions", JSON.stringify(reports));
-    loadReports();
-    if (typeof showToast === "function") showToast("Record Deleted 🗑️");
+    if (window.AppLoader) window.AppLoader.show("Deleting Report Record...");
+    
+    setTimeout(() => {
+      localStorage.setItem("transactions", JSON.stringify(reports));
+
+      // 🔥 SYNC: Also remove from Pending Payments if it exists
+      let pending = JSON.parse(localStorage.getItem("pendingCustomers") || "[]");
+      pending = pending.filter(p => (p.txnId || "").toString() !== id.toString());
+      localStorage.setItem("pendingCustomers", JSON.stringify(pending));
+
+      loadReports();
+      if (window.AppLoader) window.AppLoader.hide();
+      if (typeof showToast === "function") showToast("Record Deleted 🗑️");
+    }, 800);
   } else {
     await AuraDialog.error("Record not found.", "Error");
   }
@@ -165,34 +220,14 @@ async function deleteReport(id) {
    DATE FORMAT FIX
 ========================= */
 function formatDate(dateStr) {
-
+  if (window.AuraDate) return window.AuraDate.toDDMMYYYY(dateStr).split(" ")[0];
   if (!dateStr) return "-";
-
-  // ✅ HANDLE "22-03-2026" or "2026-04-24"
-  let cleanDate = dateStr;
-  if (cleanDate.includes(" ")) cleanDate = cleanDate.replace(" ", "T"); // Convert to ISO-like format for better parsing
-
-  const d = new Date(cleanDate);
-
-  if (isNaN(d.getTime())) {
-    // Last ditch effort: if it's "2026-04-24 17:14:23", split and try date part
-    const datePart = dateStr.split(" ")[0];
-    if (datePart.includes("-")) {
-      const parts = datePart.split("-");
-      if (parts.length === 3) {
-        if (parts[0].length === 4) return `${parts[2]}-${parts[1]}-${parts[0]}`; // YYYY-MM-DD -> DD-MM-YYYY
-        if (parts[2].length === 4) return datePart; // Already DD-MM-YYYY
-      }
-    }
-    return dateStr || "-";
+  const datePart = dateStr.split(" ")[0];
+  if (datePart.includes("-")) {
+    const parts = datePart.split("-");
+    if (parts.length === 3 && parts[0].length === 4) return `${parts[2]}-${parts[1]}-${parts[0]}`;
   }
-
-  const dd = String(d.getDate()).padStart(2, "0");
-  const mm = String(d.getMonth() + 1).padStart(2, "0");
-  const yyyy = d.getFullYear();
-
-  // Show only date
-  return `${dd}-${mm}-${yyyy}`;
+  return datePart;
 }
 
 /* =========================
@@ -247,15 +282,6 @@ function initSearchAndFilter() {
   // Initial Apply
   setTimeout(applyFilter, 100);
 
-  // ✅ Set Current Month by Default
-  const monthFilter = document.getElementById("monthFilter");
-  if (monthFilter && !monthFilter.value) {
-    const currentMonth = String(new Date().getMonth() + 1).padStart(2, "0");
-    monthFilter.value = currentMonth;
-  }
-
-  // Initial Apply
-  setTimeout(applyFilter, 100);
 }
 
 /* =========================
@@ -288,15 +314,15 @@ function applyFilter() {
     // Status matches
     const matchStatus = statusValue === "all" || statusText.includes(statusValue);
 
-    // Month matches
+    // Month matches (Robust parsing)
     const dateStr = r.date || "";
-    let rowMonth = "";
+    let rowMonth = -1;
     if (dateStr.includes("-")) {
       const parts = dateStr.split("-");
       // Handle dd-mm-yyyy or yyyy-mm-dd
-      rowMonth = parts[1];
+      rowMonth = parseInt(parts[0].length === 4 ? parts[1] : parts[1]);
     }
-    const matchMonth = !selectedMonth || rowMonth === selectedMonth;
+    const matchMonth = !selectedMonth || parseInt(rowMonth) === parseInt(selectedMonth);
 
     // Category match (NEW)
     const matchCat = catFilter === "all" || service.includes(catFilter.toLowerCase());
@@ -386,40 +412,39 @@ function applyFilter() {
 }
 
 /* =========================
-   UPDATE SUMMARY METRICS
+   UPDATE SUMMARY METRICS (OPTIMIZED)
 ========================= */
 function updateSummaryMetrics() {
   let totalCommission = 0;
   let totalBusiness = 0;
   let transactionCount = 0;
 
-  const rows = document.querySelectorAll("#reportsTable tbody tr");
-
-  rows.forEach(row => {
-    // Skip if no-data placeholder or hidden
-    if (row.classList.contains("no-data-row") || row.style.display === "none") return;
-
-    const chargeCell = row.querySelector("td:nth-child(9)");
-    const totalCell = row.querySelector("td:nth-child(10)");
-
-    const charge = parseFloat(chargeCell?.textContent.replace(/[^\d.]/g, "")) || 0;
-    const total = parseFloat(totalCell?.textContent.replace(/[^\d.]/g, "")) || 0;
+  // Use the pre-filtered data array instead of scraping the DOM (10x faster)
+  window.filteredReportsData.forEach(r => {
+    const amount = Number(r.amount) || 0;
+    const charge = Number(r.charge) || 0;
+    const total = Number(r.totalAmount) || (amount + charge);
 
     totalCommission += charge;
     totalBusiness += total;
     transactionCount++;
   });
 
-  document.getElementById("commissionValue").innerText = "₹" + totalCommission.toLocaleString();
-  document.getElementById("totalBusinessValue").innerText = "₹" + totalBusiness.toLocaleString();
-  document.getElementById("totalTransactionsValue").innerText = transactionCount;
+  const curFormat = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 });
+
+  if (document.getElementById("commissionValue")) 
+    document.getElementById("commissionValue").innerText = curFormat.format(totalCommission);
+  if (document.getElementById("totalBusinessValue")) 
+    document.getElementById("totalBusinessValue").innerText = curFormat.format(totalBusiness);
+  if (document.getElementById("totalTransactionsValue")) 
+    document.getElementById("totalTransactionsValue").innerText = transactionCount;
 
   // ✅ UPDATE POCKET CARDS (Real-time category breakdown)
   let bankingTotal = 0;
   let rechargeTotal = 0;
   let otherTotal = 0;
 
-  window.allReportsData.forEach(r => {
+  window.filteredReportsData.forEach(r => {
     const s = (r.serviceName || r.serviceType || "").toLowerCase();
     const t = Number(r.totalAmount) || (Number(r.amount) + Number(r.charge));
 
@@ -428,10 +453,62 @@ function updateSummaryMetrics() {
     else otherTotal += t;
   });
 
-  document.getElementById("bankingTotal").innerText = "₹" + bankingTotal.toLocaleString();
-  document.getElementById("rechargeTotal").innerText = "₹" + rechargeTotal.toLocaleString();
-  document.getElementById("otherTotal").innerText = "₹" + otherTotal.toLocaleString();
+  if (document.getElementById("bankingTotal")) document.getElementById("bankingTotal").innerText = curFormat.format(bankingTotal);
+  if (document.getElementById("rechargeTotal")) document.getElementById("rechargeTotal").innerText = curFormat.format(rechargeTotal);
+  if (document.getElementById("otherTotal")) document.getElementById("otherTotal").innerText = curFormat.format(otherTotal);
 }
+
+/* =========================
+   EXCEL EXPORT ENGINE (NEW)
+========================= */
+window.downloadExcel = async function() {
+  if (window.filteredReportsData.length === 0) {
+    if (window.AuraDialog) await window.AuraDialog.warning("No records to export!", "Empty Report");
+    return;
+  }
+
+  try {
+    if (typeof XLSX === 'undefined') {
+      if (window.AuraDialog) await window.AuraDialog.error("Excel library (XLSX) not found!", "System Error");
+      return;
+    }
+
+    const exportData = window.filteredReportsData.map((r, idx) => ({
+      "SN": window.filteredReportsData.length - idx,
+      "Date": formatDate(r.date),
+      "Customer Name": r.customerName || r.name || "Walk-in Customer",
+      "Mobile No": r.mobileNumber || r.mobile || "-",
+      "Aadhar No": r.aadharNumber || r.aadhar || "-",
+      "Address": r.address || "-",
+      "Service Type": r.serviceName || r.serviceType || "-",
+      "Amount": Number(r.amount) || 0,
+      "Charge": Number(r.charge) || 0,
+      "Total": Number(r.totalAmount) || (Number(r.amount) + Number(r.charge)),
+      "Payment Mode": r.paymentMode || "Cash",
+      "Status": (r.status || "Paid").toUpperCase(),
+      "Transaction ID": r.transactionId || r.txnId || "-"
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Transactions");
+
+    // Auto-size columns for professionalism
+    const wscols = [
+      {wch: 5}, {wch: 12}, {wch: 25}, {wch: 15}, {wch: 15}, {wch: 30}, 
+      {wch: 20}, {wch: 10}, {wch: 10}, {wch: 10}, {wch: 12}, {wch: 10}, {wch: 20}
+    ];
+    worksheet['!cols'] = wscols;
+
+    const fileName = `Joshi_Choice_Center_Report_${new Date().toISOString().split('T')[0]}.xlsx`;
+    XLSX.writeFile(workbook, fileName);
+
+    if (typeof showToast === "function") showToast("Excel Report Exported! 📊", "success");
+  } catch (err) {
+    console.error("Excel Export Error:", err);
+    if (window.AuraDialog) await window.AuraDialog.error("Failed to generate Excel file.", "Export Error");
+  }
+};
 
 
 // (Cleanup: removed redundant listeners already handled by applyFilter)
@@ -576,7 +653,7 @@ function generateReceiptText(t, f) {
 
   const date = formatDate(t.date);
   const txnId = t.transactionId || t.txnId || t.id || "-";
-  const name = t.customerName || "-";
+  const name = t.customerName || "Walk-in Customer";
   const service = t.serviceName || t.serviceType || "-";
   const amount = Number(t.amount || 0).toFixed(2);
   const charge = Number(t.charge || 0).toFixed(2);
@@ -709,7 +786,7 @@ Status : ${status}
       </div>` : "";
 
     out = `
-<div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 5px; color: #1e293b; white-space: normal;">
+<div style="font-family: 'Outfit', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 5px; color: #1e293b; white-space: normal;">
   <div style="text-align: center; margin-bottom: 15px;">
     ${logoImg}
     <div style="font-size: 1.3em; font-weight: 800; color: #f8fafc; text-transform: uppercase; letter-spacing: 1px;">${shop.name}</div>
@@ -859,7 +936,7 @@ function openInternalPrintWindow(content, size) {
 
   // Detect if content is HTML (new formats 6 & 7)
   const isHtml = content.trim().startsWith("<div");
-  const bodyStyle = isHtml ? "font-family: sans-serif; margin:0; padding:10px; background:white;" : "font-family: monospace; margin:0; padding:10px; background:white;";
+  const bodyStyle = isHtml ? "font-family: 'Outfit', 'Inter', sans-serif; margin:0; padding:10px; background:white; color: #1e293b;" : "font-family: 'Outfit', 'Inter', sans-serif; margin:0; padding:10px; background:white; color: #1e293b;";
   const contentStyle = isHtml ? "" : "white-space: pre-line;";
 
   doc.open();
@@ -907,7 +984,7 @@ window.openPdfModal = async function () {
     tableHtml += `<tr>
       <td>${globalIdx}</td>
       <td>${formatDate(r.date)}</td>
-      <td>${r.customerName || "-"}</td>
+      <td>${r.customerName || "Walk-in Customer"}</td>
       <td>${r.mobileNumber || "-"}</td>
       <td>${r.aadharNumber || "-"}</td>
       <td>${r.address || "N/A"}</td>
@@ -975,59 +1052,115 @@ window.closePdfModal = function () {
 };
 
 window.downloadPdfFromModal = async function () {
-  const element = document.getElementById("pdfPreviewArea");
+  const overlay = document.getElementById("auraPdfOverlay");
+  const progressFill = document.getElementById("auraPdfProgressFill");
+  const statusTitle = overlay?.querySelector(".aura-pdf-status-title");
 
   if (typeof html2pdf === 'undefined') {
-    await AuraDialog.error("PDF library not loaded properly. Please refresh the page.", "System Error");
+    await AuraDialog.error("PDF library not loaded properly.", "System Error");
     return;
   }
 
-  const btn = document.querySelector("#pdfModal .btn-print-final");
-  const originalText = btn.innerText;
-  btn.innerText = "⏳ Downloading...";
-  btn.disabled = true;
+  if (overlay) {
+    overlay.classList.add("active");
+    if (progressFill) progressFill.style.width = "10%";
+    if (statusTitle) statusTitle.innerText = "Initializing Engine...";
+  }
 
-  const opt = {
-    margin: [10, 10, 10, 10],
-    filename: `Joshi_Choice_Center_Report_${new Date().toISOString().split('T')[0]}.pdf`,
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2, useCORS: true, logging: false },
-    jsPDF: { unit: 'mm', format: 'a4', orientation: document.getElementById("pdfOrientation")?.value || 'landscape' },
-    pagebreak: { mode: 'css', avoid: 'tr' }
-  };
+  // --- GENERATE "CLEAN" HTML FOR PDF ENGINE ---
+  const orientation = document.getElementById("pdfOrientation")?.value || 'landscape';
+  const containerWidth = orientation === 'landscape' ? '1100px' : '800px';
+  
+  let tableRows = "";
+  filteredReportsData.forEach((r, idx) => {
+    const globalIdx = filteredReportsData.length - idx;
+    tableRows += `
+      <tr style="border-bottom: 1px solid #eee;">
+        <td style="padding: 8px; border: 1px solid #eee;">${globalIdx}</td>
+        <td style="padding: 8px; border: 1px solid #eee;">${formatDate(r.date)}</td>
+        <td style="padding: 8px; border: 1px solid #eee;">${r.customerName || "Walk-in Customer"}</td>
+        <td style="padding: 8px; border: 1px solid #eee;">${r.mobileNumber || "-"}</td>
+        <td style="padding: 8px; border: 1px solid #eee;">${r.aadharNumber || "-"}</td>
+        <td style="padding: 8px; border: 1px solid #eee;">${r.address || "N/A"}</td>
+        <td style="padding: 8px; border: 1px solid #eee;">${r.serviceName || r.serviceType || "-"}</td>
+        <td style="padding: 8px; border: 1px solid #eee;">${Number(r.amount) || 0}</td>
+        <td style="padding: 8px; border: 1px solid #eee;">${Number(r.charge) || 0}</td>
+        <td style="padding: 8px; border: 1px solid #eee;">${Number(r.totalAmount) || (Number(r.amount) + Number(r.charge))}</td>
+        <td style="padding: 8px; border: 1px solid #eee;">${r.paymentMode || "Cash"}</td>
+        <td style="padding: 8px; border: 1px solid #eee;">${(r.status || "SUCCESS").toUpperCase()}</td>
+        <td style="padding: 8px; border: 1px solid #eee;">${r.transactionId || "-"}</td>
+      </tr>`;
+  });
 
-  html2pdf().set(opt).from(element).save().then(() => {
-    btn.innerText = originalText;
-    btn.disabled = false;
+  const cleanHtml = `
+    <div style="width: ${containerWidth}; padding: 40px; background: white; font-family: Arial, sans-serif; color: #333;">
+      <div style="text-align: center; border-bottom: 5px solid #10b981; padding-bottom: 20px; margin-bottom: 30px;">
+        <h1 style="margin: 0; font-size: 36px; color: #000; text-transform: uppercase;">JOSHI CHOICE CENTER</h1>
+        <p style="margin: 5px 0 0; font-size: 14px; color: #666; letter-spacing: 5px;">PROFESSIONAL SERVICE REPORT | TRANSACTION DETAILS</p>
+      </div>
 
-    // ✅ Wait for the user to finish with the Save Dialog
-    const handleCompletion = () => {
-      // 1. Close the modal only AFTER they are done saving/cancelling
-      closePdfModal();
+      <table width="100%" style="background: #f9f9f9; border: 1px solid #ddd; border-radius: 10px; margin-bottom: 20px; padding: 15px;">
+        <tr>
+          <td align="left" style="font-size: 14px; font-weight: bold;">📅 Generated: ${new Date().toLocaleDateString('en-GB')}</td>
+          <td align="right" style="font-size: 14px; font-weight: bold;">📊 Total Records: ${filteredReportsData.length}</td>
+        </tr>
+      </table>
 
-      // 2. Show the professional success toast
-      if (typeof showToast === "function") {
-        showToast("PDF Export Process Finished ✅");
-      }
+      <table width="100%" style="border-collapse: collapse; font-size: 10px; table-layout: fixed;">
+        <thead>
+          <tr style="background: #f1f1f1;">
+            <th width="35" style="padding: 10px; border: 1px solid #ddd; text-align: left;">SN</th>
+            <th width="85" style="padding: 10px; border: 1px solid #ddd; text-align: left;">DATE</th>
+            <th width="120" style="padding: 10px; border: 1px solid #ddd; text-align: left;">CUSTOMER</th>
+            <th width="100" style="padding: 10px; border: 1px solid #ddd; text-align: left;">MOBILE</th>
+            <th width="110" style="padding: 10px; border: 1px solid #ddd; text-align: left;">AADHAR</th>
+            <th width="90" style="padding: 10px; border: 1px solid #ddd; text-align: left;">ADDRESS</th>
+            <th width="140" style="padding: 10px; border: 1px solid #ddd; text-align: left;">SERVICE</th>
+            <th width="65" style="padding: 10px; border: 1px solid #ddd; text-align: left;">AMT</th>
+            <th width="60" style="padding: 10px; border: 1px solid #ddd; text-align: left;">CHG</th>
+            <th width="65" style="padding: 10px; border: 1px solid #ddd; text-align: left;">TOTAL</th>
+            <th width="60" style="padding: 10px; border: 1px solid #ddd; text-align: left;">MODE</th>
+            <th width="70" style="padding: 10px; border: 1px solid #ddd; text-align: left;">STATUS</th>
+            <th width="80" style="padding: 10px; border: 1px solid #ddd; text-align: left;">TXN ID</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${tableRows}
+        </tbody>
+      </table>
 
-      window.removeEventListener('focus', handleCompletion);
+      <div style="text-align: center; border-top: 1px solid #eee; margin-top: 30px; padding-top: 15px; font-size: 12px; color: #999;">
+        © ${new Date().getFullYear()} Joshi Choice Center - Authentic Digital Services
+      </div>
+    </div>
+  `;
+
+  setTimeout(() => {
+    if (statusTitle) statusTitle.innerText = "Capturing Report Pages...";
+    if (progressFill) progressFill.style.width = "40%";
+
+    const opt = {
+      margin: [10, 10, 10, 10],
+      filename: `Joshi_Choice_Center_Report_${new Date().toISOString().split('T')[0]}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true, logging: false },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: orientation }
     };
 
-    // Add listener to detect when focus returns to the app
-    window.addEventListener('focus', handleCompletion);
+    html2pdf().set(opt).from(cleanHtml).save().then(() => {
+      if (statusTitle) statusTitle.innerText = "Export Complete! ✅";
+      if (progressFill) progressFill.style.width = "100%";
 
-    // Fallback: If for some reason focus doesn't fire, we still want to re-enable things
-    setTimeout(() => {
-      btn.disabled = false;
-      btn.innerText = originalText;
-    }, 500);
-
-  }).catch(async err => {
-    console.error("PDF Download Error:", err);
-    btn.innerText = originalText;
-    btn.disabled = false;
-    await AuraDialog.error("Failed to download PDF. Please try again.", "Download Error");
-  });
+      setTimeout(() => {
+        if (overlay) overlay.classList.remove("active");
+        closePdfModal();
+        if (typeof showToast === "function") showToast("Report Exported Successfully! ✅");
+      }, 800);
+    }).catch(err => {
+      console.error("PDF Error:", err);
+      if (overlay) overlay.classList.remove("active");
+    });
+  }, 600);
 };
 
 /* =========================
@@ -1045,8 +1178,8 @@ window.openEditModal = async function (id) {
   // Populate fields
   document.getElementById("editTxnId").value = id;
 
-  // Date conversion for <input type="date">
-  let dateVal = t.date;
+  // Date conversion for Edit Modal (Strip time if present)
+  let dateVal = t.date ? t.date.toString().split(" ")[0] : "";
   const editDateInput = document.getElementById("editDate");
 
   if (dateVal.includes("-") && dateVal.split("-")[0].length === 2) {
@@ -1111,6 +1244,22 @@ window.saveTransactionEdit = function () {
   reports[index].amount = document.getElementById("editAmount").value;
   reports[index].charge = document.getElementById("editCharge").value;
 
+  // 🔥 CUSTOMER ID RE-SYNC FIX:
+  // If identifying info changes, we need to update the customerId link
+  const newMobile = reports[index].mobileNumber.replace(/^\+91\s?/, "").replace(/\D/g, "");
+  const newAadhar = reports[index].aadharNumber.replace(/-/g, "");
+  const newName = reports[index].customerName.trim();
+
+  if (newAadhar.length === 12) {
+    reports[index].customerId = "CID-A-" + newAadhar;
+  } else if (newMobile.length === 10) {
+    reports[index].customerId = "CID-M-" + newMobile;
+  } else if (newName && newName !== "Walk-in Customer") {
+    reports[index].customerId = "CID-N-" + newName.replace(/\s+/g, "").toUpperCase();
+  } else {
+    reports[index].customerId = "CID-WALKIN";
+  }
+
   const paymentModeEl = document.getElementById("editPaymentMode");
   if (paymentModeEl) reports[index].paymentMode = paymentModeEl.value;
 
@@ -1124,16 +1273,35 @@ window.saveTransactionEdit = function () {
   const externalRefEl = document.getElementById("editExternalRef");
   if (externalRefEl) reports[index].externalRefNo = externalRefEl.value;
 
-  // Save and Refresh
-  localStorage.setItem("transactions", JSON.stringify(reports));
-
-  closeEditModal();
-  loadReports();
-  applyFilter(); // This will also update summary metrics
-
-  if (typeof showToast === "function") {
-    showToast("Transaction Updated Successfully ✅");
+  // 🔥 PENDING PAYMENTS SYNC: Update linked pending record if it exists
+  let pending = JSON.parse(localStorage.getItem("pendingCustomers") || "[]");
+  // Find by txnId OR by customerId + date if txnId is missing (older records)
+  const pIdx = pending.findIndex(p => 
+    (p.txnId === id) || 
+    (!p.txnId && p.customerId === reports[index].customerId && p.date === reports[index].date.split(" ")[0])
+  );
+  if (pIdx >= 0) {
+    pending[pIdx].name = reports[index].customerName;
+    pending[pIdx].mobile = reports[index].mobileNumber.includes("+91") ? reports[index].mobileNumber : "+91 " + reports[index].mobileNumber;
+    pending[pIdx].date = reports[index].date.split(" ")[0];
+    localStorage.setItem("pendingCustomers", JSON.stringify(pending));
   }
+
+  // Save and Refresh
+  if (window.AppLoader) window.AppLoader.show("Updating Transaction...");
+
+  setTimeout(() => {
+    localStorage.setItem("transactions", JSON.stringify(reports));
+
+    closeEditModal();
+    loadReports();
+    applyFilter(); // This will also update summary metrics
+
+    if (window.AppLoader) window.AppLoader.hide();
+    if (typeof showToast === "function") {
+      showToast("Transaction Updated Successfully ✅");
+    }
+  }, 800);
 }
 
 /* =========================
@@ -1151,4 +1319,45 @@ function hideLoader() {
   }
 }
 
+/* =========================
+   EDIT MODAL FORMATTERS
+========================= */
+function initEditModalFormatters() {
+  const nameInput = document.getElementById("editName");
+  const addressInput = document.getElementById("editAddress");
+  const mobileInput = document.getElementById("editMobile");
+  const aadharInput = document.getElementById("editAadhar");
+
+  // --- Title Case Helper ---
+  const applyTitleCase = (e) => {
+    let val = e.target.value;
+    e.target.value = val.toLowerCase().split(' ').map(word => {
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    }).join(' ');
+  };
+
+  nameInput?.addEventListener("input", applyTitleCase);
+  addressInput?.addEventListener("input", applyTitleCase);
+
+  // --- Mobile Formatter (+91 1234567890) ---
+  mobileInput?.addEventListener("input", (e) => {
+    let val = e.target.value.replace(/\D/g, ''); // Digits only
+    if (val.startsWith('91')) val = val.slice(2); // Remove leading 91 if typed
+    val = val.slice(0, 10); // Limit to 10 digits
+    e.target.value = val ? `+91 ${val}` : "";
+  });
+
+  // --- Aadhar Formatter (1111-2222-3333) ---
+  aadharInput?.addEventListener("input", (e) => {
+    let val = e.target.value.replace(/\D/g, ''); // Digits only
+    val = val.slice(0, 12); // Limit to 12 digits
+    // Format as XXXX-XXXX-XXXX
+    let formatted = "";
+    for (let i = 0; i < val.length; i++) {
+      if (i > 0 && i % 4 === 0) formatted += "-";
+      formatted += val[i];
+    }
+    e.target.value = formatted;
+  });
+}
 

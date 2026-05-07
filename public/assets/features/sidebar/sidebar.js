@@ -129,6 +129,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // 2. MENU INTERACTIVE LOGIC (HOVER/CLICK)
     menuItems.forEach(item => {
         item.addEventListener("mouseenter", () => {
+            // 🔥 PERFORMANCE FIX: Only move indicator if sidebar is open
             if (sidebar.classList.contains("open")) {
                 moveIndicator(item, true);
             }
@@ -137,9 +138,13 @@ document.addEventListener("DOMContentLoaded", () => {
         item.addEventListener("click", () => {
             menuItems.forEach(i => i.classList.remove("active"));
             item.classList.add("active");
-            moveIndicator(item, true);
+            
+            // Only move if open
+            if (sidebar.classList.contains("open")) {
+                moveIndicator(item, true);
+            }
 
-            // Clear Settings tab persistence when navigating to any other page
+            // Clear Settings tab persistence
             const href = item.getAttribute("href");
             if (href && !href.includes("settings.html")) {
                 sessionStorage.removeItem("activeSettingsTab");

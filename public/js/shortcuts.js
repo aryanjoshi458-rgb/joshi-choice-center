@@ -20,6 +20,19 @@
                 if (window.AuraQuickLock) window.AuraQuickLock.lock();
             }, 100);
         }
+
+        // Login History Recording (Once per session)
+        if (!sessionStorage.getItem("jc_recorded_session")) {
+            sessionStorage.setItem("jc_recorded_session", "true");
+            const history = JSON.parse(localStorage.getItem("jc_login_history") || "[]");
+            history.unshift({
+                time: new Date().toLocaleString(),
+                ip: "Local Machine",
+                status: "Success",
+                browser: "Aura v3 Core"
+            });
+            localStorage.setItem("jc_login_history", JSON.stringify(history.slice(0, 25)));
+        }
     };
 
     window.AuraQuickLock = {
@@ -53,7 +66,16 @@
 
             const attemptUnlock = () => {
                 const pass = input.value;
-                const storedPass = localStorage.getItem("jc_password") || "123";
+                const storedPass = localStorage.getItem("jc_password");
+
+                if (!storedPass) {
+                    showToast("No password set! Set one in Settings.", "error");
+                    overlay.remove();
+                    document.body.style.overflow = "";
+                    localStorage.removeItem("jc_isLocked");
+                    return;
+                }
+
                 if (pass === storedPass) {
                     overlay.remove();
                     document.body.style.overflow = ""; // Restore scrollbar
@@ -90,13 +112,16 @@
         "reports": "Alt + r",
         "expenses": "Alt + e",
         "settings": "Alt + s",
-        "print-receipt": "Alt + p",
+        "print-receipt": "Alt + P",
         "pending-payments": "Alt + b",
         "notifications": "Alt + i",
         "customer-profile": "Alt + u",
+        "rate-list": "Alt + m",
         "theme-toggle": "Alt + t",
         "quick-lock": "Alt + l",
-        "privacy-toggle": "Alt + q"
+        "privacy-toggle": "Alt + q",
+        "export-backup": "Alt + Shift + E",
+        "import-backup": "Alt + Shift + R"
     };
 
     const actionToPage = {
@@ -109,7 +134,8 @@
         "print-receipt": "print-receipt.html",
         "pending-payments": "pending-payments.html",
         "notifications": "notifications.html",
-        "customer-profile": "customer-profile.html"
+        "customer-profile": "customer-profile.html",
+        "rate-list": "rate-list.html"
     };
 
     function getShortcuts() {
@@ -137,6 +163,21 @@
 
         const pressedString = combination.join(" + ");
 
+        // --- ESCAPE FOR BACK NAVIGATION ---
+        if (e.key === "Escape") {
+            // Check for active overlays that should consume the ESC key first
+            const hasOverlay = document.querySelector('.omni-search-overlay.active, .aura-dialog-overlay, .modal[style*="display: flex"], .modal[style*="display: block"]');
+
+            if (!hasOverlay) {
+                const currentPage = window.location.pathname.split("/").pop();
+                if (currentPage !== "dashboard.html" && currentPage !== "" && currentPage !== "index.html") {
+                    e.preventDefault();
+                    window.history.back();
+                }
+                return;
+            }
+        }
+
         // --- MODIFIED INPUT CHECK ---
         // Allow shortcuts like Alt + L or Alt + Q even if an input is focused
         const isModifierPressed = e.ctrlKey || e.altKey || (e.metaKey && !e.ctrlKey); // Meta is CMD on Mac
@@ -148,10 +189,14 @@
                 e.stopPropagation();
 
                 if (action === "theme-toggle") {
-                    const current = localStorage.getItem("appTheme") || "light";
+                    const current = localStorage.getItem("theme") || "light";
                     const next = current === "light" ? "dark" : "light";
-                    localStorage.setItem("appTheme", next);
+                    localStorage.setItem("theme", next);
+
+                    // Force re-sync of all system elements
                     document.body.classList.toggle("dark-mode", next === "dark");
+                    window.dispatchEvent(new Event("themeChanged"));
+
                     if (window.showToast) window.showToast(`Switched to ${next} mode!`, "success");
                     return;
                 }
@@ -164,9 +209,23 @@
                 if (action === "privacy-toggle") {
                     e.stopImmediatePropagation();
                     const isNowActive = document.body.classList.toggle("privacy-mode-active");
-                    localStorage.setItem("jc_privacy_mode", isNowActive);
+                    localStorage.setItem("jc_privacy_mode", isNowActive.toString());
                     console.log("Privacy Mode Toggled:", isNowActive);
                     if (window.showToast) window.showToast(isNowActive ? "Privacy Blur Enabled 👁️" : "Privacy Blur Disabled 🔓", "info");
+                    return;
+                }
+
+                if (action === "export-backup") {
+                    const btn = document.getElementById("exportBackup");
+                    if (btn) btn.click();
+                    else if (window.showToast) window.showToast("Export only available on Settings Page", "info");
+                    return;
+                }
+
+                if (action === "import-backup") {
+                    const btn = document.getElementById("importBackup");
+                    if (btn) btn.click();
+                    else if (window.showToast) window.showToast("Restore only available on Settings Page", "info");
                     return;
                 }
 

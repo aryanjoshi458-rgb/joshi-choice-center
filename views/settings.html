@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8" /><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self';">
   <title>Settings | Joshi Choice Center</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
@@ -25,10 +25,11 @@
   <link rel="stylesheet" href="../public/css/aura-modals.css">
   <link rel="stylesheet" href="../public/css/aura-assistant.css">
   <link rel="stylesheet" href="../public/css/aura-titlebar.css">
+  <link rel="stylesheet" href="../public/css/omni-search.css">
   <link rel="stylesheet" href="../public/css/aura-design-system.css">
   <script src="../public/js/auth.js"></script>
   <script src="../public/js/aura-window.js"></script>
-  <script>Auth.protectPage();</script>
+
 
   <style>
     /* CUSTOM ANIMATED CHECKBOX (WRAPPER-46) */
@@ -87,32 +88,6 @@
       opacity: 1;
       border-radius: 50%;
     }
-
-    .checkbox-wrapper-46 .cbx:hover span:first-child {
-      border-color: #506eec;
-    }
-
-    .checkbox-wrapper-46 .inp-cbx:checked+.cbx span:first-child {
-      background: #506eec;
-      border-color: #506eec;
-      animation: wave-46 0.4s ease;
-    }
-
-    .checkbox-wrapper-46 .inp-cbx:checked+.cbx span:first-child svg {
-      stroke-dashoffset: 0;
-    }
-
-    .checkbox-wrapper-46 .inp-cbx:checked+.cbx span:first-child:before {
-      transform: scale(3.5);
-      opacity: 0;
-      transition: all 0.6s ease;
-    }
-
-    @keyframes wave-46 {
-      50% {
-        transform: scale(0.9);
-      }
-    }
   </style>
 </head>
 
@@ -140,6 +115,12 @@
         </svg>
         <span data-i18n="sidebar-new-customer">New Customer</span>
       </a>
+            <a href="service-hub.html">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon">
+                    <path d="M12 2 2 12l10 10 10-10-10-10Z"></path><path d="m7 12 5-5 5 5-5 5-5-5Z"></path>
+                </svg>
+                <span data-i18n="sidebar-digital-hub">Digital Hub</span>
+            </a>
       <a href="customer-directory.html">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon">
           <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
@@ -207,8 +188,9 @@
           <polyline points="16 17 21 12 16 7" />
           <line x1="21" y1="12" x2="9" y2="12" />
         </svg>
-        <span>Logout</span>
+        <span data-i18n="sidebar-logout">Logout</span>
       </a>
+
     </div>
   </div>
 
@@ -360,7 +342,7 @@
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
               <path d="m9 12 2 2 4-4" />
             </svg>
-            <span data-i18n="tab-security">Security</span>
+            <span>Security & Access Control</span>
           </button>
           <button class="aura-nav-btn" data-tab="advanced">
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -1075,6 +1057,30 @@
                   <kbd id="kb-theme-toggle" class="current-key-display">Alt + T</kbd>
                 </div>
               </div>
+              <div class="aura-sh-row">
+                <label>Quick Lock</label>
+                <div class="aura-sh-input">
+                  <input type="text" readonly data-action="quick-lock" class="shortcut-recording-input"
+                    placeholder="Record...">
+                  <kbd id="kb-quick-lock" class="current-key-display">Alt + L</kbd>
+                </div>
+              </div>
+              <div class="aura-sh-row">
+                <label>Privacy Mode</label>
+                <div class="aura-sh-input">
+                  <input type="text" readonly data-action="privacy-toggle" class="shortcut-recording-input"
+                    placeholder="Record...">
+                  <kbd id="kb-privacy-toggle" class="current-key-display">Alt + Q</kbd>
+                </div>
+              </div>
+              <div class="aura-sh-row">
+                <label>Rate List</label>
+                <div class="aura-sh-input">
+                  <input type="text" readonly data-action="rate-list" class="shortcut-recording-input"
+                    placeholder="Record...">
+                  <kbd id="kb-rate-list" class="current-key-display">Alt + M</kbd>
+                </div>
+              </div>
 
               <div class="aura-sh-row">
                 <label>Software Zoom (Dynamic)</label>
@@ -1134,6 +1140,7 @@
 
       <!-- 11. SECURITY & ACCESS CONTROL -->
       <div id="security" class="tab-content">
+        <!-- 2. ADMINISTRATIVE ACCESS CONTROL -->
         <div class="aura-section-card">
           <div class="aura-card-header">
             <div class="aura-icon-box orange">
@@ -1143,8 +1150,8 @@
               </svg>
             </div>
             <div class="aura-title-stack">
-              <h2 data-i18n="tab-security">Security & Access Control</h2>
-              <p>Manage administrative access and session security</p>
+              <h2>Administrative Access Control</h2>
+              <p>Manage administrative credentials and session security</p>
             </div>
           </div>
 
@@ -1202,6 +1209,37 @@
                 </select>
               </div>
             </div>
+
+            <!-- Workspace Security -->
+            <div class="aura-toggle-list" style="margin-top: 30px; display: grid; grid-template-columns: 1fr; gap: 15px;">
+              <div class="aura-toggle-item" style="display: flex; justify-content: space-between; align-items: center; background: var(--hover-bg, rgba(0,0,0,0.15)); padding: 18px 25px; border-radius: 18px; border: 1px solid var(--border-color, rgba(255,255,255,0.05));">
+                <div>
+                  <div style="font-weight: 700; color: var(--aura-text); font-size: 0.95rem;">Aura Privacy Blur</div>
+                  <div style="font-size: 0.8em; color: var(--aura-text-soft);">Blur sensitive data with hover-to-peek. (Alt + Q)</div>
+                </div>
+                <div class="checkbox-wrapper-46">
+                  <input type="checkbox" id="privacyBlurToggle" class="inp-cbx" />
+                  <label for="privacyBlurToggle" class="cbx">
+                    <span><svg viewBox="0 0 12 10" height="10px" width="12px"><polyline points="1.5 6 4.5 9 10.5 1"></polyline></svg></span>
+                    <span></span>
+                  </label>
+                </div>
+              </div>
+
+              <div style="display: flex; gap: 15px; background: var(--hover-bg, rgba(0,0,0,0.15)); padding: 18px 25px; border-radius: 18px; border: 1px solid var(--border-color, rgba(255,255,255,0.05)); align-items: center;">
+                <div style="flex: 1;">
+                  <div style="font-weight: 700; color: var(--aura-text); font-size: 0.95rem;">Quick Lock System</div>
+                  <div style="font-size: 0.8em; color: var(--aura-text-soft);">Instantly lock software with glassmorphism. (Alt + L)</div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                  <input type="password" id="lockScreenPassword" placeholder="Set Password" style="width: 130px; padding: 12px 15px; border-radius: 12px; background: var(--hover-bg, rgba(0,0,0,0.25)); border: 1.5px solid var(--border-color, rgba(255,255,255,0.05)); color: var(--text-main, white); font-size: 0.9rem;">
+                  <button class="aura-mini-btn" id="triggerQuickLock" style="background: var(--aura-accent); border: none; padding: 12px 20px; border-radius: 12px; color: white; cursor: pointer; font-weight: 800; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px;">
+                    Lock Now
+                  </button>
+                </div>
+              </div>
+            </div>
+
             <div class="aura-form-footer">
               <button class="aura-premium-btn" id="saveSecuritySettings">Update Security Config</button>
             </div>
@@ -1212,7 +1250,7 @@
       <div class="tab-content" id="receipt">
         <div class="aura-section-card" style="position: relative; overflow: hidden;">
           <!-- COMING SOON OVERLAY -->
-          <div class="coming-soon-overlay" id="receiptComingSoon" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 50; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-radius: inherit;">
+          <div class="coming-soon-overlay" id="receiptComingSoon" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 50; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--card-bg, rgba(15, 23, 42, 0.4)); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-radius: inherit;">
              <div class="cs-content-box" style="text-align: center; transform: translateY(-20px);">
                 <div class="cs-svg-wrapper" style="margin-bottom: 25px;">
                   <svg width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="url(#cs-grad)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="cs-glow-svg">
@@ -1256,7 +1294,7 @@
               <div class="aura-field" style="margin-bottom: 25px;">
                 <label>Select Receipt Style (Format)</label>
                 <select id="receiptDefaultFormat"
-                  style="width: 100%; padding: 12px; border-radius: 12px; background: var(--card-bg); border: 1.5px solid var(--border-color); color: var(--text-main); font-weight: 600;">
+                  style="width: 100%; padding: 12px; border-radius: 12px; background: var(--hover-bg, var(--card-bg)); border: 1.5px solid var(--border-color); color: var(--text-main); font-weight: 600;">
                   <option value="1">Format 1: Classic Simple</option>
                   <option value="2">Format 2: Boxed Professional</option>
                   <option value="3">Format 3: Elegant Divider</option>
@@ -1282,7 +1320,7 @@
                 style="margin-top: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                 <!-- SHOW LOGO -->
                 <div class="aura-toggle-item"
-                  style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); padding: 10px 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                  style="display: flex; justify-content: space-between; align-items: center; background: var(--hover-bg, rgba(255,255,255,0.03)); padding: 10px 15px; border-radius: 12px; border: 1px solid var(--border-color, rgba(255,255,255,0.05));">
                   <span style="font-size: 0.9em; font-weight: 600; color: var(--text-main);">Show Logo</span>
                   <div class="checkbox-wrapper-46">
                     <input type="checkbox" id="showLogo" class="inp-cbx" />
@@ -1299,7 +1337,7 @@
 
                 <!-- SHOW ADDRESS -->
                 <div class="aura-toggle-item"
-                  style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); padding: 10px 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                  style="display: flex; justify-content: space-between; align-items: center; background: var(--hover-bg, rgba(255,255,255,0.03)); padding: 10px 15px; border-radius: 12px; border: 1px solid var(--border-color, rgba(255,255,255,0.05));">
                   <span style="font-size: 0.9em; font-weight: 600; color: var(--text-main);">Show Address</span>
                   <div class="checkbox-wrapper-46">
                     <input type="checkbox" id="showAddress" class="inp-cbx" />
@@ -1316,7 +1354,7 @@
 
                 <!-- SHOW CONTACT -->
                 <div class="aura-toggle-item"
-                  style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); padding: 10px 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                  style="display: flex; justify-content: space-between; align-items: center; background: var(--hover-bg, rgba(255,255,255,0.03)); padding: 10px 15px; border-radius: 12px; border: 1px solid var(--border-color, rgba(255,255,255,0.05));">
                   <span style="font-size: 0.9em; font-weight: 600; color: var(--text-main);">Show Contact</span>
                   <div class="checkbox-wrapper-46">
                     <input type="checkbox" id="showContact" class="inp-cbx" />
@@ -1333,7 +1371,7 @@
 
                 <!-- SHOW PAYMENT MODE -->
                 <div class="aura-toggle-item"
-                  style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); padding: 10px 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                  style="display: flex; justify-content: space-between; align-items: center; background: var(--hover-bg, rgba(255,255,255,0.03)); padding: 10px 15px; border-radius: 12px; border: 1px solid var(--border-color, rgba(255,255,255,0.05));">
                   <span style="font-size: 0.9em; font-weight: 600; color: var(--text-main);">Show Mode</span>
                   <div class="checkbox-wrapper-46">
                     <input type="checkbox" id="showPaymentMode" class="inp-cbx" />
@@ -1352,7 +1390,7 @@
               <div class="aura-field" style="margin-top: 20px;">
                 <label>Professional Terms & Conditions (T&C)</label>
                 <textarea id="receiptTerms"
-                  style="width: 100%; height: 80px; padding: 12px; border-radius: 12px; background: var(--card-bg); border: 1.5px solid var(--border-color); color: var(--text-main); font-family: inherit; resize: none;"
+                  style="width: 100%; height: 80px; padding: 12px; border-radius: 12px; background: var(--hover-bg, var(--card-bg)); border: 1.5px solid var(--border-color); color: var(--text-main); font-family: inherit; resize: none;"
                   placeholder="e.g. 1. Goods once sold will not be returned. 2. Please keep this receipt for future reference."></textarea>
               </div>
 
@@ -1365,7 +1403,7 @@
             <!-- Right: Live Preview -->
             <div class="studio-preview-pane">
               <div
-                style="background: rgba(0,0,0,0.2); border-radius: 20px; padding: 20px; border: 2px dashed rgba(255,255,255,0.1); height: 100%; position: relative;">
+                style="background: var(--hover-bg, rgba(0,0,0,0.2)); border-radius: 20px; padding: 20px; border: 2px dashed var(--border-color, rgba(255,255,255,0.1)); height: 100%; position: relative;">
                 <div
                   style="position: absolute; top: -10px; left: 20px; background: #4f46e5; color: white; padding: 2px 10px; border-radius: 10px; font-size: 0.7em; font-weight: 800; letter-spacing: 1px;">
                   LIVE PREVIEW</div>
@@ -1418,52 +1456,7 @@
       </div>
 
         <div class="tab-content" id="advanced">
-          <!-- 1. PRIVACY & BOSS MODE -->
-          <div class="aura-section-card" style="margin-bottom: 25px;">
-            <div class="aura-card-header">
-              <div class="aura-icon-box blue">
-                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
-                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                </svg>
-              </div>
-              <div class="aura-title-stack">
-                <h2>Privacy & Security</h2>
-                <p>Protect your dashboard and lock your session</p>
-              </div>
-            </div>
-
-            <div class="aura-toggle-list" style="margin-top: 20px; display: grid; grid-template-columns: 1fr; gap: 15px;">
-              <div class="aura-toggle-item" style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); padding: 15px 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
-                <div>
-                  <div style="font-weight: 700; color: var(--text-main);">Aura Privacy Blur</div>
-                  <div style="font-size: 0.8em; color: var(--text-muted);">Blur sensitive data with hover-to-peek. (Alt + Q)</div>
-                </div>
-                <div class="checkbox-wrapper-46">
-                  <input type="checkbox" id="privacyBlurToggle" class="inp-cbx" />
-                  <label for="privacyBlurToggle" class="cbx">
-                    <span><svg viewBox="0 0 12 10" height="10px" width="12px"><polyline points="1.5 6 4.5 9 10.5 1"></polyline></svg></span>
-                    <span></span>
-                  </label>
-                </div>
-              </div>
-
-              <div style="display: flex; gap: 15px; background: rgba(255,255,255,0.03); padding: 15px 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); align-items: center;">
-                <div style="flex: 1;">
-                  <div style="font-weight: 700; color: var(--text-main);">Quick Lock System</div>
-                  <div style="font-size: 0.8em; color: var(--text-muted);">Instantly lock software with glassmorphism. (Alt + L)</div>
-                </div>
-                <div style="display: flex; align-items: center; gap: 10px;">
-                  <input type="password" id="lockScreenPassword" placeholder="Set Password" style="width: 120px; padding: 8px 12px; border-radius: 8px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); color: white; font-size: 0.85em;">
-                  <button class="aura-mini-btn" id="triggerQuickLock" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); padding: 8px 15px; border-radius: 8px; color: white; cursor: pointer;">
-                    Lock Now
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- 2. PERFORMANCE & SYSTEM -->
+          <!-- 1. PERFORMANCE & SYSTEM -->
           <div class="aura-section-card" style="margin-bottom: 25px;">
             <div class="aura-card-header">
               <div class="aura-icon-box orange">
@@ -1509,9 +1502,10 @@
             </div>
 
             <div class="aura-toggle-list" style="margin-top: 20px;">
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                <div class="aura-toggle-item" style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); padding: 10px 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
-                  <span style="font-size: 0.85em; font-weight: 600;">Today's Overview</span>
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                <!-- Row 1 -->
+                <div class="aura-toggle-item" style="display: flex; justify-content: space-between; align-items: center; background: var(--hover-bg, rgba(0,0,0,0.15)); padding: 12px 18px; border-radius: 12px; border: 1px solid var(--border-color, rgba(255,255,255,0.05));">
+                  <span style="font-size: 0.85em; font-weight: 600; color: var(--aura-text);">Today's Overview</span>
                   <div class="checkbox-wrapper-46">
                     <input type="checkbox" id="widgetToday" class="inp-cbx" checked />
                     <label for="widgetToday" class="cbx">
@@ -1520,8 +1514,8 @@
                     </label>
                   </div>
                 </div>
-                <div class="aura-toggle-item" style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); padding: 10px 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
-                  <span style="font-size: 0.85em; font-weight: 600;">Earnings Analysis</span>
+                <div class="aura-toggle-item" style="display: flex; justify-content: space-between; align-items: center; background: var(--hover-bg, rgba(0,0,0,0.15)); padding: 12px 18px; border-radius: 12px; border: 1px solid var(--border-color, rgba(255,255,255,0.05));">
+                  <span style="font-size: 0.85em; font-weight: 600; color: var(--aura-text);">Earnings Analysis</span>
                   <div class="checkbox-wrapper-46">
                     <input type="checkbox" id="widgetEarnings" class="inp-cbx" />
                     <label for="widgetEarnings" class="cbx">
@@ -1530,8 +1524,10 @@
                     </label>
                   </div>
                 </div>
-                <div class="aura-toggle-item" style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); padding: 10px 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
-                  <span style="font-size: 0.85em; font-weight: 600;">Recent Expenses</span>
+
+                <!-- Row 2 -->
+                <div class="aura-toggle-item" style="display: flex; justify-content: space-between; align-items: center; background: var(--hover-bg, rgba(0,0,0,0.15)); padding: 12px 18px; border-radius: 12px; border: 1px solid var(--border-color, rgba(255,255,255,0.05));">
+                  <span style="font-size: 0.85em; font-weight: 600; color: var(--aura-text);">Recent Expenses</span>
                   <div class="checkbox-wrapper-46">
                     <input type="checkbox" id="widgetExpenses" class="inp-cbx" />
                     <label for="widgetExpenses" class="cbx">
@@ -1540,8 +1536,8 @@
                     </label>
                   </div>
                 </div>
-                <div class="aura-toggle-item" style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); padding: 10px 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
-                  <span style="font-size: 0.85em; font-weight: 600;">Pending List</span>
+                <div class="aura-toggle-item" style="display: flex; justify-content: space-between; align-items: center; background: var(--hover-bg, rgba(0,0,0,0.15)); padding: 12px 18px; border-radius: 12px; border: 1px solid var(--border-color, rgba(255,255,255,0.05));">
+                  <span style="font-size: 0.85em; font-weight: 600; color: var(--aura-text);">Pending List</span>
                   <div class="checkbox-wrapper-46">
                     <input type="checkbox" id="widgetPending" class="inp-cbx" />
                     <label for="widgetPending" class="cbx">
@@ -1550,57 +1546,150 @@
                     </label>
                   </div>
                 </div>
+
+                <!-- Row 3 -->
+                <div class="aura-toggle-item" style="display: flex; justify-content: space-between; align-items: center; background: var(--hover-bg, rgba(0,0,0,0.15)); padding: 12px 18px; border-radius: 12px; border: 1px solid var(--border-color, rgba(255,255,255,0.05));">
+                  <span style="font-size: 0.85em; font-weight: 600; color: var(--aura-text);">Digital Clock</span>
+                  <div class="checkbox-wrapper-46">
+                    <input type="checkbox" id="widgetClock" class="inp-cbx" />
+                    <label for="widgetClock" class="cbx">
+                      <span><svg viewBox="0 0 12 10" height="10px" width="12px"><polyline points="1.5 6 4.5 9 10.5 1"></polyline></svg></span>
+                      <span></span>
+                    </label>
+                  </div>
+                </div>
+                <div class="aura-toggle-item" style="display: flex; justify-content: space-between; align-items: center; background: var(--hover-bg, rgba(0,0,0,0.15)); padding: 12px 18px; border-radius: 12px; border: 1px solid var(--border-color, rgba(255,255,255,0.05));">
+                  <span style="font-size: 0.85em; font-weight: 600; color: var(--aura-text);">Quick Actions</span>
+                  <div class="checkbox-wrapper-46">
+                    <input type="checkbox" id="widgetActions" class="inp-cbx" />
+                    <label for="widgetActions" class="cbx">
+                      <span><svg viewBox="0 0 12 10" height="10px" width="12px"><polyline points="1.5 6 4.5 9 10.5 1"></polyline></svg></span>
+                      <span></span>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Row 4 -->
+                <div class="aura-toggle-item" style="display: flex; justify-content: space-between; align-items: center; background: var(--hover-bg, rgba(0,0,0,0.15)); padding: 12px 18px; border-radius: 12px; border: 1px solid var(--border-color, rgba(255,255,255,0.05));">
+                  <span style="font-size: 0.85em; font-weight: 600; color: var(--aura-text);">Real-time Stats</span>
+                  <div class="checkbox-wrapper-46">
+                    <input type="checkbox" id="widgetStats" class="inp-cbx" />
+                    <label for="widgetStats" class="cbx">
+                      <span><svg viewBox="0 0 12 10" height="10px" width="12px"><polyline points="1.5 6 4.5 9 10.5 1"></polyline></svg></span>
+                      <span></span>
+                    </label>
+                  </div>
+                </div>
+                <div class="aura-toggle-item" style="display: flex; justify-content: space-between; align-items: center; background: var(--hover-bg, rgba(0,0,0,0.15)); padding: 12px 18px; border-radius: 12px; border: 1px solid var(--border-color, rgba(255,255,255,0.05));">
+                  <span style="font-size: 0.85em; font-weight: 600; color: var(--aura-text);">Recent Transactions</span>
+                  <div class="checkbox-wrapper-46">
+                    <input type="checkbox" id="widgetRecentTxns" class="inp-cbx" />
+                    <label for="widgetRecentTxns" class="cbx">
+                      <span><svg viewBox="0 0 12 10" height="10px" width="12px"><polyline points="1.5 6 4.5 9 10.5 1"></polyline></svg></span>
+                      <span></span>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Row 5 -->
+                <div class="aura-toggle-item" style="display: flex; justify-content: space-between; align-items: center; background: var(--hover-bg, rgba(0,0,0,0.15)); padding: 12px 18px; border-radius: 12px; border: 1px solid var(--border-color, rgba(255,255,255,0.05));">
+                  <span style="font-size: 0.85em; font-weight: 600; color: var(--aura-text);">Top Services</span>
+                  <div class="checkbox-wrapper-46">
+                    <input type="checkbox" id="widgetTopServices" class="inp-cbx" />
+                    <label for="widgetTopServices" class="cbx">
+                      <span><svg viewBox="0 0 12 10" height="10px" width="12px"><polyline points="1.5 6 4.5 9 10.5 1"></polyline></svg></span>
+                      <span></span>
+                    </label>
+                  </div>
+                </div>
+                <div class="aura-toggle-item" style="display: flex; justify-content: space-between; align-items: center; background: var(--hover-bg, rgba(0,0,0,0.15)); padding: 12px 18px; border-radius: 12px; border: 1px solid var(--border-color, rgba(255,255,255,0.05));">
+                  <span style="font-size: 0.85em; font-weight: 600; color: var(--aura-text);">Profit Analysis</span>
+                  <div class="checkbox-wrapper-46">
+                    <input type="checkbox" id="widgetProfit" class="inp-cbx" />
+                    <label for="widgetProfit" class="cbx">
+                      <span><svg viewBox="0 0 12 10" height="10px" width="12px"><polyline points="1.5 6 4.5 9 10.5 1"></polyline></svg></span>
+                      <span></span>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Row 6 -->
+                <div class="aura-toggle-item" style="display: flex; justify-content: space-between; align-items: center; background: var(--hover-bg, rgba(0,0,0,0.15)); padding: 12px 18px; border-radius: 12px; border: 1px solid var(--border-color, rgba(255,255,255,0.05));">
+                  <span style="font-size: 0.85em; font-weight: 600; color: var(--aura-text);">Private Notes</span>
+                  <div class="checkbox-wrapper-46">
+                    <input type="checkbox" id="widgetNotes" class="inp-cbx" />
+                    <label for="widgetNotes" class="cbx">
+                      <span><svg viewBox="0 0 12 10" height="10px" width="12px"><polyline points="1.5 6 4.5 9 10.5 1"></polyline></svg></span>
+                      <span></span>
+                    </label>
+                  </div>
+                </div>
               </div>
 
-              <div class="aura-form-footer" style="margin-top: 20px;">
-                <button class="aura-premium-btn" id="saveAdvancedSettings" style="width: 100%;">Save All Advanced Preferences</button>
-              </div>
             </div>
-          </div>
-        </div>
-
-      <div class="tab-content" id="about">
-        <div class="aura-about-hero">
-          <div class="aura-about-logo">JC</div>
-          <h1>Joshi Choice Center</h1>
-          <p class="aura-tagline">Empowering Small Business with Digital Intelligence</p>
-
-          <div class="version-info-grid">
-            <div class="version-card current">
-              <span class="v-label">Current Version</span>
-              <strong class="v-value" id="currentAppVersion">v1.3.3</strong>
-            </div>
-            <div class="version-card latest">
-              <span class="v-label">Latest Stable</span>
-              <strong class="v-value" id="latestAppVersion">v1.3.3</strong>
-            </div>
-          </div>
-
-          <div class="aura-status-pill success" id="versionStatusPill">
-            <span class="dot"></span>
-            <span id="versionStatusText">SOFTWARE UP TO DATE</span>
-          </div>
-
-          <div class="update-controls">
-            <button class="aura-update-btn" id="checkUpdates">
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"
-                class="btn-icon">
-                <path d="M21 2v6h-6M3 12a9 9 0 0 1 15-6.7L21 8M3 22v-6h6M21 12a9 9 0 0 1-15 6.7L3 16"></path>
-              </svg>
-              <span>Check for Updates</span>
-            </button>
-            <p class="last-checked" id="lastCheckedText">Last checked: Just now</p>
-          </div>
-
-          <div id="updateStatus"></div>
-
-          <div class="about-footer-info">
-            <p class="aura-credits">© 2026 Joshi Choice Center. Developed with ❤️ for Business efficiency.</p>
           </div>
         </div>
       </div>
-    </div>
-    </div>
+
+      <div class="tab-content" id="about">
+        <div class="aura-cyber-split" id="aboutCyberSplit">
+          <div class="cyber-scanline"></div>
+
+          <!-- LEFT: BRANDING -->
+          <div class="cyber-brand-side">
+            <div class="cyber-logo-box">
+              <div class="cyber-logo-glow"></div>
+              <div class="cyber-logo-text">JC</div>
+            </div>
+            <div class="cyber-main-title">
+              <h1>Joshi Choice Center</h1>
+              <div class="cyber-line-decoration"></div>
+              <p>Next-Gen Business Intelligence Platform</p>
+            </div>
+          </div>
+
+          <!-- RIGHT: SYSTEM DATA -->
+          <div class="cyber-data-side">
+            <div class="cyber-card-inner">
+              <div class="cyber-header">
+                <span class="cyber-label">SYSTEM_CORE_INFO</span>
+              </div>
+
+              <div class="cyber-data-grid">
+                <div class="cyber-data-item">
+                  <span class="d-label">CORE_BUILD</span>
+                  <span class="d-value" id="currentAppVersion">v3.0.1</span>
+                </div>
+                <div class="cyber-data-item">
+                  <span class="d-label">STABLE_REL</span>
+                  <span class="d-value" id="latestAppVersion">v3.0.1</span>
+                </div>
+              </div>
+
+              <div class="cyber-status-zone">
+                <div class="aura-status-pill success" id="versionStatusPill">
+                  <span class="dot"></span>
+                  <span id="versionStatusText">SYSTEM_OPTIMIZED</span>
+                </div>
+              </div>
+
+              <div class="cyber-sync-zone">
+                <button class="cyber-sync-btn" id="checkUpdates">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="3">
+                    <path d="M21 2v6h-6M3 12a9 9 0 0 1 15-6.7L21 8M3 22v-6h6M21 12a9 9 0 0 1-15 6.7L3 16"></path>
+                  </svg>
+                  <span>CHECK FOR UPDATES</span>
+                </button>
+                <span class="cyber-sync-stamp" id="lastCheckedText">LAST_SYNC: ONLINE</span>
+              </div>
+            </div>
+
+            <div class="cyber-footer-line">
+              <span>© 2026 Joshi Choice Center. All Rights Reserved.</span>
+            </div>
+          </div>
+        </div>
+      </div>
 
     <!-- Modal logic handled by aura-modals.js dynamically -->
 
@@ -1711,7 +1800,10 @@
 
   <script src="../public/assets/sidebar-pages/settings/settings.js"></script>
   <script src="../public/assets/features/scroll-toggle.js"></script>
+  <script src="../public/js/omni-search.js"></script>
   <script src="../public/js/shortcuts.js"></script>
 </body>
 
 </html>
+
+

@@ -1,5 +1,5 @@
 // ===============================
-// MODERN TABLE PAGINATION (PREMIUM & PERSISTENT)
+// MODERN TABLE PAGINATION (CIRCULAR NUMERIC DESIGN)
 // ===============================
 
 (function initPagination() {
@@ -13,30 +13,19 @@
         const tbody = table.querySelector("tbody");
         if (!tbody) return;
 
-        // Get all rows but only those that are "visible" from other filters
-        // Note: Some filters might set display="none"
-        // We first need to know which rows ARE visible to paginate them.
         const allRows = Array.from(tbody.querySelectorAll("tr"));
-        
-        // Rows that are NOT hidden by search/filter logic
         const visibleRows = allRows.filter(r => {
-            // If it's the "No Reports Found" row or the new professional "no-data-row", don't paginate
             if (r.innerText.includes("No Reports Found") || r.classList.contains("no-data-row")) return false;
-            // IMPORTANT: Only count rows that are NOT filtered out by the search/month filter
-            // We ignore r.style.display because pagination itself sets display='none'
             return r.getAttribute("data-filtered") !== "true";
         });
 
-        // Remove old pager if exists
         document.getElementById("modernPager")?.remove();
-
-        // If no rows, don't show pagination
         if (visibleRows.length === 0) return;
 
         const totalPages = Math.ceil(visibleRows.length / rowsPerPage) || 1;
         if (currentPage > totalPages) currentPage = totalPages;
 
-        // ---------- STYLE (Premium Glassmorphism) ----------
+        // ---------- STYLE (Circular & Premium) ----------
         if (!document.getElementById("modern-pagination-style")) {
             const style = document.createElement("style");
             style.id = "modern-pagination-style";
@@ -46,66 +35,86 @@
                     justify-content: center;
                     align-items: center;
                     gap: 12px;
-                    margin: 25px 0;
-                    padding: 10px;
-                    background: rgba(255, 255, 255, 0.05);
-                    backdrop-filter: blur(10px);
-                    border-radius: 16px;
-                    border: 1px solid rgba(255, 255, 255, 0.1);
-                    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-                    user-select: none;
+                    margin: 30px 0;
+                    padding: 12px 24px;
+                    background: var(--card-bg, rgba(15, 23, 42, 0.6));
+                    backdrop-filter: blur(20px);
+                    border-radius: 100px;
+                    border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+                    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
                     width: fit-content;
                     margin-left: auto;
                     margin-right: auto;
                 }
-                .pg-btn {
-                    min-width: 40px;
-                    height: 40px;
+                .pg-section-label {
+                    color: var(--text-muted, rgba(255, 255, 255, 0.4));
+                    font-weight: 800;
+                    font-size: 0.75rem;
+                    text-transform: uppercase;
+                    letter-spacing: 1.5px;
+                    margin-right: 15px;
+                    padding-right: 15px;
+                    border-right: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+                }
+                .pg-circles {
+                    display: flex;
+                    gap: 8px;
+                    align-items: center;
+                }
+                .pg-circle {
+                    width: 36px;
+                    height: 36px;
+                    border-radius: 50%;
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    border-radius: 12px;
-                    border: 1px solid rgba(255, 255, 255, 0.1);
-                    background: linear-gradient(135deg, #6366f1, #8b5cf6);
-                    color: #fff;
-                    font-weight: 600;
-                    font-size: 14px;
+                    background: var(--hover-bg, rgba(255, 255, 255, 0.05));
+                    border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+                    color: var(--text-muted, rgba(255, 255, 255, 0.6));
+                    font-weight: 700;
+                    font-size: 0.9rem;
                     cursor: pointer;
                     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-                    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
                 }
-                .pg-btn:hover:not(.disabled) {
-                    transform: translateY(-3px);
-                    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
-                    filter: brightness(1.1);
+                .pg-circle:hover {
+                    background: var(--primary-color);
+                    color: white;
+                    transform: translateY(-2px);
+                    border-color: transparent;
                 }
-                .pg-btn:active:not(.disabled) {
-                    transform: scale(0.95);
+                .pg-circle.active {
+                    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+                    color: white;
+                    border-color: rgba(99, 102, 241, 0.4);
+                    box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
+                    transform: scale(1.1);
                 }
-                .pg-btn.disabled {
-                    background: rgba(255, 255, 255, 0.05);
-                    color: rgba(255, 255, 255, 0.3);
+                .pg-nav-btn {
+                    width: 36px;
+                    height: 36px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border-radius: 50%;
+                    background: var(--hover-bg, rgba(255, 255, 255, 0.03));
+                    border: 1px solid var(--border-color, rgba(255, 255, 255, 0.05));
+                    color: var(--text-muted, rgba(255, 255, 255, 0.4));
+                    cursor: pointer;
+                    transition: all 0.3s;
+                }
+                .pg-nav-btn:hover:not(.disabled) {
+                    background: var(--primary-color);
+                    color: white;
+                    border-color: transparent;
+                }
+                .pg-nav-btn.disabled {
+                    opacity: 0.2;
                     cursor: not-allowed;
-                    box-shadow: none;
-                    border: 1px solid rgba(255, 255, 255, 0.05);
                 }
-                .pg-info {
-                    font-weight: 500;
-                    font-size: 14px;
-                    color: var(--text-color, #444);
-                    background: rgba(255, 255, 255, 0.1);
-                    padding: 8px 16px;
-                    border-radius: 10px;
-                    min-width: 120px;
-                    text-align: center;
-                }
-                [data-theme="dark"] .pg-info {
-                    color: #efeff1;
-                }
-                .pg-page-num {
-                    color: #8b5cf6;
-                    font-weight: 700;
-                    margin: 0 4px;
+                .pg-dots {
+                    color: var(--text-muted);
+                    font-weight: 800;
+                    padding: 0 5px;
                 }
             `;
             document.head.appendChild(style);
@@ -115,71 +124,86 @@
         const pager = document.createElement("div");
         pager.id = "modernPager";
         pager.className = "pagination-wrap";
-        pager.innerHTML = `
-            <button class="pg-btn ${currentPage === 1 ? 'disabled' : ''}" id="pgPrev" title="Previous Page">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-            </button>
-            <div class="pg-info" id="pgInfo">
-                Page <span class="pg-page-num">${currentPage}</span> of <span class="pg-page-num">${totalPages}</span>
-            </div>
-            <button class="pg-btn ${currentPage === totalPages ? 'disabled' : ''}" id="pgNext" title="Next Page">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
-            </button>
-        `;
+
+        let circlesHtml = "";
+        const maxVisible = 5;
+        let startPage = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+        let endPage = Math.min(totalPages, startPage + maxVisible - 1);
         
-        // Append after the table wrapper or table
+        if (endPage - startPage + 1 < maxVisible) {
+            startPage = Math.max(1, endPage - maxVisible + 1);
+        }
+
+        if (startPage > 1) {
+            circlesHtml += `<div class="pg-circle" data-page="1">1</div>`;
+            if (startPage > 2) circlesHtml += `<div class="pg-dots">...</div>`;
+        }
+
+        for (let i = startPage; i <= endPage; i++) {
+            circlesHtml += `<div class="pg-circle ${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</div>`;
+        }
+
+        if (endPage < totalPages) {
+            if (endPage < totalPages - 1) circlesHtml += `<div class="pg-dots">...</div>`;
+            circlesHtml += `<div class="pg-circle" data-page="${totalPages}">${totalPages}</div>`;
+        }
+
+        pager.innerHTML = `
+            <div class="pg-section-label">Reports</div>
+            <div class="pg-nav-btn ${currentPage === 1 ? 'disabled' : ''}" id="pgPrev">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </div>
+            <div class="pg-circles">${circlesHtml}</div>
+            <div class="pg-nav-btn ${currentPage === totalPages ? 'disabled' : ''}" id="pgNext">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </div>
+        `;
+
         const target = table.closest('.reports-table-wrap') || table.parentElement;
         target.appendChild(pager);
 
-        const prevBtn = document.getElementById("pgPrev");
-        const nextBtn = document.getElementById("pgNext");
-
         function renderPage(page) {
-            // Hide all rows first
+            currentPage = page;
             allRows.forEach(r => r.style.display = "none");
 
-            // Only show the specific rows for this page from the "visibleRows" pool
             const start = (page - 1) * rowsPerPage;
             const end = start + rowsPerPage;
-            
+
             visibleRows.slice(start, end).forEach(row => {
                 row.style.display = "";
             });
 
-            // Update UI
-            const info = document.getElementById("pgInfo");
-            if (info) {
-                info.innerHTML = `Page <span class="pg-page-num">${currentPage}</span> of <span class="pg-page-num">${totalPages}</span>`;
-            }
-            prevBtn.classList.toggle("disabled", currentPage === 1);
-            nextBtn.classList.toggle("disabled", currentPage === totalPages);
+            // Update Circles
+            document.querySelectorAll(".pg-circle").forEach(c => {
+                c.classList.toggle("active", parseInt(c.dataset.page) === currentPage);
+            });
+
+            // Update Nav Buttons
+            document.getElementById("pgPrev").classList.toggle("disabled", currentPage === 1);
+            document.getElementById("pgNext").classList.toggle("disabled", currentPage === totalPages);
         }
 
-        prevBtn.onclick = () => {
-            if (currentPage > 1) {
-                currentPage--;
-                renderPage(currentPage);
-            }
+        // Events
+        document.querySelectorAll(".pg-circle").forEach(circle => {
+            circle.onclick = () => renderPage(parseInt(circle.dataset.page));
+        });
+
+        document.getElementById("pgPrev").onclick = () => {
+            if (currentPage > 1) renderPage(currentPage - 1);
         };
 
-        nextBtn.onclick = () => {
-            if (currentPage < totalPages) {
-                currentPage++;
-                renderPage(currentPage);
-            }
+        document.getElementById("pgNext").onclick = () => {
+            if (currentPage < totalPages) renderPage(currentPage + 1);
         };
 
         renderPage(currentPage);
     }
 
-    // Initial load
     document.addEventListener("DOMContentLoaded", () => {
-        setTimeout(setupPagination, 500); // Give other scripts time to load data
+        setTimeout(setupPagination, 500);
     });
 
-    // Public hook → call this after ANY search / filter / add / delete
-    window.refreshPagination = function() {
-        // We don't reset currentPage unless necessary (e.g. if current page becomes empty)
+    window.refreshPagination = function () {
         setupPagination();
     };
 })();

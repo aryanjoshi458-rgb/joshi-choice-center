@@ -43,7 +43,10 @@ function loadCustomers() {
 
 
 // ===== ADD CUSTOMER =====
+let isAddingCustomer = false;
 function addCustomer() {
+    if (isAddingCustomer) return;
+    isAddingCustomer = true;
 
     let date = document.getElementById("date").value;
     let rawName = document.getElementById("name").value.trim();
@@ -53,6 +56,7 @@ function addCustomer() {
 
     if (!date || !rawName || !mobileRaw || !work || !charge) {
         AuraDialog.error("Please fill all fields", "Validation Error");
+        isAddingCustomer = false; // 🔥 RESET
         return;
     }
 
@@ -77,6 +81,7 @@ function addCustomer() {
         if (digits.length !== 10) {
             if (window.AppLoader) window.AppLoader.hide();
             AuraDialog.error("Enter valid 10 digit mobile number", "Invalid Mobile");
+            isAddingCustomer = false; // 🔥 RESET
             return;
         }
 
@@ -87,7 +92,7 @@ function addCustomer() {
         // ✅ FIX: ID ADD KIYA
         list.push({
             id: Date.now().toString(),   // 🔥 IMPORTANT
-            date: date,
+            date: window.AuraDate ? window.AuraDate.toDDMMYYYY(date) : date,
             name: name,
             mobile: mobile,
             work: work,
@@ -104,6 +109,7 @@ function addCustomer() {
 
         loadCustomers();
         if (window.AppLoader) window.AppLoader.hide();
+        isAddingCustomer = false; // 🔥 RESET SUCCESS
 
         // Log Notification
         if (window.parent && window.parent.createAppNotification) {
@@ -125,16 +131,29 @@ function markPaid(i) {
     if (window.AppLoader) window.AppLoader.show("Updating Status...");
     setTimeout(() => {
         let list = JSON.parse(localStorage.getItem("pendingCustomers"));
-        list[i].status = "Paid";
+        const record = list[i];
+        record.status = "Paid";
+        
+        // 🔥 SYNC: Update main transactions database
+        if (record.txnId) {
+            let txns = JSON.parse(localStorage.getItem("transactions") || "[]");
+            const tIdx = txns.findIndex(t => (t.transactionId || t.txnId).toString() === record.txnId.toString());
+            if (tIdx >= 0) {
+                txns[tIdx].status = "Success"; // Flip to Success in main report
+                txns[tIdx].pendingCharge = "0";
+                txns[tIdx].receivedCharge = txns[tIdx].charge;
+                localStorage.setItem("transactions", JSON.stringify(txns));
+            }
+        }
+
         localStorage.setItem("pendingCustomers", JSON.stringify(list));
         loadCustomers();
         if (window.AppLoader) window.AppLoader.hide();
 
-        // Log Notification
         if (window.parent && window.parent.createAppNotification) {
             window.parent.createAppNotification(
                 "Payment Received",
-                `Customer: ${list[i].name} has paid ₹${list[i].charge}`,
+                `Customer: ${record.name} has paid ₹${record.charge}`,
                 "transaction"
             );
         }
@@ -147,7 +166,19 @@ function markPending(i) {
     if (window.AppLoader) window.AppLoader.show("Updating Status...");
     setTimeout(() => {
         let list = JSON.parse(localStorage.getItem("pendingCustomers"));
-        list[i].status = "Pending";
+        const record = list[i];
+        record.status = "Pending";
+
+        // 🔥 SYNC: Update main transactions database
+        if (record.txnId) {
+            let txns = JSON.parse(localStorage.getItem("transactions") || "[]");
+            const tIdx = txns.findIndex(t => (t.transactionId || t.txnId).toString() === record.txnId.toString());
+            if (tIdx >= 0) {
+                txns[tIdx].status = "Pending";
+                localStorage.setItem("transactions", JSON.stringify(txns));
+            }
+        }
+
         localStorage.setItem("pendingCustomers", JSON.stringify(list));
         loadCustomers();
         if (window.AppLoader) window.AppLoader.hide();
@@ -324,8 +355,7 @@ function updatePendingTotal() {
 
     const totalEl = document.getElementById("totalPendingAmount");
     if (totalEl) {
-        totalEl.innerText = `₹${total}`;
-        // Add a little pop animation to the total
+        totalEl.innerText = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(total);
         gsap.fromTo(totalEl, { scale: 1.2, color: "#f59e0b" }, { scale: 1, color: "inherit", duration: 0.5 });
     }
 }

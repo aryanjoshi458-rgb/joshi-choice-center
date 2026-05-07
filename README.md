@@ -6,7 +6,7 @@ Developer               - Aryan Joshi
 <br>
 System Status           - Licensed & Active
 <br>
-Engine                  - Aura Core & Cyrus v2.0
+Engine                  - Aura Core & Cyrus v3.0
 <br>
 Environment             - Electron x64
 <br>

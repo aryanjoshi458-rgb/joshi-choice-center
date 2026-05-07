@@ -4,24 +4,26 @@
 
 :root {
     --aura-bg: #f3f6ff;
-    --aura-card-bg: rgba(255, 255, 255, 0.9);
+    --aura-card-bg: var(--card-bg, rgba(255, 255, 255, 0.9));
     --aura-accent: #6366f1;
     --aura-accent-glow: rgba(99, 102, 241, 0.2);
-    --aura-text: #1e293b;
-    --aura-text-soft: #64748b;
-    --aura-border: rgba(226, 232, 240, 0.8);
+    --aura-text: var(--text-main, #1e293b);
+    --aura-text-soft: var(--text-muted, #64748b);
+    --aura-border: var(--border-color, rgba(226, 232, 240, 0.8));
     --aura-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05), 0 5px 15px -3px rgba(0, 0, 0, 0.03);
     --aura-radius: 24px;
     --aura-nav-h: 70px;
+    --hover-bg: rgba(0, 0, 0, 0.03);
 }
 
 body.dark-mode {
     --aura-bg: #0b0f1a;
-    --aura-card-bg: rgba(22, 29, 45, 0.9);
-    --aura-text: #f1f5f9;
-    --aura-text-soft: #94a3b8;
-    --aura-border: rgba(255, 255, 255, 0.05);
+    --aura-card-bg: var(--card-bg, rgba(22, 29, 45, 0.9));
+    --aura-text: var(--text-main, #f1f5f9);
+    --aura-text-soft: var(--text-muted, #94a3b8);
+    --aura-border: var(--border-color, rgba(255, 255, 255, 0.05));
     --aura-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    --hover-bg: rgba(255, 255, 255, 0.05);
 }
 
 #settingsContainer.aura-layout {
@@ -59,7 +61,6 @@ body.dark-mode {
     display: flex;
     align-items: center;
     background: var(--aura-card-bg);
-    backdrop-filter: blur(20px);
     border: 1px solid var(--aura-border);
     padding: 10px;
     border-radius: 40px;
@@ -80,6 +81,11 @@ body.dark-mode {
     /* EXTRA PADDING FOR MASK AREA */
     gap: 15px;
     /* PREMIUM GAP */
+}
+
+body.dark-mode .aura-nav-island {
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
 }
 
 .aura-nav-island::-webkit-scrollbar {
@@ -160,14 +166,16 @@ body.sidebar-open .aura-nav-indicator {
 /* SECTION CARDS - PREMIUM AURA v3 */
 .aura-section-card {
     background: var(--aura-card-bg);
-    backdrop-filter: blur(25px) saturate(180%);
     border: 1px solid var(--aura-border);
     border-radius: 32px;
     padding: 40px;
-    box-shadow:
-        0 20px 50px -12px rgba(0, 0, 0, 0.1),
-        inset 0 1px 1px rgba(255, 255, 255, 0.1);
+    box-shadow: var(--aura-shadow);
     transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+body.dark-mode .aura-section-card {
+    backdrop-filter: blur(25px) saturate(180%);
+    -webkit-backdrop-filter: blur(25px) saturate(180%);
 }
 
 .aura-card-header {
@@ -212,6 +220,14 @@ body.sidebar-open .aura-nav-indicator {
     background: linear-gradient(135deg, #ef4444, #dc2626);
 }
 
+.aura-icon-box.dark {
+    background: linear-gradient(135deg, #1e293b, #0f172a);
+}
+
+.aura-icon-box.pink {
+    background: linear-gradient(135deg, #ec4899, #be185d);
+}
+
 .aura-title-stack h2 {
     font-size: 1.7rem;
     font-weight: 900;
@@ -241,7 +257,7 @@ body.sidebar-open .aura-nav-indicator {
     align-items: center;
     gap: 20px;
     padding: 20px;
-    background: rgba(0, 0, 0, 0.02);
+    background: var(--hover-bg, rgba(0, 0, 0, 0.02));
     border-radius: 32px;
     border: 1px dashed var(--aura-border);
 }
@@ -301,19 +317,13 @@ body.sidebar-open .aura-nav-indicator {
 .aura-field select,
 .aura-field textarea {
     padding: 15px 20px;
-    background: rgba(0, 0, 0, 0.03);
-    border: 1.5px solid transparent;
+    background: var(--hover-bg);
+    border: 1.5px solid var(--aura-border);
     border-radius: 18px;
     color: var(--aura-text);
     font-size: 1rem;
     font-weight: 600;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-body.dark-mode .aura-field input,
-body.dark-mode .aura-field select,
-body.dark-mode .aura-field textarea {
-    background: rgba(255, 255, 255, 0.03);
 }
 
 body.dark-mode .aura-field select option {
@@ -419,7 +429,7 @@ body.dark-mode .aura-field select option {
 }
 
 .aura-preset-card {
-    background: rgba(0, 0, 0, 0.03);
+    background: var(--hover-bg, rgba(0, 0, 0, 0.03));
     padding: 15px;
     border-radius: 28px;
     border: 2px solid transparent;
@@ -582,7 +592,7 @@ body.winter-mode {
 }
 
 .aura-mouse-card {
-    background: rgba(0, 0, 0, 0.03);
+    background: var(--hover-bg, rgba(0, 0, 0, 0.03));
     padding: 12px;
     border-radius: 24px;
     border: 2px solid transparent;
@@ -699,7 +709,7 @@ body.dark-mode .aura-mouse-viz {
 
 /* ANIMATION GALLERY REVOLUTION */
 .aura-anim-card {
-    background: rgba(0, 0, 0, 0.03);
+    background: var(--hover-bg, rgba(0, 0, 0, 0.03));
     padding: 15px;
     border-radius: 28px;
     border: 2px solid transparent;
@@ -1681,223 +1691,307 @@ body.dark-mode .aura-backup-btn {
 }
 
 /* =========================================
-   ABOUT SECTION HERO (PREMIUM v2)
+   AURA QUANTUM - SOFTWARE INTELLIGENCE CENTER
    ========================================= */
 
-.aura-about-hero {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 60px 40px;
+.aura-about-layout {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 45px;
+    padding: 60px;
     background: var(--aura-card-bg);
-    backdrop-filter: blur(30px) saturate(180%);
-    border: 1px solid var(--aura-border);
+    backdrop-filter: blur(40px) saturate(200%);
+    -webkit-backdrop-filter: blur(40px) saturate(200%);
     border-radius: 40px;
-    text-align: center;
+    border: 1px solid var(--aura-border);
     box-shadow: var(--aura-shadow);
+    max-width: 980px;
+    margin: 35px auto;
     position: relative;
     overflow: hidden;
-    max-width: 800px;
-    margin: 0 auto;
+    align-items: center;
 }
 
-.aura-about-hero::before {
+/* CYBERNETIC AMBIENCE */
+.aura-about-layout::before {
     content: "";
     position: absolute;
     top: -50%;
     left: -50%;
     width: 200%;
     height: 200%;
-    background: radial-gradient(circle, var(--aura-accent-glow) 0%, transparent 70%);
+    background: radial-gradient(circle at center, rgba(59, 130, 246, 0.05) 0%, transparent 70%);
     pointer-events: none;
     z-index: 0;
-    opacity: 0.5;
 }
 
-.aura-about-logo {
-    width: 110px;
-    height: 110px;
-    background: linear-gradient(135deg, #6366f1, #a855f7);
-    color: white;
-    font-size: 3rem;
-    font-weight: 900;
+/* --- LEFT COLUMN: BRANDING --- */
+.about-branding-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 35px;
+    position: relative;
+    z-index: 1;
+}
+
+.aura-orbital-logo {
+    position: relative;
+    width: 160px;
+    height: 160px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 35px;
-    margin-bottom: 30px;
-    box-shadow: 0 25px 50px rgba(99, 102, 241, 0.4), inset 0 0 20px rgba(255, 255, 255, 0.2);
-    position: relative;
-    z-index: 1;
 }
 
-.aura-about-hero h1 {
+.logo-core {
+    width: 95px;
+    height: 95px;
+    background: linear-gradient(135deg, #3b82f6, #6366f1);
+    color: white;
     font-size: 2.8rem;
-    font-weight: 900;
-    margin: 0;
-    background: linear-gradient(to bottom, var(--aura-text), var(--aura-text-soft));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    letter-spacing: -1.5px;
-    position: relative;
-    z-index: 1;
-}
-
-.aura-tagline {
-    font-size: 1rem;
-    color: var(--aura-text-soft);
-    margin: 10px 0 40px 0;
-    font-weight: 600;
-    opacity: 0.8;
-}
-
-/* VERSION INFO GRID */
-.version-info-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    width: 100%;
-    max-width: 440px;
-    margin-bottom: 25px;
-    position: relative;
-    z-index: 1;
-}
-
-.version-card {
-    padding: 20px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid var(--aura-border);
-    border-radius: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    transition: 0.3s;
-}
-
-body:not(.dark-mode) .version-card {
-    background: rgba(0, 0, 0, 0.02);
-}
-
-.version-card:hover {
-    background: var(--aura-card-bg);
-    transform: translateY(-5px);
-    border-color: var(--aura-accent);
-}
-
-.v-label {
-    font-size: 0.75rem;
     font-weight: 800;
-    color: var(--aura-text-soft);
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    border-radius: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 15px 40px rgba(59, 130, 246, 0.3), inset 0 0 20px rgba(255, 255, 255, 0.2);
+    z-index: 5;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.v-value {
-    font-size: 1.4rem;
-    font-weight: 900;
+.logo-core::after {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transform: rotate(45deg);
+    animation: specularShine 3s infinite ease-in-out;
+}
+
+@keyframes specularShine {
+    0% { transform: translate(-100%, -100%) rotate(45deg); }
+    100% { transform: translate(100%, 100%) rotate(45deg); }
+}
+
+.orbit-ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 1.5px solid rgba(59, 130, 246, 0.2);
+}
+
+.orbit-ring.r1 { 
+    width: 115%; height: 115%; 
+    animation: orbitRotate 10s linear infinite; 
+}
+.orbit-ring.r2 { 
+    width: 140%; height: 140%; 
+    animation: orbitRotateRev 15s linear infinite; 
+    border-style: dashed;
+    opacity: 0.6;
+}
+.orbit-ring.r3 { 
+    width: 170%; height: 170%; 
+    animation: orbitRotate 25s linear infinite; 
+    border-style: dotted;
+    opacity: 0.4;
+}
+
+@keyframes orbitRotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes orbitRotateRev {
+    from { transform: rotate(360deg); }
+    to { transform: rotate(0deg); }
+}
+
+.about-titles h1 {
+    font-size: 2.8rem;
+    font-weight: 800;
+    margin: 0;
     color: var(--aura-text);
+    letter-spacing: -1.5px;
+    text-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
 
-/* STATUS PILL V2 */
-.aura-status-pill {
+.about-titles .aura-tagline {
+    font-size: 0.9rem;
+    color: #3b82f6;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4em;
+    margin: 12px 0 20px 0;
+}
+
+.aura-status-badge {
     display: inline-flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     padding: 10px 24px;
-    border-radius: 40px;
-    font-size: 0.85rem;
-    font-weight: 800;
-    letter-spacing: 1px;
-    margin-bottom: 40px;
-    position: relative;
-    z-index: 1;
-    border: 1px solid transparent;
-}
-
-.aura-status-pill.success {
     background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    border-radius: 30px;
     color: #10b981;
-    border-color: rgba(16, 185, 129, 0.2);
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
 }
 
-.aura-status-pill.warning {
-    background: rgba(245, 158, 11, 0.1);
-    color: #f59e0b;
-    border-color: rgba(245, 158, 11, 0.2);
-}
-
-.aura-status-pill .dot {
+.pulse-dot {
     width: 10px;
     height: 10px;
+    background: #10b981;
     border-radius: 50%;
-    box-shadow: 0 0 10px currentColor;
-    animation: auraPulse 2s infinite;
+    box-shadow: 0 0 12px #10b981;
+    animation: auraPulseDot 2s infinite ease-in-out;
 }
 
-/* UPDATE CONTROLS */
-.update-controls {
+@keyframes auraPulseDot {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.4); opacity: 0.6; }
+}
+
+/* --- RIGHT COLUMN: INTEL --- */
+.about-intel-column {
+    display: flex;
+    flex-direction: column;
+    gap: 35px;
+}
+
+.intel-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.intel-card {
+    background: var(--hover-bg);
+    border: 1px solid var(--aura-border);
+    padding: 22px;
+    border-radius: 24px;
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.intel-card:hover {
+    background: rgba(255, 255, 255, 0.06);
+    transform: translateY(-5px);
+    border-color: rgba(59, 130, 246, 0.4);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+}
+
+.intel-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #94a3b8;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 10px;
+}
+
+.intel-header svg {
+    color: #3b82f6;
+}
+
+.intel-value {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--aura-text);
+    font-family: 'Outfit', sans-serif;
+}
+
+.update-action-box {
+    background: rgba(59, 130, 246, 0.05);
+    padding: 30px;
+    border-radius: 32px;
+    border: 1px solid rgba(59, 130, 246, 0.15);
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 15px;
-    margin-bottom: 50px;
-    position: relative;
-    z-index: 1;
+    gap: 24px;
 }
 
-.aura-update-btn {
-    background: var(--aura-text);
-    color: var(--aura-bg);
+.quantum-update-btn {
+    width: 100%;
+    padding: 18px;
+    background: #fff;
+    color: #000;
     border: none;
-    padding: 18px 45px;
-    border-radius: 22px;
-    font-weight: 900;
+    border-radius: 18px;
+    font-weight: 800;
     font-size: 1.1rem;
     cursor: pointer;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
-    transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
     display: flex;
     align-items: center;
-    gap: 12px;
+    justify-content: center;
+    gap: 14px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-body.dark-mode .aura-update-btn {
-    background: white;
-    color: black;
+.quantum-update-btn:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 15px 35px rgba(255, 255, 255, 0.2);
 }
 
-.aura-update-btn:hover {
-    transform: translateY(-4px) scale(1.03);
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
-    background: var(--aura-accent);
-    color: white;
+.quantum-update-btn:active { transform: scale(0.96); }
+
+.btn-shine {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    animation: btnShine 4s infinite;
 }
 
-.aura-update-btn:active {
-    transform: scale(0.98);
+@keyframes btnShine {
+    0% { left: -100%; }
+    20%, 100% { left: 100%; }
 }
 
-.aura-update-btn:disabled {
-    opacity: 0.7;
-    cursor: wait;
+.meta-info {
+    text-align: center;
 }
 
-.btn-icon {
-    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+.meta-info p {
+    font-size: 0.75rem;
+    color: #64748b;
+    margin: 4px 0;
+    font-weight: 600;
 }
 
-.aura-update-btn:disabled .btn-icon {
-    animation: btnRotate 1s linear infinite;
+.copyright {
+    opacity: 0.5;
+    font-size: 0.65rem !important;
 }
 
-@keyframes btnRotate {
-    from {
-        transform: rotate(0deg);
+/* RESPONSIVE SCALE FOR 85% */
+@media (max-width: 1200px) {
+    .aura-about-layout {
+        grid-template-columns: 1fr;
+        gap: 30px;
+        max-width: 600px;
     }
-
-    to {
-        transform: rotate(360deg);
+    .about-branding-column {
+        border-right: none;
+        padding-right: 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        padding-bottom: 30px;
     }
 }
 
@@ -1928,52 +2022,123 @@ body.dark-mode .aura-update-btn {
    KEYBOARD MAPPING - PREMIUM AURA
    ========================================= */
 
+.aura-sh-search-wrap {
+    position: relative;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+}
+
+.aura-sh-search-wrap svg {
+    position: absolute;
+    left: 15px;
+    color: var(--aura-text-soft);
+    pointer-events: none;
+    transition: color 0.3s;
+}
+
+.aura-sh-search-wrap input {
+    width: 100%;
+    padding: 12px 20px 12px 45px;
+    background: var(--hover-bg);
+    border: 1.5px solid var(--aura-border);
+    border-radius: 14px;
+    color: var(--aura-text);
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+body.dark-mode .aura-sh-search-wrap input {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.aura-sh-search-wrap input:focus {
+    background: rgba(99, 102, 241, 0.05);
+    border-color: var(--aura-accent);
+    box-shadow: 0 10px 25px -5px var(--aura-accent-glow);
+    outline: none;
+}
+
+.aura-sh-search-wrap input:focus + svg,
+.aura-sh-search-wrap:focus-within svg {
+    color: var(--aura-accent);
+}
+
 .aura-shortcut-list {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 0;
     margin: 25px 0 35px 0;
+    background: var(--hover-bg, rgba(0, 0, 0, 0.05));
+    border-radius: 16px;
+    border: 1px solid var(--aura-border);
+    overflow: hidden;
+    box-shadow: var(--aura-shadow, 0 10px 30px -5px rgba(0, 0, 0, 0.05));
+}
+
+/* Header for the shortcut list */
+.aura-sh-header {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    padding: 12px 20px;
+    background: rgba(255, 255, 255, 0.03);
+    border-bottom: 1px solid var(--aura-border);
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: var(--aura-accent);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
 }
 
 .aura-sh-row {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr auto;
     align-items: center;
-    justify-content: space-between;
-    padding: 15px 20px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid var(--aura-border);
-    border-radius: 18px;
-    transition: 0.3s;
+    padding: 10px 20px;
+    background: transparent;
+    border-bottom: 1px solid var(--aura-border);
+    transition: all 0.2s ease;
+    border-radius: 0;
+}
+
+.aura-sh-row:last-child {
+    border-bottom: none;
 }
 
 body.dark-mode .aura-sh-row {
-    background: rgba(255, 255, 255, 0.01);
+    background: transparent;
 }
 
 .aura-sh-row:hover {
-    background: rgba(255, 255, 255, 0.06);
-    transform: translateX(5px);
+    background: rgba(99, 102, 241, 0.05);
+    transform: none;
 }
 
 .aura-sh-row label {
-    font-size: 0.95rem;
-    font-weight: 700;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--aura-text-soft);
+    transition: color 0.2s;
+}
+
+.aura-sh-row:hover label {
     color: var(--aura-text);
 }
 
 .aura-sh-input {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 12px;
 }
 
 .shortcut-recording-input {
-    width: 140px;
-    padding: 10px 14px;
-    background: var(--aura-bg);
+    width: 110px;
+    padding: 6px 12px;
+    background: var(--hover-bg, rgba(0, 0, 0, 0.05));
     border: 1.5px solid var(--aura-border);
-    border-radius: 12px;
-    font-size: 0.85rem;
+    border-radius: 8px;
+    font-size: 0.75rem;
     font-weight: 700;
     text-align: center;
     cursor: pointer;
@@ -1982,9 +2147,9 @@ body.dark-mode .aura-sh-row {
 }
 
 .shortcut-recording-input:focus {
-    width: 180px;
+    width: 140px;
     border-color: #f59e0b;
-    background: rgba(245, 158, 11, 0.05);
+    background: rgba(245, 158, 11, 0.1);
     color: #f59e0b;
     outline: none;
     box-shadow: 0 0 15px rgba(245, 158, 11, 0.2);
@@ -2010,10 +2175,10 @@ kbd.current-key-display {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 80px;
-    padding: 8px 12px;
+    min-width: 60px;
+    padding: 6px 10px;
     font-family: 'JetBrains Mono', 'Fira Code', monospace;
-    font-size: 0.85rem;
+    font-size: 0.75rem;
     font-weight: 800;
     color: var(--aura-text);
     background: linear-gradient(to bottom, var(--aura-card-bg), var(--aura-bg));
@@ -2908,8 +3073,8 @@ body.dark-mode .aura-control-panel {
 .layout-card {
     position: relative;
     padding: 35px 15px 25px !important;
-    background: rgba(255, 255, 255, 0.04) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    background: var(--hover-bg, rgba(255, 255, 255, 0.04)) !important;
+    border: 1px solid var(--aura-border, rgba(255, 255, 255, 0.1)) !important;
     border-radius: 20px !important;
     transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1) !important;
     cursor: pointer;
@@ -3083,14 +3248,14 @@ body.dark-mode .aura-control-panel {
 .layout-card span {
     font-size: 0.82rem;
     font-weight: 800;
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--aura-text-soft, rgba(255, 255, 255, 0.6));
     margin-top: 5px;
     text-align: center;
     letter-spacing: -0.2px;
 }
 
 .layout-card.active span {
-    color: white;
+    color: var(--aura-text, white);
     text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
 }
 
@@ -3122,4 +3287,485 @@ body.dark-mode .aura-control-panel {
 
 body.dark-mode .aura-toggle-item:hover {
     background: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* --- CYBER-SPLIT ABOUT SECTION (REVOLUTIONARY LAYOUT) --- */
+.aura-cyber-split {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 40px;
+    padding: 60px 40px;
+    background: var(--aura-card-bg);
+    border-radius: 40px;
+    border: 1px solid var(--aura-border);
+    backdrop-filter: blur(30px);
+    margin: 20px auto;
+    max-width: 1000px;
+    min-height: 480px;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    animation: auraFadeUp 0.8s ease-out;
+}
+
+.aura-cyber-split::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at center, rgba(99, 102, 241, 0.05) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* LEFT SIDE: BRANDING */
+.cyber-brand-side {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+    padding-right: 40px;
+}
+
+.cyber-logo-box {
+    position: relative;
+    width: 140px;
+    height: 140px;
+    margin-bottom: 30px;
+}
+
+.cyber-logo-glow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #6366f1;
+    border-radius: 35px;
+    filter: blur(40px);
+    opacity: 0.3;
+    animation: cyberPulse 4s infinite ease-in-out;
+}
+
+@keyframes cyberPulse {
+    0%, 100% { transform: scale(1); opacity: 0.3; }
+    50% { transform: scale(1.1); opacity: 0.5; }
+}
+
+.cyber-logo-text {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #6366f1, #a855f7);
+    color: white;
+    font-size: 3.5rem;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 35px;
+    box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    font-family: 'Outfit', sans-serif;
+}
+
+.cyber-main-title h1 {
+    font-size: 2.4rem;
+    color: var(--aura-text);
+    margin-bottom: 10px;
+    font-weight: 800;
+    letter-spacing: -1px;
+}
+
+.cyber-line-decoration {
+    width: 60px;
+    height: 4px;
+    background: #6366f1;
+    margin: 15px auto;
+    border-radius: 10px;
+}
+
+.cyber-main-title p {
+    color: var(--aura-text-soft);
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+/* RIGHT SIDE: DATA */
+.cyber-data-side {
+    position: relative;
+    z-index: 2;
+    padding-left: 20px;
+}
+
+.cyber-card-inner {
+    background: var(--hover-bg);
+    padding: 35px;
+    border-radius: 30px;
+    border: 1px solid var(--aura-border);
+    box-shadow: var(--aura-shadow);
+}
+
+.cyber-header {
+    margin-bottom: 25px;
+    border-bottom: 1px solid var(--aura-border);
+    padding-bottom: 10px;
+}
+
+.cyber-label {
+    font-family: monospace;
+    font-size: 0.75rem;
+    color: var(--aura-accent);
+    font-weight: 800;
+    letter-spacing: 2px;
+}
+
+.cyber-data-grid {
+    display: grid;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.cyber-data-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--aura-card-bg);
+    padding: 15px 20px;
+    border-radius: 15px;
+    border: 1px solid var(--aura-border);
+}
+
+.d-label {
+    font-size: 0.8rem;
+    color: var(--aura-text-soft);
+    font-weight: 700;
+}
+
+.d-value {
+    color: var(--aura-text);
+    font-weight: 800;
+    font-size: 1.1rem;
+    font-family: 'Outfit', sans-serif;
+}
+
+.cyber-status-zone {
+    margin-bottom: 35px;
+}
+
+.cyber-sync-zone {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.cyber-sync-btn {
+    background: white;
+    color: #0f172a;
+    border: none;
+    padding: 16px;
+    border-radius: 18px;
+    font-weight: 900;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.cyber-sync-btn:hover {
+    background: #6366f1;
+    color: white;
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(99, 102, 241, 0.4);
+}
+
+.cyber-sync-stamp {
+    font-family: monospace;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.3);
+    text-align: center;
+    font-weight: 700;
+}
+
+.cyber-footer-line {
+    margin-top: 25px;
+    text-align: center;
+    font-family: monospace;
+    font-size: 0.7rem;
+    color: var(--aura-text-soft);
+    letter-spacing: 1px;
+    opacity: 0.5;
+}
+
+@keyframes auraFadeUp {
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* CUSTOM ANIMATED CHECKBOX (WRAPPER-46) SUPPORT */
+.checkbox-wrapper-46 .cbx:hover span:first-child {
+    border-color: #506eec;
+}
+
+.checkbox-wrapper-46 .inp-cbx:checked+.cbx span:first-child {
+    background: #506eec;
+    border-color: #506eec;
+    animation: wave-46 0.4s ease;
+}
+
+.checkbox-wrapper-46 .inp-cbx:checked+.cbx span:first-child svg {
+    stroke-dashoffset: 0;
+}
+
+.checkbox-wrapper-46 .inp-cbx:checked+.cbx span:first-child:before {
+    transform: scale(3.5);
+    opacity: 0;
+    transition: all 0.6s ease;
+}
+
+@keyframes wave-46 {
+    50% { transform: scale(0.9); }
+}
+
+/* --- REFINED AURA-STYLE ABOUT (CLEAN & ELEGANT) --- */
+.aura-cyber-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    padding: 60px 50px;
+    background: var(--aura-card-bg);
+    border-radius: 40px;
+    border: 1px solid var(--aura-border);
+    backdrop-filter: blur(40px);
+    margin: 0px auto;
+    max-width: 1050px;
+    min-height: 480px;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--aura-shadow);
+}
+
+.cyber-scanline {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.05);
+    z-index: 5;
+    pointer-events: none;
+    animation: scanMove 4s infinite linear;
+}
+
+@keyframes scanMove {
+    from { top: -10%; }
+    to { top: 110%; }
+}
+
+/* LEFT SIDE: BRANDING */
+.cyber-brand-side {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+    padding-right: 40px;
+}
+
+.cyber-logo-box {
+    position: relative;
+    width: 140px;
+    height: 140px;
+    margin-bottom: 30px;
+}
+
+.cyber-logo-glow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--aura-accent);
+    border-radius: 35px;
+    filter: blur(40px);
+    opacity: 0.1;
+    animation: cyberPulse 5s infinite ease-in-out;
+}
+
+body.dark-mode .cyber-logo-glow {
+    opacity: 0.3;
+}
+
+.cyber-logo-text {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #6366f1, #a855f7);
+    color: white;
+    font-size: 3.5rem;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 35px;
+    box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    font-family: 'Outfit', sans-serif;
+}
+
+.cyber-main-title h1 {
+    font-size: 2rem;
+    color: var(--aura-text);
+    margin-bottom: 8px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    white-space: nowrap;
+}
+
+.cyber-line-decoration {
+    width: 60px;
+    height: 4px;
+    background: #6366f1;
+    margin: 15px auto;
+    border-radius: 10px;
+}
+
+.cyber-main-title p {
+    color: var(--aura-text-soft);
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+/* RIGHT SIDE: DATA */
+.cyber-data-side {
+    position: relative;
+    z-index: 2;
+    padding-left: 20px;
+}
+
+.cyber-card-inner {
+    background: var(--hover-bg);
+    padding: 35px;
+    border-radius: 30px;
+    border: 1px solid var(--aura-border);
+    box-shadow: var(--aura-shadow);
+}
+
+.cyber-header {
+    margin-bottom: 25px;
+    border-bottom: 1px solid var(--aura-border);
+    padding-bottom: 10px;
+}
+
+.cyber-label {
+    font-family: monospace;
+    font-size: 0.75rem;
+    color: var(--aura-accent);
+    font-weight: 800;
+    letter-spacing: 2px;
+}
+
+.cyber-data-grid {
+    display: grid;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.cyber-data-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--aura-card-bg);
+    padding: 15px 20px;
+    border-radius: 15px;
+    border: 1px solid var(--aura-border);
+}
+
+.d-label {
+    font-size: 0.8rem;
+    color: var(--aura-text-soft);
+    font-weight: 700;
+}
+
+.d-value {
+    color: var(--aura-text);
+    font-weight: 800;
+    font-size: 1.1rem;
+    font-family: 'Outfit', sans-serif;
+}
+
+.cyber-status-zone {
+    margin-bottom: 35px;
+}
+
+.cyber-sync-zone {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.cyber-sync-btn {
+    background: white;
+    color: #0f172a;
+    border: none;
+    padding: 16px;
+    border-radius: 18px;
+    font-weight: 900;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.cyber-sync-btn:hover {
+    background: #6366f1;
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 15px 30px rgba(99, 102, 241, 0.3);
+}
+
+.cyber-sync-stamp {
+    font-family: monospace;
+    font-size: 0.75rem;
+    color: var(--aura-text-soft);
+    text-align: center;
+    font-weight: 700;
+    opacity: 0.6;
+}
+
+.cyber-footer-line {
+    margin-top: 25px;
+    text-align: center;
+    font-family: monospace;
+    font-size: 0.7rem;
+    color: var(--aura-text-soft);
+    letter-spacing: 1px;
+    opacity: 0.5;
+}
+
+@keyframes cyberPulse {
+    0%, 100% { transform: scale(1); opacity: 0.3; }
+    50% { transform: scale(1.1); opacity: 0.5; }
 }

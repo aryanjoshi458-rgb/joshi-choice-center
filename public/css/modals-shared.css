@@ -62,13 +62,14 @@
   align-items: center;
 }
 
-.modal-header h2 {
+.modal-header h2,
+.modal-header h3 {
   margin: 0;
   display: flex;
   align-items: center;
-  font-size: 1.4rem;
+  font-size: 1.3rem;
   font-weight: 700;
-  color: var(--text-main, #1f2937);
+  color: var(--aura-text-main, #1f2937);
   gap: 12px;
 }
 
@@ -76,6 +77,44 @@
   width: 24px;
   height: 24px;
   color: #10b981;
+}
+
+/* PREMIUM EDIT ICON ANIMATION */
+.aura-edit-anim {
+  filter: drop-shadow(0 0 5px rgba(16, 185, 129, 0.3));
+  transition: all 0.3s ease;
+}
+
+.modal.active .pencil-nib,
+#editModal:target .pencil-nib,
+.modal[style*="display: block"] .pencil-nib,
+.modal[style*="display: flex"] .pencil-nib {
+  animation: aura-pencil-write 2.5s infinite ease-in-out;
+  transform-origin: center;
+  transform-box: fill-box;
+}
+
+@keyframes aura-pencil-write {
+  0%, 100% {
+    transform: rotate(0deg) translate(0, 0);
+  }
+  20% {
+    transform: rotate(-12deg) translate(-1px, 1px);
+  }
+  40% {
+    transform: rotate(8deg) translate(1px, -1px);
+  }
+  60% {
+    transform: rotate(-5deg) translate(-0.5px, 0.5px);
+  }
+  80% {
+    transform: rotate(3deg) translate(0.5px, -0.5px);
+  }
+}
+
+.aura-edit-anim:hover {
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.6));
 }
 
 .close-modal {
@@ -346,21 +385,31 @@ body.dark-mode .modal-preview-side {
 .search-list {
   max-height: 300px;
   overflow-y: auto;
-  background: var(--bg-color, #f9fafb);
+  background: var(--aura-bg, #f9fafb);
   border-radius: 12px;
-  border: 1px solid var(--border-color, #eee);
+  border: 1px solid var(--aura-border, #eee);
   margin-top: 10px;
 }
 
 .search-item {
   padding: 15px;
-  border-bottom: 1px solid var(--border-color, #eee);
+  border-bottom: 1px solid var(--aura-border, #eee);
   cursor: pointer;
   transition: 0.2s;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  color: var(--text-main);
+  color: var(--aura-text-main);
+}
+
+.search-item span {
+  color: var(--aura-text-main) !important;
+}
+
+.search-item span.txn {
+  font-weight: 700;
+  color: #10b981 !important;
+  opacity: 0.9;
 }
 
 .search-item:last-child {
@@ -376,9 +425,9 @@ body.dark-mode .modal-preview-side {
   width: 100%;
   padding: 14px 20px;
   border-radius: 14px;
-  border: 2px solid var(--border-color);
-  background: var(--card-bg);
-  color: var(--text-main);
+  border: 2px solid var(--aura-border);
+  background: var(--aura-card-bg);
+  color: var(--aura-text-main);
   font-size: 1rem;
   outline: none;
   transition: all 0.3s ease;

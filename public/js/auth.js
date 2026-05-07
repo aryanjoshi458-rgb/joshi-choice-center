@@ -16,7 +16,7 @@ if (!window.Auth) {
             if (!localStorage.getItem('jc_master_key')) {
                 localStorage.setItem('jc_master_key', '8080');
             }
-            
+
             // Start inactivity monitor
             this.initTimeoutMonitor();
         },
@@ -61,10 +61,21 @@ if (!window.Auth) {
         },
 
         /**
+         * Resets password using Master Key (Recovery)
+         */
+        resetPassword(masterKey, newPassword) {
+            if (this.verifyMasterKey(masterKey)) {
+                localStorage.setItem('jc_password', newPassword);
+                return true;
+            }
+            return false;
+        },
+
+        /**
          * Session Timeout Logic
          */
         timeoutTimer: null,
-        
+
         initTimeoutMonitor() {
             const timeoutMinutes = parseInt(localStorage.getItem('jc_session_timeout') || '0');
             if (timeoutMinutes <= 0) return; // Disable if 0 (Never)
@@ -82,7 +93,7 @@ if (!window.Auth) {
             if (timeoutMinutes <= 0) return;
 
             if (this.timeoutTimer) clearTimeout(this.timeoutTimer);
-            
+
             this.timeoutTimer = setTimeout(() => {
                 if (this.isLoggedIn()) {
                     console.log("Session timed out due to inactivity.");
@@ -100,7 +111,7 @@ if (!window.Auth) {
             sessionStorage.removeItem('jc_isLoggedIn');
             sessionStorage.removeItem('jc_lastLogin');
             sessionStorage.removeItem('activeSettingsTab'); // Reset settings tab on logout
-            
+
             setTimeout(() => {
                 window.location.href = 'login.html';
             }, 800);
@@ -122,4 +133,11 @@ if (!window.Auth) {
     // Initialize on first load
     Auth.init();
     window.Auth = Auth;
+
+    // Auto-protect if requested via URL or other means (optional)
+}
+
+// Global safety check
+if (window.Auth && !window.location.pathname.includes('login.html')) {
+    window.Auth.protectPage();
 }

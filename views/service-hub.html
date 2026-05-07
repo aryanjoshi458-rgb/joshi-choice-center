@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self';">
+    <title>Digital Banking Hub | Joshi Choice Center</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../public/css/style.css">
+    <link rel="stylesheet" href="../public/css/loader.css">
+    <link rel="stylesheet" href="../public/css/aura-titlebar.css">
+    <link rel="stylesheet" href="../public/css/aura-design-system.css">
+    <link rel="stylesheet" href="../public/assets/features/sidebar/sidebar.css">
+    <link rel="stylesheet" href="../public/css/theme-toggle.css">
+    <link rel="stylesheet" href="../public/assets/sidebar-pages/global/global-background-animation.css">
+    <link rel="stylesheet" href="../public/assets/sidebar-pages/service-hub/service-hub.css">
+    
+    <script src="../public/js/aura-window.js"></script>
+    <script src="../public/js/loader.js"></script>
+    <script src="../public/js/auth.js"></script>
+
+</head>
+<body>
+    <div class="animated-bg"></div>
+
+    <!-- Sidebar -->
+    <div id="proSidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">JC</div>
+            <span data-i18n="app-title">Joshi Choice Center</span>
+        </div>
+        <div class="sidebar-menu">
+            <a href="dashboard.html">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon">
+                    <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+                </svg>
+                <span data-i18n="sidebar-dashboard">Dashboard</span>
+            </a>
+            <a href="new-customer.html">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="16" y1="11" x2="22" y2="11"/>
+                </svg>
+                <span data-i18n="sidebar-new-customer">New Customer</span>
+            </a>
+            <a href="#" class="active">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon">
+                    <path d="M12 2 2 12l10 10 10-10-10-10Z"></path><path d="m7 12 5-5 5 5-5 5-5-5Z"></path>
+                </svg>
+                <span data-i18n="sidebar-digital-hub">Digital Hub</span>
+            </a>
+            <a href="customer-directory.html">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+                <span data-i18n="sidebar-customer-directory">Customer Directory</span>
+            </a>
+            <a href="notifications.html">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="sidebar-icon">
+                    <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+                    <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+                </svg>
+                <span data-i18n="sidebar-notification">Notification</span>
+            </a>
+            <a href="print-receipt.html">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="sidebar-icon">
+                    <polyline points="6 9 6 2 18 2 18 9" />
+                    <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+                    <rect width="12" height="8" x="6" y="14" />
+                </svg>
+                <span data-i18n="sidebar-print-receipt">Print Receipt</span>
+            </a>
+            <a href="pending-payments.html">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon">
+                    <path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4"></path>
+                    <path d="M4 6v12c0 1.1.9 2 2 2h14v-4"></path>
+                    <path d="M18 12a2 2 0 0 0-2 2c0 1.1.9 2 2 2h4v-4h-4z"></path>
+                </svg>
+                <span data-i18n="sidebar-pending-payments">Pending Payments</span>
+            </a>
+            <a href="reports.html">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon">
+                    <path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/>
+                </svg>
+                <span data-i18n="sidebar-reports">Reports</span>
+            </a>
+            <a href="expenses.html">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="sidebar-icon">
+                    <path d="M21 12V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-1" />
+                    <path d="M16 12h5" />
+                </svg>
+                <span data-i18n="sidebar-expenses">Expenses</span>
+            </a>
+            <a href="rate-list.html">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon">
+                    <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+                    <line x1="7" y1="7" x2="7.01" y2="7"></line>
+                </svg>
+                <span data-i18n="sidebar-service-rates">Service Rates</span>
+            </a>
+            <a href="settings.html">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                </svg>
+                <span data-i18n="sidebar-settings">Settings</span>
+            </a>
+            <a href="#" onclick="Auth.logout()"
+                style="color: #f87171; border-top: 1px solid rgba(248, 113, 113, 0.1); margin-top: 10px; padding-top: 15px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="sidebar-icon">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                    <polyline points="16 17 21 12 16 7" />
+                    <line x1="21" y1="12" x2="9" y2="12" />
+                </svg>
+                <span data-i18n="sidebar-logout">Logout</span>
+            </a>
+        </div>
+
+    </div>
+
+    <!-- Main Content -->
+    <main class="main">
+        <header class="brand">
+            <div class="brand-box">
+                <div class="logo">JC</div>
+                <h1 class="app-title">Digital Banking Hub</h1>
+            </div>
+        </header>
+
+        <div class="hub-container">
+            <!-- Left Side: Terminal -->
+            <div class="hub-terminal premium-shadow">
+                <div class="terminal-header">
+                    <div class="status-indicator live"><span></span> LIVE TERMINAL</div>
+                    <div class="terminal-id">ID: JC-HUB-001</div>
+                </div>
+
+                <div class="hub-tabs">
+                    <button class="hub-tab active" data-target="aeps-panel">AEPS (Banking)</button>
+                    <button class="hub-tab" data-target="recharge-panel">Recharge & Bills</button>
+                    <button class="hub-tab" data-target="dmt-panel">Money Transfer</button>
+                    <button class="hub-tab" data-target="api-panel">API Settings</button>
+                </div>
+
+                <div class="hub-panels">
+                    <!-- AEPS Panel -->
+                    <div id="aeps-panel" class="hub-panel active">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Service Type</label>
+                                <select id="aeps-service">
+                                    <option value="withdrawal">Cash Withdrawal</option>
+                                    <option value="balance">Balance Enquiry</option>
+                                    <option value="statement">Mini Statement</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Select Bank</label>
+                                <select id="aeps-bank">
+                                    <option>State Bank of India</option>
+                                    <option>Bank of Baroda</option>
+                                    <option>HDFC Bank</option>
+                                    <option>Airtel Payments Bank</option>
+                                </select>
+                            </div>
+                            <div class="form-group full-width">
+                                <label>Aadhaar Number</label>
+                                <input type="text" id="aeps-aadhaar" placeholder="XXXX XXXX XXXX">
+                            </div>
+                            <div class="form-group">
+                                <label>Amount (₹)</label>
+                                <input type="number" id="aeps-amount" placeholder="0">
+                            </div>
+                            <div class="form-group">
+                                <label>Fingerprint Auth</label>
+                                <button class="scan-btn" id="scan-finger">
+                                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12c0-4.4 3.6-8 8-8s8 3.6 8 8M5 12c0-2.8 2.2-5 5-5s5 2.2 5 5M8 12c0-1.1.9-2 2-2s2 .9 2 2M21 12c0 4.4-3.6 8-8 8s-8-3.6-8-8M18 12c0 2.8-2.2 5-5 5s-5-2.2-5-5"/></svg>
+                                    Scan Now
+                                </button>
+                            </div>
+                        </div>
+                        <button class="execute-btn" id="btn-aeps">Execute Transaction</button>
+                    </div>
+
+                    <!-- Recharge Panel -->
+                    <div id="recharge-panel" class="hub-panel">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Service</label>
+                                <select id="rec-type">
+                                    <option value="mobile">Mobile Recharge</option>
+                                    <option value="dth">DTH Recharge</option>
+                                    <option value="electricity">Electricity Bill</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Operator</label>
+                                <select id="rec-operator">
+                                    <option>Jio</option>
+                                    <option>Airtel</option>
+                                    <option>VI</option>
+                                </select>
+                            </div>
+                            <div class="form-group full-width">
+                                <label>Mobile / Customer Number</label>
+                                <input type="text" id="rec-number" placeholder="Enter number">
+                            </div>
+                            <div class="form-group">
+                                <label>Amount (₹)</label>
+                                <input type="number" id="rec-amount" placeholder="0">
+                            </div>
+                            <div class="form-group">
+                                <label>Plan Details</label>
+                                <button class="scan-btn">View Plans</button>
+                            </div>
+                        </div>
+                        <button class="execute-btn" id="btn-recharge">Pay Now</button>
+                    </div>
+
+                    <!-- DMT Panel -->
+                    <div id="dmt-panel" class="hub-panel">
+                        <div class="form-grid">
+                            <div class="form-group full-width">
+                                <label>Beneficiary Account Number</label>
+                                <input type="text" id="dmt-account" placeholder="Enter Account No">
+                            </div>
+                            <div class="form-group">
+                                <label>IFSC Code</label>
+                                <input type="text" id="dmt-ifsc" placeholder="SBIN000XXXX">
+                            </div>
+                            <div class="form-group">
+                                <label>Amount (₹)</label>
+                                <input type="number" id="dmt-amount" placeholder="0">
+                            </div>
+                        </div>
+                        <button class="execute-btn" id="btn-dmt">Transfer Money</button>
+                    </div>
+
+                    <!-- API Panel -->
+                    <div id="api-panel" class="hub-panel">
+                        <div class="api-info-box">
+                            <p><strong>Note:</strong> Enter your Fintech API credentials here to connect to real-time banking servers.</p>
+                        </div>
+                        <div class="form-grid">
+                            <div class="form-group full-width">
+                                <label>Merchant ID</label>
+                                <input type="password" value="JC-12345678" readonly>
+                            </div>
+                            <div class="form-group full-width">
+                                <label>API Secret Key</label>
+                                <input type="password" value="••••••••••••••••" placeholder="Enter Key">
+                            </div>
+                            <div class="form-group">
+                                <label>Environment</label>
+                                <select>
+                                    <option>Sandbox (Testing)</option>
+                                    <option disabled>Production (Live)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button class="execute-btn" style="background: #10b981;">Save Settings</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side: Activity Log -->
+            <div class="hub-activity premium-shadow">
+                <h3>Live API Logs</h3>
+                <div class="log-container" id="api-logs">
+                    <div class="log-entry">
+                        <span class="log-time">13:21:45</span>
+                        <span class="log-msg">System Bootstrapped. Ready.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+
+    <!-- Success Modal -->
+    <div id="success-modal" class="hub-modal">
+        <div class="modal-content success">
+            <div class="success-icon">✓</div>
+            <h3>Transaction Successful!</h3>
+            <p id="success-msg">Your request has been processed.</p>
+            <button class="close-hub-modal">Continue</button>
+        </div>
+    </div>
+
+    <!-- "The Orbit" Coming Soon Overlay -->
+    <div class="cs-overlay" id="hubComingSoon">
+        <div class="orbit-container">
+            <!-- Animated SVG Rings -->
+            <svg class="orbit-svg" viewBox="0 0 500 500">
+                <circle class="orbit-ring ring-1" cx="250" cy="250" r="100" />
+                <circle class="orbit-ring ring-2" cx="250" cy="250" r="160" />
+                <circle class="orbit-ring ring-3" cx="250" cy="250" r="220" />
+                
+                <!-- Orbiting Icons (Holographic) -->
+                <g class="orbiting-icon icon-1">
+                    <circle r="15" fill="rgba(99, 102, 241, 0.2)" stroke="#6366f1" stroke-width="2" />
+                    <path d="M-5 0h10M0 -5v10" stroke="#6366f1" stroke-width="2" />
+                </g>
+                <g class="orbiting-icon icon-2">
+                    <circle r="12" fill="rgba(168, 85, 247, 0.2)" stroke="#a855f7" stroke-width="2" />
+                    <circle r="5" stroke="#a855f7" stroke-width="1.5" />
+                </g>
+                <g class="orbiting-icon icon-3">
+                    <circle r="18" fill="rgba(37, 99, 235, 0.2)" stroke="#2563eb" stroke-width="2" />
+                    <rect x="-6" y="-6" width="12" height="12" stroke="#2563eb" stroke-width="2" />
+                </g>
+            </svg>
+
+            <!-- Central Content -->
+            <div class="orbit-content">
+                <div class="orbit-badge">S Y S T E M</div>
+                <h1 class="orbit-title">Digital Hub</h1>
+                <div class="orbit-status">
+                    <span class="status-dot"></span>
+                    <span>C O M I N G &nbsp; S O O N</span>
+                </div>
+                <p class="orbit-desc">Building the future of next-gen digital banking.</p>
+                
+                <form class="orbit-notify" id="cs-form">
+                    <div class="notify-input-wrapper">
+                        <input type="email" placeholder="Get early access" required>
+                        <button type="submit" id="notify-btn">Notify</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/MotionPathPlugin.min.js"></script>
+    <script src="../public/assets/sidebar-pages/service-hub/service-hub.js"></script>
+    <script src="../public/assets/features/sidebar/sidebar.js"></script>
+    <script src="../public/js/theme-toggle.js"></script>
+</body>
+</html>
+
+
+
+

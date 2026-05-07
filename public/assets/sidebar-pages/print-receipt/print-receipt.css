@@ -27,7 +27,7 @@ body {
   margin-top: 0;
   margin-bottom: 20px;
   font-size: 1.1rem;
-  color: var(--text-main);
+  color: var(--aura-text-main);
   font-weight: 700;
 }
 
@@ -43,12 +43,12 @@ input, select {
   padding: 12px;
   margin-bottom: 12px;
   border-radius: 12px;
-  border: 1.5px solid var(--border-color, #ddd);
-  background: var(--card-bg, #ffffff);
-  color: var(--text-main, #333);
+  border: 1.5px solid var(--aura-border, #ddd);
+  background: var(--aura-card-bg, #ffffff);
+  color: var(--aura-text-main, #333);
   box-sizing: border-box;
   font-family: inherit;
-  transition: all 0.3s ease;
+  transition: var(--aura-transition, all 0.3s ease);
   outline: none;
 }
 
@@ -66,9 +66,9 @@ body.dark-mode select {
 
 .list-item {
   padding: 12px;
-  border-bottom: 1px solid var(--border-color, #eee);
+  border-bottom: 1px solid var(--aura-border, #eee);
   cursor: pointer;
-  color: var(--text-main);
+  color: var(--aura-text-main);
   transition: 0.2s;
 }
 

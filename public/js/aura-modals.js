@@ -111,6 +111,14 @@ window.AuraDialog = (() => {
             if (inputRef) {
                 setTimeout(() => inputRef.focus(), 300);
 
+                // ✅ AUTO-CAPITALIZATION LOGIC
+                if (input.autoCapitalize !== false) {
+                    inputRef.addEventListener("input", function() {
+                        let words = this.value.toLowerCase().split(" ");
+                        this.value = words.map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+                    });
+                }
+
                 // ✅ ENTER KEY SUPPORT
                 inputRef.addEventListener("keydown", (e) => {
                     if (e.key === "Enter") {
@@ -156,7 +164,23 @@ window.AuraDialog = (() => {
             msg, title, type: "error", icon: "⚠️", showCancel: true, isDanger: true,
             confirmText: "Execute Action",
             input: { label: `Type "${verifyText}" to confirm`, placeholder: "...", verifyText }
-        })
+        }),
+        promptValue: (msg, title = "Input Required", placeholder = "Type here...") => {
+            return new Promise((resolve) => {
+                show({
+                    msg, title, type: "info", icon: "📝", showCancel: true,
+                    confirmText: "Save Changes",
+                    input: { label: msg, placeholder: placeholder }
+                }).then(confirmed => {
+                    if (confirmed) {
+                        const val = document.getElementById("auraModalInput").value.trim();
+                        resolve(val);
+                    } else {
+                        resolve(null);
+                    }
+                });
+            });
+        }
     };
 })();
 

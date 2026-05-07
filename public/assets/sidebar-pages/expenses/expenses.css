@@ -6,15 +6,15 @@
     --q-income: #10b981;
     --q-expense: #f43f5e;
     --q-profit: #3b82f6;
-    --q-glass: rgba(255, 255, 255, 0.7);
-    --q-border: rgba(255, 255, 255, 0.4);
+    --q-glass: var(--card-bg, rgba(255, 255, 255, 0.7));
+    --q-border: var(--border-color, rgba(255, 255, 255, 0.4));
     --accent: #6366f1;
     --accent-glow: rgba(99, 102, 241, 0.2);
 }
 
 body.dark-mode {
-    --q-glass: rgba(15, 23, 42, 0.85);
-    --q-border: rgba(255, 255, 255, 0.08);
+    --q-glass: var(--card-bg, rgba(15, 23, 42, 0.85));
+    --q-border: var(--border-color, rgba(255, 255, 255, 0.08));
 }
 
 .quantum-expense-layout {
@@ -71,7 +71,7 @@ body.dark-mode .q-stat-icon { background: rgba(255, 255, 255, 0.05); }
 .q-stat-data p {
     font-size: 0.75rem;
     font-weight: 800;
-    color: #64748b;
+    color: var(--text-muted, #64748b);
     text-transform: uppercase;
     letter-spacing: 1px;
     margin-bottom: 4px;
@@ -80,7 +80,7 @@ body.dark-mode .q-stat-icon { background: rgba(255, 255, 255, 0.05); }
 .q-stat-data h2 {
     font-size: 1.8rem;
     font-weight: 900;
-    color: #1e293b;
+    color: var(--text-main, #1e293b);
     margin: 0;
 }
 
@@ -141,7 +141,7 @@ body.dark-mode .q-stat-data h2 { color: #f1f5f9; }
     display: block;
     font-size: 0.8rem;
     font-weight: 700;
-    color: #64748b;
+    color: var(--text-muted, #64748b);
     margin-bottom: 10px;
     padding-left: 5px;
 }
@@ -153,13 +153,13 @@ body.dark-mode .q-stat-data h2 { color: #f1f5f9; }
 .q-input-wrap input,
 .q-input-wrap select {
     width: 100%;
-    background: rgba(255, 255, 255, 0.5);
-    border: 2px solid transparent;
+    background: var(--hover-bg, rgba(255, 255, 255, 0.5));
+    border: 2px solid var(--border-color, transparent);
     border-radius: 18px;
     padding: 14px 20px;
     font-size: 0.95rem;
     font-weight: 600;
-    color: #1e293b;
+    color: var(--text-main, #1e293b);
     transition: 0.3s;
 }
 
@@ -232,7 +232,7 @@ body.dark-mode .q-input-wrap input:focus { background: #0f172a; }
     font-weight: 900;
     letter-spacing: -0.5px;
     margin: 0;
-    background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
+    background: linear-gradient(135deg, var(--text-main, #fff) 0%, var(--text-muted, #94a3b8) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
@@ -246,17 +246,17 @@ body.dark-mode .q-input-wrap input:focus { background: #0f172a; }
     width: 100%;
     padding: 14px 45px 14px 20px;
     border-radius: 18px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(0, 0, 0, 0.2) !important;
+    border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+    background: var(--hover-bg, rgba(0, 0, 0, 0.2)) !important;
     font-weight: 500;
-    color: white !important;
+    color: var(--text-main, white) !important;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .history-search input:focus {
     width: 360px;
     border-color: var(--accent);
-    background: rgba(0, 0, 0, 0.4) !important;
+    background: var(--card-bg, rgba(0, 0, 0, 0.4)) !important;
     box-shadow: 0 0 0 4px var(--accent-glow);
 }
 
@@ -287,7 +287,7 @@ body.dark-mode .q-input-wrap input:focus { background: #0f172a; }
     padding: 0 25px 15px;
     font-size: 0.8rem;
     font-weight: 800;
-    color: #e2e8f0; /* Brighter slate for better contrast */
+    color: var(--text-muted, #e2e8f0); /* Brighter slate for better contrast */
     text-transform: uppercase;
     letter-spacing: 2px;
     text-align: left;
@@ -296,9 +296,9 @@ body.dark-mode .q-input-wrap input:focus { background: #0f172a; }
 }
 
 .modern-table tbody tr {
-    background: rgba(15, 23, 42, 0.4);
+    background: var(--card-bg, rgba(15, 23, 42, 0.4));
     backdrop-filter: blur(15px);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color, rgba(255, 255, 255, 0.05));
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
@@ -312,7 +312,7 @@ body.dark-mode .modern-table tbody tr {
     padding: 18px 25px;
     font-size: 0.95rem;
     font-weight: 500;
-    color: #f1f5f9;
+    color: var(--text-main, #f1f5f9);
 }
 
 .modern-table tr td:first-child { 

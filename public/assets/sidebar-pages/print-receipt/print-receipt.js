@@ -122,7 +122,7 @@ function generateReceiptText(t, f) {
 <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 5px; color: #1e293b; white-space: normal;">
   <div style="text-align: center; margin-bottom: 15px;">
     ${logoImg}
-    <div style="font-size: 1.3em; font-weight: 800; color: #f8fafc; text-transform: uppercase; letter-spacing: 1px;">${shop.name}</div>
+    <div style="font-size: 1.3em; font-weight: 800; color: #1e293b; text-transform: uppercase; letter-spacing: 1px;">${shop.name}</div>
     ${showShopAddress}
   </div>
 

@@ -11,10 +11,10 @@ if (!fs.existsSync(storagePath)) {
 }
 
 class StorageManager {
-  static save(key, data) {
+  static async save(key, data) {
     try {
       const filePath = path.join(storagePath, `${key}.json`);
-      fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+      await fs.promises.writeFile(filePath, JSON.stringify(data, null, 2), 'utf8');
       return true;
     } catch (err) {
       console.error(`Storage Error (Save): ${key}`, err);
@@ -22,11 +22,11 @@ class StorageManager {
     }
   }
 
-  static get(key) {
+  static async get(key) {
     try {
       const filePath = path.join(storagePath, `${key}.json`);
       if (!fs.existsSync(filePath)) return null;
-      const data = fs.readFileSync(filePath, 'utf8');
+      const data = await fs.promises.readFile(filePath, 'utf8');
       return JSON.parse(data);
     } catch (err) {
       console.error(`Storage Error (Get): ${key}`, err);
@@ -34,16 +34,17 @@ class StorageManager {
     }
   }
 
-  static getAll() {
+  static async getAll() {
     const data = {};
     try {
-      const files = fs.readdirSync(storagePath);
-      files.forEach(file => {
+      const files = await fs.promises.readdir(storagePath);
+      for (const file of files) {
         if (file.endsWith('.json')) {
           const key = file.replace('.json', '');
-          data[key] = this.get(key);
+          const content = await this.get(key);
+          if (content !== null) data[key] = content;
         }
-      });
+      }
     } catch (err) {
       console.error('Storage Error (GetAll)', err);
     }
@@ -91,52 +92,6 @@ function createWindow() {
       sandbox: true,
       devTools: true // Enabled but will be controlled via shortcuts
     }
-  });
-
-  // IPC for dynamic Title Bar color updates (Windows)
-  ipcMain.on('update-titlebar', (event, { color, symbolColor }) => {
-    if (win && !win.isDestroyed()) {
-      win.setTitleBarOverlay({ color, symbolColor });
-
-      // Update native menu theme
-      // If symbolColor is white (#ffffff), we are in dark mode
-      nativeTheme.themeSource = symbolColor === '#ffffff' ? 'dark' : 'light';
-    }
-  });
-
-  // IPC for showing native menu from custom title bar
-  ipcMain.on('show-menu', (event, { index, x, y }) => {
-    const menu = Menu.getApplicationMenu();
-    if (menu && menu.items[index]) {
-      menu.items[index].submenu.popup({ window: win, x: x, y: y });
-    }
-  });
-
-  // --- NEW PERSISTENCE IPC HANDLERS ---
-  ipcMain.handle('storage:get-all', () => {
-    return StorageManager.getAll();
-  });
-
-  ipcMain.on('storage:save', (event, { key, data }) => {
-    StorageManager.save(key, data);
-  });
-
-  ipcMain.on('storage:delete', (event, key) => {
-    try {
-      const filePath = path.join(storagePath, `${key}.json`);
-      if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
-    } catch (err) { }
-  });
-
-  ipcMain.on('storage:clear', () => {
-    try {
-      const files = fs.readdirSync(storagePath);
-      files.forEach(file => {
-        if (file.endsWith('.json')) {
-          fs.unlinkSync(path.join(storagePath, file));
-        }
-      });
-    } catch (err) { }
   });
 
   windows.add(win);
@@ -196,6 +151,76 @@ function createWindow() {
 
   return win;
 }
+
+// --- GLOBAL IPC HANDLERS (Architectural Fix) ---
+
+// IPC for dynamic Title Bar color updates
+ipcMain.on('update-titlebar', (event, { color, symbolColor }) => {
+  const win = BrowserWindow.fromWebContents(event.sender);
+  if (win && !win.isDestroyed()) {
+    win.setTitleBarOverlay({ color, symbolColor });
+    nativeTheme.themeSource = symbolColor === '#ffffff' ? 'dark' : 'light';
+  }
+});
+
+// IPC for showing native menu from custom title bar
+ipcMain.on('show-menu', (event, { index, x, y }) => {
+  const win = BrowserWindow.fromWebContents(event.sender);
+  const menu = Menu.getApplicationMenu();
+  if (win && menu && menu.items[index]) {
+    menu.items[index].submenu.popup({ window: win, x: x, y: y });
+  }
+});
+
+// Persistence Handlers
+ipcMain.handle('storage:get-all', async () => {
+  return await StorageManager.getAll();
+});
+
+ipcMain.on('storage:save', async (event, { key, data }) => {
+  await StorageManager.save(key, data);
+  // Broadcast to other windows
+  windows.forEach(win => {
+    if (!win.isDestroyed() && win.webContents !== event.sender) {
+      win.webContents.send('aura-data-updated', { key, data });
+    }
+  });
+});
+
+ipcMain.on('storage:delete', async (event, key) => {
+  try {
+    const filePath = path.join(storagePath, `${key}.json`);
+    if (fs.existsSync(filePath)) await fs.promises.unlink(filePath);
+    
+    windows.forEach(win => {
+      if (!win.isDestroyed() && win.webContents !== event.sender) {
+        win.webContents.send('aura-data-deleted', key);
+      }
+    });
+  } catch (err) {
+    console.error(`Error deleting ${key}:`, err);
+  }
+});
+
+ipcMain.on('storage:clear', async (event) => {
+  try {
+    const files = await fs.promises.readdir(storagePath);
+    // Properly await all unlinks
+    await Promise.all(files.map(async (file) => {
+      if (file.endsWith('.json')) {
+        return fs.promises.unlink(path.join(storagePath, file));
+      }
+    }));
+    
+    windows.forEach(win => {
+      if (!win.isDestroyed() && win.webContents !== event.sender) {
+        win.webContents.send('aura-data-cleared');
+      }
+    });
+  } catch (err) {
+    console.error("Error clearing storage:", err);
+  }
+});
 
 ipcMain.on('reset-zoom-level', (event) => {
   const win = BrowserWindow.fromWebContents(event.sender);
@@ -308,7 +333,13 @@ const template = [
           if (browserWindow) browserWindow.loadFile(path.join(__dirname, 'views/expenses.html'));
         }
       },
-      { type: 'separator' },
+      {
+        label: 'Service Rate List',
+        accelerator: 'Alt+M',
+        click: (menuItem, browserWindow) => {
+          if (browserWindow) browserWindow.loadFile(path.join(__dirname, 'views/rate-list.html'));
+        }
+      },
       { type: 'separator' },
       { role: 'togglefullscreen' }
     ]
@@ -379,7 +410,7 @@ ipcMain.handle('check-for-update', async () => {
             return;
           }
 
-          const asset = release.assets ? release.assets.find(a => a.name.endsWith('.exe')) : null;
+          const asset = (release.assets && release.assets.length > 0) ? release.assets.find(a => a.name.endsWith('.exe')) : null;
 
           resolve({
             version: release.tag_name.replace('v', ''),
@@ -399,36 +430,46 @@ ipcMain.handle('check-for-update', async () => {
 
 function downloadUpdate(event, url) {
   const downloadPath = path.join(app.getPath('downloads'), 'JCC_Update_Installer.exe');
-  const file = fs.createWriteStream(downloadPath);
-
-  https.get(url, (response) => {
-    // Handle redirect
-    if (response.statusCode === 302 || response.statusCode === 301) {
-      downloadUpdate(event, response.headers.location);
-      return;
-    }
-
-    const totalSize = parseInt(response.headers['content-length'], 10);
-    let downloadedSize = 0;
-
-    response.on('data', (chunk) => {
-      downloadedSize += chunk.length;
-      file.write(chunk);
-      const progress = Math.floor((downloadedSize / totalSize) * 100);
-      event.reply('download-progress', progress);
+  
+  try {
+    const file = fs.createWriteStream(downloadPath);
+    
+    file.on('error', (err) => {
+      console.error("Stream Error:", err);
+      event.reply('download-error', "File Access Denied: Could not write to Downloads folder.");
     });
 
-    response.on('end', () => {
-      file.end();
-    });
+    https.get(url, (response) => {
+      // Handle redirect
+      if (response.statusCode === 302 || response.statusCode === 301) {
+        downloadUpdate(event, response.headers.location);
+        return;
+      }
 
-    file.on('finish', () => {
-      event.reply('download-complete', downloadPath);
+      const totalSize = parseInt(response.headers['content-length'], 10);
+      let downloadedSize = 0;
+
+      response.on('data', (chunk) => {
+        downloadedSize += chunk.length;
+        file.write(chunk);
+        const progress = Math.floor((downloadedSize / totalSize) * 100);
+        event.reply('download-progress', progress);
+      });
+
+      response.on('end', () => {
+        file.end();
+      });
+
+      file.on('finish', () => {
+        event.reply('download-complete', downloadPath);
+      });
+    }).on('error', (err) => {
+      fs.unlink(downloadPath, () => { });
+      event.reply('download-error', err.message);
     });
-  }).on('error', (err) => {
-    fs.unlink(downloadPath, () => { });
-    event.reply('download-error', err.message);
-  });
+  } catch (err) {
+    event.reply('download-error', "Initialization Failed: " + err.message);
+  }
 }
 
 ipcMain.on('download-update', (event, url) => {

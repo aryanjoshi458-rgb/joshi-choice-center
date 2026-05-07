@@ -47,6 +47,29 @@ document.addEventListener("DOMContentLoaded", () => {
         { id: "8", name: "Mobile Recharge", category: "Mobile & Utility", price: 0, chargeType: "fixed", charge: 1 }
     ];
 
+    const serviceMap = [
+        { name: "Cash Deposit", cat: "Banking" },
+        { name: "Cash Withdrawal", cat: "Banking" },
+        { name: "Balance Enquiry", cat: "Banking" },
+        { name: "Mini Statement", cat: "Banking" },
+        { name: "Account Opening", cat: "Banking" },
+        { name: "Fund Transfer", cat: "Banking" },
+        { name: "Black & White Photocopy", cat: "Printing" },
+        { name: "PDF Print Out", cat: "Printing" },
+        { name: "Document Lamination", cat: "Document" },
+        { name: "New PAN Card Application", cat: "Govt Services" },
+        { name: "Correction in PAN Card", cat: "Govt Services" },
+        { name: "PAN Card Reprint / Lost", cat: "Govt Services" },
+        { name: "New Voter ID Registration", cat: "Govt Services" },
+        { name: "Correction in Voter ID", cat: "Govt Services" },
+        { name: "Replacement / Lost Voter ID", cat: "Govt Services" },
+        { name: "Aadhaar Linking (Voter)", cat: "Govt Services" },
+        { name: "Mobile Recharge", cat: "Mobile & Utility" },
+        { name: "Google Play Recharge", cat: "Mobile & Utility" },
+        { name: "Money Transfer (PhonePe/UPI)", cat: "Mobile & Utility" },
+        { name: "Electricity Bill Payment", cat: "Mobile & Utility" }
+    ];
+
     function getRates() {
         let rates = JSON.parse(localStorage.getItem("serviceRates"));
         if (!rates) {
@@ -163,11 +186,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 const id = btn.dataset.id;
                 const confirmed = await window.AuraDialog.confirm("Delete this service rate permanently?", "Delete Service", true);
                 if (confirmed) {
-                    let rates = getRates().filter(r => r.id !== id);
-                    localStorage.setItem("serviceRates", JSON.stringify(rates));
-                    renderServices();
-                    renderTabs();
-                    if (window.showToast) window.showToast("Service deleted!", "error");
+                    if (window.AppLoader) window.AppLoader.show("Removing Service...");
+                    
+                    setTimeout(() => {
+                        let rates = getRates().filter(r => r.id !== id);
+                        localStorage.setItem("serviceRates", JSON.stringify(rates));
+                        renderServices();
+                        renderTabs();
+                        if (window.AppLoader) window.AppLoader.hide();
+                        if (window.showToast) window.showToast("Service deleted!", "error");
+                    }, 600);
                 }
             };
         });
@@ -230,6 +258,59 @@ document.addEventListener("DOMContentLoaded", () => {
     function init() {
         renderTabs();
         renderServices();
+
+        // Populate Suggestions Logic
+        const suggestionsBox = document.getElementById("serviceSuggestions");
+        
+        function renderSuggestions(filter = "") {
+            const filtered = serviceMap.filter(s => 
+                s.name.toLowerCase().includes(filter.toLowerCase())
+            );
+            
+            if (filtered.length === 0) {
+                suggestionsBox.classList.remove("active");
+                return;
+            }
+            
+            suggestionsBox.innerHTML = filtered.map(s => `
+                <div class="suggestion-item" data-name="${s.name}" data-cat="${s.cat}">
+                    ${s.name}
+                </div>
+            `).join("");
+            
+            suggestionsBox.classList.add("active");
+            
+            // Add click listeners to items
+            suggestionsBox.querySelectorAll(".suggestion-item").forEach(item => {
+                item.onclick = () => {
+                    serviceNameInput.value = item.dataset.name;
+                    serviceCategoryInput.value = item.dataset.cat;
+                    suggestionsBox.classList.remove("active");
+                };
+            });
+        }
+
+        if (serviceNameInput) {
+            serviceNameInput.addEventListener("input", (e) => {
+                renderSuggestions(e.target.value);
+                
+                // Auto-Category for exact match (manual typing)
+                const match = serviceMap.find(s => s.name === e.target.value);
+                if (match && serviceCategoryInput) {
+                    serviceCategoryInput.value = match.cat;
+                }
+            });
+
+            // Close suggestions on blur (with delay for click)
+            serviceNameInput.addEventListener("blur", () => {
+                setTimeout(() => suggestionsBox.classList.remove("active"), 200);
+            });
+
+            // Show all on focus if empty
+            serviceNameInput.addEventListener("focus", () => {
+                renderSuggestions(serviceNameInput.value);
+            });
+        }
 
         // Main Action Listeners
         if (addRateBtn) addRateBtn.onclick = () => {
@@ -315,11 +396,16 @@ document.addEventListener("DOMContentLoaded", () => {
             rates.push(rateData);
         }
 
-        localStorage.setItem("serviceRates", JSON.stringify(rates));
-        rateModal.classList.remove("active");
-        renderServices();
-        renderTabs();
-        if (window.showToast) window.showToast(editMode ? "Rate updated!" : "New service added!", "success");
+        if (window.AppLoader) window.AppLoader.show(editMode ? "Updating Service..." : "Adding Service...");
+
+        setTimeout(() => {
+            localStorage.setItem("serviceRates", JSON.stringify(rates));
+            rateModal.classList.remove("active");
+            renderServices();
+            renderTabs();
+            if (window.AppLoader) window.AppLoader.hide();
+            if (window.showToast) window.showToast(editMode ? "Rate updated!" : "New service added!", "success");
+        }, 800);
     }
 
     init();

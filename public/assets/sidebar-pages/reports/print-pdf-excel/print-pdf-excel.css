@@ -1,38 +1,71 @@
 /* ===== RIGHT SIDE BUTTON CONTAINER ===== */
 #reportActions {
   display: flex;
-  gap: 6px;
+  gap: 7px;
   align-items: center;
-  margin-left: auto; /* Push the whole group to the right */
+  margin-left: auto;
 }
 
-/* ===== BUTTON BASE STYLE ===== */
+/* ===== PREMIUM SHINE BUTTON BASE ===== */
 #reportActions button {
-  padding: 6px 14px;
+  position: relative;
+  padding: 7px 16px;
   border: none;
-  border-radius: 6px;
+  border-radius: 10px;
   color: #fff;
   cursor: pointer;
   font-size: 13px;
-  transition: 0.2s ease;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   margin-top: -15px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* ===== COLORS ===== */
+/* ===== COLORS & GLOWS ===== */
 .btn-print {
-  background: #059669; /* Match reports.css */
+  background: linear-gradient(135deg, #10b981, #059669);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 .btn-pdf {
-  background: #E91E63;
+  background: linear-gradient(135deg, #f43f5e, #e11d48);
+  box-shadow: 0 4px 12px rgba(244, 63, 94, 0.3);
 }
 .btn-excel {
-  background: #2196F3;
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
-/* ===== HOVER EFFECT ===== */
+/* ===== SHINE EFFECT (Login-Style Hover Sweep) ===== */
+#reportActions button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: 0.5s;
+  pointer-events: none;
+}
+
+#reportActions button:hover::before {
+  left: 100%;
+}
+
+/* ===== INTERACTION ===== */
 #reportActions button:hover {
-  transform: translateY(-1px);
-  opacity: 0.9;
+  transform: translateY(-4px) scale(1.05);
+  filter: brightness(1.1);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+#reportActions button:active {
+  transform: scale(0.95);
 }
 
 /* ===== SEARCH ROW FIX ===== */
@@ -41,11 +74,12 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
+  margin-bottom: 25px;
 }
 
 /* LEFT SIDE (search + filter) */
 .report-left {
   display: flex;
-  gap: 10px;
+  gap: 15px;
   align-items: center;
 }

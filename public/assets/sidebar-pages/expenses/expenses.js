@@ -55,8 +55,8 @@ document.addEventListener("DOMContentLoaded", () => {
         expenseForm.addEventListener("submit", (e) => {
             e.preventDefault();
             const newExpense = {
-                id: Date.now().toString(),
-                date: document.getElementById("expDate").value,
+                id: "EXP-" + Date.now() + "-" + Math.random().toString(36).substring(2, 7).toUpperCase(),
+                date: window.AuraDate ? window.AuraDate.toDDMMYYYY(document.getElementById("expDate").value) : document.getElementById("expDate").value,
                 category: document.getElementById("expCategory").value,
                 description: document.getElementById("expDescription").value,
                 amount: parseFloat(document.getElementById("expAmount").value)
@@ -122,8 +122,18 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function loadExpenses() {
-        const expenses = JSON.parse(localStorage.getItem("expenses")) || [];
-        const transactions = JSON.parse(localStorage.getItem("transactions")) || [];
+        let expenses = [];
+        let transactions = [];
+        
+        try {
+            expenses = JSON.parse(localStorage.getItem("expenses")) || [];
+            transactions = JSON.parse(localStorage.getItem("transactions")) || [];
+        } catch (e) {
+            console.error("Corrupted database found:", e);
+            expenses = [];
+            transactions = [];
+        }
+
         const todayStr = getTodayLocal();
         const tbody = document.getElementById("expenseTableBody");
         if (!tbody) return;
@@ -141,21 +151,35 @@ document.addEventListener("DOMContentLoaded", () => {
             "Others": `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>`
         };
 
-        // Sort by date (newest first)
-        expenses.sort((a, b) => new Date(b.date) - new Date(a.date));
+        // Standardized formatting helper
+        const curFormat = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' });
+
+        const parseForSort = (dStr) => {
+            if (!dStr) return 0;
+            const parts = dStr.split(" ")[0].split("-");
+            if (parts[0].length === 4) return new Date(dStr).getTime();
+            return new Date(parts[2], parts[1] - 1, parts[0]).getTime();
+        };
+
+        expenses.sort((a, b) => parseForSort(b.date) - parseForSort(a.date));
+
+        // Get Today's Date in DD-MM-YYYY for comparison
+        const now = new Date();
+        const dd = String(now.getDate()).padStart(2, '0');
+        const mm = String(now.getMonth() + 1).padStart(2, '0');
+        const yyyy = now.getFullYear();
+        const todayStandard = `${dd}-${mm}-${yyyy}`;
 
         let todayExpenses = 0;
         let todayIncome = 0;
         
-        // Calculate Today's Expenses
         expenses.forEach(exp => {
-            if (exp.date === todayStr) {
+            if (exp.date.split(" ")[0] === todayStandard) {
                 todayExpenses += exp.amount;
             }
 
             const icon = categoryIcons[exp.category] || categoryIcons["Others"];
 
-            // Table Row Rendering
             const row = document.createElement("tr");
             row.innerHTML = `
                 <td>${formatDate(exp.date)}</td>
@@ -166,7 +190,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     </div>
                 </td>
                 <td style="color: #94a3b8; font-weight: 400;">${exp.description}</td>
-                <td class="amount-text">₹${exp.amount.toFixed(2)}</td>
+                <td class="amount-text">${curFormat.format(exp.amount)}</td>
                 <td>
                     <button class="delete-btn-q" onclick="deleteExpense('${exp.id}')" title="Remove Entry">
                         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
@@ -176,35 +200,27 @@ document.addEventListener("DOMContentLoaded", () => {
             tbody.appendChild(row);
         });
 
-        // Calculate Today's Income from Transactions
+        // Robust Income Calculation (Net Commission based)
         const todayTransactions = transactions.filter(txn => {
-            let dStr = txn.date;
-            const parts = dStr.split("-");
-            if (parts.length === 3 && parts[0].length === 2) {
-                dStr = `${parts[2]}-${parts[1]}-${parts[0]}`;
-            }
-            return dStr === todayStr;
+            if (!txn.date) return false;
+            return txn.date.split(" ")[0] === todayStandard;
         });
 
-        todayIncome = todayTransactions.reduce((sum, txn) => sum + (Number(txn.totalAmount || txn.total || txn.amount) || 0), 0);
+        // 🔥 CRITICAL FIX: Income should be the "Charge" (Commission), not the gross amount
+        todayIncome = todayTransactions.reduce((sum, txn) => sum + (Number(txn.charge || 0)), 0);
 
         const netProfit = todayIncome - todayExpenses;
 
-        // Update Stats UI
-        document.getElementById("todayIncome").innerText = `₹${todayIncome.toFixed(2)}`;
-        document.getElementById("todayTotal").innerText = `₹${todayExpenses.toFixed(2)}`;
-        document.getElementById("netProfit").innerText = `₹${netProfit.toFixed(2)}`;
-
-        // Dynamic Profit Styling
-        const profitValueEl = document.getElementById("netProfit");
+        // Update Stats UI with Formatting
+        if (document.getElementById("todayIncome")) document.getElementById("todayIncome").innerText = curFormat.format(todayIncome);
+        if (document.getElementById("todayTotal")) document.getElementById("todayTotal").innerText = curFormat.format(todayExpenses);
         
+        const profitValueEl = document.getElementById("netProfit");
         if (profitValueEl) {
+            profitValueEl.innerText = curFormat.format(netProfit);
             profitValueEl.classList.remove("profit-positive", "profit-negative");
-            if (netProfit > 0) {
-                profitValueEl.classList.add("profit-positive");
-            } else if (netProfit < 0) {
-                profitValueEl.classList.add("profit-negative");
-            }
+            if (netProfit > 0) profitValueEl.classList.add("profit-positive");
+            else if (netProfit < 0) profitValueEl.classList.add("profit-negative");
         }
     }
 
@@ -224,12 +240,12 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     function formatDate(dateStr) {
+        if (window.AuraDate) return window.AuraDate.toDDMMYYYY(dateStr).split(" ")[0];
         if (!dateStr) return "";
         const parts = dateStr.split("-");
         if (parts.length === 3) {
-            // Check if it's already yyyy-mm-dd or dd-mm-yyyy
             if (parts[0].length === 4) {
-                return `${parts[2]}-${parts[1]}-${parts[0]}`; // Convert to DD-MM-YYYY
+                return `${parts[2]}-${parts[1]}-${parts[0]}`;
             }
             return dateStr;
         }

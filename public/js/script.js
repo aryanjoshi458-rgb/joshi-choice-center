@@ -64,8 +64,65 @@ document.addEventListener("DOMContentLoaded", () => {
   const resetFormBtn = document.getElementById("resetForm");
 
   // ================================
-  // 1. INPUT FORMATTING & LOOKUP
+  // 1. INPUT FORMATTING & LOOKUP & PENDING CHECK
   // ================================
+
+  // Helper to check pending amount
+  function checkPendingAmount(mobile, aadhar) {
+    // 🔥 FRESH DATA RETRIEVAL
+    const pendingCustomers = JSON.parse(localStorage.getItem("pendingCustomers") || "[]");
+    const transactions = JSON.parse(localStorage.getItem("transactions") || "[]");
+
+    let totalPending = 0;
+    const cleanMobile = mobile ? mobile.replace(/^\+91\s?/, "").replace(/\D/g, "") : "";
+    const cleanAadhar = aadhar ? aadhar.replace(/\D/g, "") : "";
+
+    // Track unique pending entries to avoid double counting if multiple identifiers match
+    let countedIds = new Set();
+
+    pendingCustomers.forEach(p => {
+      if (p.status === "Pending") {
+        let isMatch = false;
+
+        // 1. Match by Mobile
+        const pMobile = p.mobile ? p.mobile.replace(/^\+91\s?/, "").replace(/\D/g, "") : "";
+        if (cleanMobile && pMobile === cleanMobile) isMatch = true;
+
+        // 2. Match by Aadhar (via Transaction lookup)
+        if (!isMatch && cleanAadhar && p.txnId) {
+          const txn = transactions.find(t => t.transactionId === p.txnId);
+          if (txn) {
+            const txnAadhar = txn.aadharNumber ? txn.aadharNumber.replace(/\D/g, "") : "";
+            if (txnAadhar === cleanAadhar) isMatch = true;
+          }
+        }
+
+        // 3. Match by Name (Fallback if no Aadhar/Mobile match but name is same - optional, but let's stick to user request)
+
+        if (isMatch && !countedIds.has(p.id)) {
+          // Robust parsing to handle currency symbols or commas
+          const chargeVal = parseFloat(String(p.charge || "0").replace(/[^\d.]/g, "")) || 0;
+          totalPending += chargeVal;
+          countedIds.add(p.id);
+        }
+      }
+    });
+
+    const alertEl = document.getElementById("pendingAmountAlert");
+    const valueEl = document.getElementById("pendingAmountValue");
+
+    if (totalPending > 0) {
+      if (valueEl) valueEl.innerText = "₹" + totalPending.toLocaleString('en-IN');
+      if (alertEl) {
+        alertEl.style.display = "flex";
+        if (window.gsap) {
+          gsap.fromTo(alertEl, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: "back.out(1.7)" });
+        }
+      }
+    } else {
+      if (alertEl) alertEl.style.display = "none";
+    }
+  }
 
   // 1. Mobile Formatting & Auto-Lookup (Smart +91 Prefix)
   if (custMobile) {
@@ -110,6 +167,13 @@ document.addEventListener("DOMContentLoaded", () => {
             showToast("Welcome Back! Customer details auto-filled. ✨");
           }
         }
+        
+        // Always check for pending amount when 10 digits reached
+        checkPendingAmount(finalVal, existingCust ? existingCust.aadhar : "");
+      } else {
+        // Clear alert if mobile is not complete
+        const alertEl = document.getElementById("pendingAmountAlert");
+        if (alertEl && digits.length < 10) alertEl.style.display = "none";
       }
     });
   }
@@ -129,16 +193,43 @@ document.addEventListener("DOMContentLoaded", () => {
   if (custName) applyTitleCase(custName);
   if (custAddress) applyTitleCase(custAddress);
 
-  // Aadhar Formatting
+  // Aadhar Formatting & Auto-Lookup
   if (custAadhar) {
     custAadhar.addEventListener("input", () => {
-      let value = custAadhar.value.replace(/\D/g, "").slice(0, 12);
+      let rawValue = custAadhar.value.replace(/\D/g, "");
+      let value = rawValue.slice(0, 12);
       let formatted = "";
       for (let i = 0; i < value.length; i++) {
         if (i > 0 && i % 4 === 0) formatted += "-";
         formatted += value[i];
       }
       custAadhar.value = formatted;
+
+      // Auto-Lookup when 12 digits are reached
+      if (value.length === 12) {
+        const customers = JSON.parse(localStorage.getItem("customers")) || [];
+        const existingCust = customers.find(c => {
+          const cleanAadhar = c.aadhar.replace(/\D/g, "");
+          return cleanAadhar === value;
+        });
+
+        if (existingCust) {
+          if (custName) custName.value = existingCust.name || "";
+          if (custMobile) custMobile.value = existingCust.mobile || "";
+          if (custAddress) custAddress.value = existingCust.address || "";
+
+          if (typeof showToast === "function") {
+            showToast("Customer profile found via Aadhar! ✨");
+          }
+        }
+
+        // Always check for pending amount when 12 digits reached
+        checkPendingAmount(existingCust ? existingCust.mobile : "", value);
+      } else {
+        // Clear alert if aadhar is not complete
+        const alertEl = document.getElementById("pendingAmountAlert");
+        if (alertEl && value.length < 12) alertEl.style.display = "none";
+      }
     });
   }
 
@@ -146,7 +237,11 @@ document.addEventListener("DOMContentLoaded", () => {
   // 2. UNIFIED SAVE & PRINT LOGIC
   // ================================
 
+  let isSavingTransaction = false;
   async function performSave(shouldPrint = false) {
+    if (isSavingTransaction) return; // 🔥 PREVENT DOUBLE SAVE
+    isSavingTransaction = true;
+
     const category = serviceType.value;
     // Shared Validation
     const isBanking = category === "Banking & Financial Services";
@@ -158,6 +253,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const cleanMobile = custMobile.value.replace(/^\+91\s?/, "").replace(/\D/g, "");
       if (!custMobile.value || cleanMobile.length !== 10) {
         if (window.AppLoader) window.AppLoader.hide();
+        isSavingTransaction = false; // 🔥 RESET
         await AuraDialog.error("Mobile Number is MANDATORY for Mobile Recharge (10 Digits Required).", "Input Error");
         custMobile.focus();
         return;
@@ -165,6 +261,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     if (!serviceType.value) {
       if (window.AppLoader) window.AppLoader.hide();
+      isSavingTransaction = false; // 🔥 RESET
       await AuraDialog.warning("Please select a service type.", "Selection Required");
       serviceType.focus();
       return;
@@ -178,6 +275,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const serviceName = isBanking ? "Banking" : "PAN Card";
       if (!custName.value.trim()) {
         if (window.AppLoader) window.AppLoader.hide();
+        isSavingTransaction = false; // 🔥 RESET
         await AuraDialog.error(`Customer Name is MANDATORY for ${serviceName} services.`, "Validation Error");
         custName.focus();
         return;
@@ -185,6 +283,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const cleanMobile = custMobile.value.replace(/^\+91\s?/, "").replace(/\D/g, "");
       if (cleanMobile && cleanMobile.length !== 10) {
         if (window.AppLoader) window.AppLoader.hide();
+        isSavingTransaction = false; // 🔥 RESET
         await AuraDialog.error(`Mobile Number must be 10 digits if provided for ${serviceName} services.`, "Validation Error");
         custMobile.focus();
         return;
@@ -192,12 +291,14 @@ document.addEventListener("DOMContentLoaded", () => {
       const aadharDigits = custAadhar.value.replace(/-/g, "");
       if (aadharDigits.length !== 12) {
         if (window.AppLoader) window.AppLoader.hide();
+        isSavingTransaction = false; // 🔥 RESET
         await AuraDialog.error(`Aadhar Card is MANDATORY (12 digits) for ${serviceName} services.`, "Validation Error");
         custAadhar.focus();
         return;
       }
       if (!custAddress.value.trim()) {
         if (window.AppLoader) window.AppLoader.hide();
+        isSavingTransaction = false; // 🔥 RESET
         await AuraDialog.error(`Address is MANDATORY for ${serviceName} services.`, "Validation Error");
         custAddress.focus();
         return;
@@ -207,7 +308,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // A. Smart Customer Identity Logic
     const currentMobileClean = custMobile.value.replace(/^\+91\s?/, "").replace(/\D/g, "");
     const currentAadharClean = custAadhar.value.replace(/-/g, "");
-    let finalName = custName.value.trim();
+    let finalName = custName.value.trim() || "Walk-in Customer";
 
     // 1. Generate / Find Unique Customer ID
     let customerId = "";
@@ -257,12 +358,30 @@ document.addEventListener("DOMContentLoaded", () => {
       address: custAddress.value.trim() || "N/A"
     };
 
+    const unformat = (val) => String(val || "0").replace(/[^\d.]/g, "");
+
     // B. Save Transaction
     const allTxns = JSON.parse(localStorage.getItem("transactions")) || [];
-    const transactionId = "TXN" + String(allTxns.length + 1).padStart(3, "0");
+    
+    // Calculate Next Sequential ID
+    let nextNum = 1;
+    if (allTxns.length > 0) {
+      const ids = allTxns.map(t => {
+        const idStr = String(t.transactionId || t.txnId || t.id || "0");
+        // Only match short sequential IDs (TXN + 3-6 digits)
+        const match = idStr.match(/^TXN(\d{3,6})$/);
+        return match ? parseInt(match[1]) : 0;
+      });
+      const maxShortId = Math.max(...ids, 0);
+      nextNum = maxShortId > 0 ? maxShortId + 1 : allTxns.length + 1;
+    }
+    let transactionId = "TXN" + String(nextNum).padStart(3, "0");
 
-    // Helper to strip commas
-    const unformat = (val) => String(val || "0").replace(/,/g, "");
+    // 🔥 FIX: Ensure generated ID doesn't already exist to prevent collision on deletion
+    while (allTxns.some(t => String(t.transactionId || t.txnId || t.id) === transactionId)) {
+      nextNum++;
+      transactionId = "TXN" + String(nextNum).padStart(3, "0");
+    }
 
     // Determine the full service name based on category (Shortened for readability)
     const shortNames = {
@@ -340,7 +459,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const currentTime = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
     const transaction = {
       customerId: customerDataForTxn.id, // Fixed Link
-      date: `${txnDate.value} ${currentTime}`,
+      date: `${window.AuraDate ? window.AuraDate.toDDMMYYYY(txnDate.value) : txnDate.value} ${currentTime}`,
       customerName: customerDataForTxn.name,
       mobileNumber: customerDataForTxn.mobile,
       aadharNumber: customerDataForTxn.aadhar,
@@ -364,15 +483,24 @@ document.addEventListener("DOMContentLoaded", () => {
     const pendingVal = parseFloat(transaction.pendingCharge) || 0;
     if (pendingVal > 0) {
       const pendingCustomers = JSON.parse(localStorage.getItem("pendingCustomers") || "[]");
-      pendingCustomers.push({
-        id: Date.now().toString(),
+      const existingIdx = pendingCustomers.findIndex(p => p.txnId === transaction.transactionId);
+
+      const pendingData = {
+        id: existingIdx >= 0 ? pendingCustomers[existingIdx].id : Date.now().toString(),
         date: transaction.date.split(' ')[0],
         name: transaction.customerName,
         mobile: transaction.mobileNumber.includes("+91") ? transaction.mobileNumber : "+91 " + transaction.mobileNumber,
-        work: `Bal: ${transaction.serviceName} (${transaction.transactionId})`,
+        work: `Bal: ${transaction.serviceName}`,
         charge: pendingVal.toString(),
-        status: "Pending"
-      });
+        status: "Pending",
+        txnId: transaction.transactionId // Track for updates
+      };
+
+      if (existingIdx >= 0) {
+        pendingCustomers[existingIdx] = pendingData;
+      } else {
+        pendingCustomers.push(pendingData);
+      }
       localStorage.setItem("pendingCustomers", JSON.stringify(pendingCustomers));
     }
 
@@ -400,13 +528,16 @@ document.addEventListener("DOMContentLoaded", () => {
       const onDone = () => {
         loadTransactionsToTable();
         resetTransactionForm();
+        isSavingTransaction = false; // 🔥 RESET AFTER SUCCESS
       };
 
       if (typeof showToast === "function") {
         showToast(shouldPrint ? "Transaction Saved & Receipt Generated! 🖨️" : "Transaction Saved Successfully! ✅");
         onDone();
+      } else if (window.AuraDialog) {
+        window.AuraDialog.alert(shouldPrint ? "Receipt Generated!" : "Transaction Saved!", "Success", "success").then(onDone);
       } else {
-        AuraDialog.success("Saved!", "Success").then(onDone);
+        onDone();
       }
     }, 800);
   }
@@ -702,6 +833,7 @@ Txn: ${t.transactionId}
 
 Customer: ${t.customerName}
 Mobile: ${t.mobileNumber}
+Address: ${t.address || "N/A"}
 
 Service: ${t.serviceName}
 
@@ -727,7 +859,7 @@ ${ps.footer1}
   doc.open();
   doc.write(`
     <html>
-    <head><style>body{font-family:monospace; white-space: pre-line; padding: 20px; text-align: left;} .wrapper{max-width:340px; margin:auto;}</style></head>
+    <head><style>body{font-family: 'Outfit', 'Inter', sans-serif; white-space: pre-line; padding: 20px; text-align: left; color: #1e293b;} .wrapper{max-width:340px; margin:auto;}</style></head>
     <body onload="window.print()">
       <div class="wrapper">
         ${logoHtml}
@@ -746,34 +878,16 @@ window.loadTransactionsToTable = function () {
 
   const txns = JSON.parse(localStorage.getItem("transactions")) || [];
 
-  // Robust Today string check
   const today = new Date();
-  const y = today.getFullYear();
-  const m = String(today.getMonth() + 1).padStart(2, '0');
-  const d = String(today.getDate()).padStart(2, '0');
-  const todayStr = `${y}-${m}-${d}`;
-  const todayStrAlt = `${d}-${m}-${y}`;
+  const dd = String(today.getDate()).padStart(2, '0');
+  const mm = String(today.getMonth() + 1).padStart(2, '0');
+  const yyyy = today.getFullYear();
+  const todayStr = `${dd}-${mm}-${yyyy}`;
 
   const todayTxns = txns.filter(t => {
     if (!t.date) return false;
     const datePart = t.date.split(" ")[0].trim();
-    const parts = datePart.split("-");
-    if (parts.length !== 3) return false;
-
-    let ty, tm, td;
-    if (parts[0].length === 4) { // YYYY-MM-DD
-      ty = parseInt(parts[0]); 
-      tm = parseInt(parts[1]); 
-      td = parseInt(parts[2]);
-    } else { // DD-MM-YYYY
-      td = parseInt(parts[0]); 
-      tm = parseInt(parts[1]); 
-      ty = parseInt(parts[2]);
-    }
-
-    return ty === today.getFullYear() && 
-           tm === (today.getMonth() + 1) && 
-           td === today.getDate();
+    return datePart === todayStr;
   });
 
   // Display newest first
@@ -783,21 +897,7 @@ window.loadTransactionsToTable = function () {
     const row = tbody.insertRow();
     row.insertCell(0).innerText = displayTxns.length - index;
     // Format date for display (remove time)
-    let displayDate = txn.date || "";
-    if (displayDate.includes(" ")) {
-      const [datePart] = displayDate.split(" ");
-      const parts = datePart.split("-");
-      if (parts.length === 3) {
-        // If YYYY-MM-DD -> DD-MM-YYYY
-        if (parts[0].length === 4) displayDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
-        else displayDate = datePart; // Already DD-MM-YYYY or other
-      }
-    } else if (displayDate.includes("-")) {
-      const parts = displayDate.split("-");
-      if (parts.length === 3 && parts[0].length === 4) {
-        displayDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
-      }
-    }
+    const displayDate = window.AuraDate ? window.AuraDate.toDDMMYYYY(txn.date).split(" ")[0] : (txn.date || "").split(" ")[0];
     row.insertCell(1).innerText = displayDate;
     row.insertCell(2).innerText = txn.customerName;
     row.insertCell(3).innerText = txn.mobileNumber;
@@ -815,8 +915,9 @@ window.loadTransactionsToTable = function () {
     row.insertCell(9).innerHTML = `<span class="amt-blue">${f(txn.totalAmount)}</span>`;
     row.insertCell(10).innerText = txn.paymentMode;
 
-    const statusClass = (txn.status || "").toLowerCase() === "success" ? "paid" : ((txn.status || "").toLowerCase() === "failed" ? "failed" : "pending");
-    row.insertCell(11).innerHTML = `<span class="status-badge ${statusClass}">${txn.status || "Success"}</span>`;
+    const sRaw = (txn.status || "").toLowerCase();
+    const sClass = sRaw === "success" ? "status-success" : (sRaw === "failed" ? "status-failed" : "status-pending");
+    row.insertCell(11).innerHTML = `<span class="status-badge ${sClass}">${txn.status || "Success"}</span>`;
 
     row.insertCell(12).innerText = txn.transactionId;
     row.insertCell(13).innerHTML = `
@@ -891,22 +992,16 @@ window.openEditModal = function (id) {
   }
   editDateInput.value = dateVal;
 
-  // Helper to format modal fields
-  const f = (val) => {
-    const n = parseFloat(String(val || "0").replace(/,/g, ""));
-    return isNaN(n) ? "0" : new Intl.NumberFormat('en-IN').format(n);
-  };
-
   document.getElementById("editName").value = t.customerName || "";
   document.getElementById("editMobile").value = t.mobileNumber || "";
   document.getElementById("editAadhar").value = t.aadharNumber || "";
   document.getElementById("editAddress").value = t.address || "";
   document.getElementById("editService").value = t.serviceName || t.serviceType || "";
-  document.getElementById("editAmount").value = f(t.amount);
-  document.getElementById("editCharge").value = f(t.charge);
+  document.getElementById("editAmount").value = t.amount || 0;
+  document.getElementById("editCharge").value = t.charge || 0;
 
   if (document.getElementById("editNetPayable")) {
-    document.getElementById("editNetPayable").value = f(t.netPayable || (Number(t.amount || 0) - Number(t.charge || 0)));
+    document.getElementById("editNetPayable").value = t.netPayable || (Number(t.amount || 0) - Number(t.charge || 0));
     const isWithdraw = (t.serviceName || "").includes("Cash Withdrawal") || (t.serviceName || "").includes("(Withdraw)");
     document.getElementById("editNetPayableGroup").style.display = isWithdraw ? "block" : "none";
   }
@@ -941,8 +1036,6 @@ window.saveTransactionEdit = function () {
     return;
   }
 
-  const unformat = (val) => String(val || "0").replace(/,/g, "");
-
   // Update object
   reports[index].date = document.getElementById("editDate").value;
   reports[index].customerName = document.getElementById("editName").value;
@@ -951,9 +1044,9 @@ window.saveTransactionEdit = function () {
   reports[index].address = document.getElementById("editAddress").value;
   reports[index].serviceName = document.getElementById("editService").value;
 
-  // Save unformatted values
-  reports[index].amount = unformat(document.getElementById("editAmount").value);
-  reports[index].charge = unformat(document.getElementById("editCharge").value);
+  // Save values
+  reports[index].amount = document.getElementById("editAmount").value;
+  reports[index].charge = document.getElementById("editCharge").value;
 
   const paymentModeEl = document.getElementById("editPaymentMode");
   if (paymentModeEl) reports[index].paymentMode = paymentModeEl.value;
@@ -994,7 +1087,20 @@ window.saveTransactionEdit = function () {
 window.updateNextTransactionId = function () {
   const text = document.getElementById("transactionIdText");
   const txns = JSON.parse(localStorage.getItem("transactions")) || [];
-  const nextId = "TXN" + String(txns.length + 1).padStart(3, "0");
+
+  let nextNum = 1;
+  if (txns.length > 0) {
+    const ids = txns.map(t => {
+      const idStr = String(t.transactionId || t.txnId || t.id || "0");
+      // Only match short sequential IDs (TXN + 3-6 digits) to avoid timestamped ones
+      const match = idStr.match(/^TXN(\d{3,6})$/);
+      return match ? parseInt(match[1]) : 0;
+    });
+    const maxShortId = Math.max(...ids, 0);
+    nextNum = maxShortId > 0 ? maxShortId + 1 : txns.length + 1;
+  }
+
+  const nextId = "TXN" + String(nextNum).padStart(3, "0");
   if (text) text.innerText = nextId;
 };
 
@@ -1006,7 +1112,11 @@ window.resetTransactionForm = function () {
   form.querySelectorAll("input").forEach(i => {
     if (i.id !== "txnDate") i.value = "";
   });
-  form.querySelectorAll("select").forEach(s => s.selectedIndex = 0);
+
+  form.querySelectorAll("select").forEach(s => {
+    s.selectedIndex = 0;
+    if (s.id === "chargeMode") s.value = "deduct";
+  });
 
   // Reset Date
   const txnDate = document.getElementById("txnDate");
@@ -1029,10 +1139,11 @@ window.resetTransactionForm = function () {
     const star = document.getElementById(id);
     if (star) star.style.display = "none";
   });
+  const mobileStar = document.getElementById("mobileReqStar");
   if (mobileStar) mobileStar.style.display = "none";
 
   // Reset Sub-groups visibility
-  const subGroups = ["amountGroup", "chargeGroup", "totalGroup", "paymentModeGroup"];
+  const subGroups = ["amountGroup", "chargeGroup", "totalGroup", "paymentModeGroup", "receivedChargeGroup", "pendingChargeGroup", "netPayableGroup"];
   subGroups.forEach(id => {
     const el = document.getElementById(id);
     if (el) el.style.display = (id === "netPayableGroup") ? "none" : "block";

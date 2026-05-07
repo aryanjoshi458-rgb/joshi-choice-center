@@ -12,6 +12,8 @@ const translations = {
         "sidebar-digital-notes": "Digital Notes",
         "sidebar-expenses": "Expenses",
         "sidebar-customer-directory": "Customer Directory",
+        "sidebar-digital-hub": "Digital Hub",
+        "sidebar-logout": "Logout",
 
         "app-title": "Joshi Choice Center",
         "customer-directory": "Customer Directory",
@@ -41,7 +43,7 @@ const translations = {
         "send-whatsapp-btn": "Send WhatsApp",
 
         "total-visits": "Total Visits",
-        "total-spend": "Total Spend",
+        "total-spend": "Business Value",
         "last-txn": "Last Transaction",
         "transaction-history": "Transaction History",
 
@@ -92,6 +94,8 @@ const translations = {
         "sidebar-digital-notes": "डिजिटल नोट्स",
         "sidebar-expenses": "खर्चे",
         "sidebar-customer-directory": "ग्राहक निर्देशिका",
+        "sidebar-digital-hub": "डिजिटल हब",
+        "sidebar-logout": "लॉगआउट",
 
         "app-title": "जोशी चॉइस सेंटर",
         "customer-directory": "ग्राहक निर्देशिका",
@@ -121,7 +125,7 @@ const translations = {
         "send-whatsapp-btn": "व्हाट्सएप भेजें",
 
         "total-visits": "कुल विज़िट",
-        "total-spend": "कुल ख़र्च",
+        "total-spend": "कुल व्यापार",
         "last-txn": "पिछला लेनदेन",
         "transaction-history": "लेनदेन का इतिहास",
 

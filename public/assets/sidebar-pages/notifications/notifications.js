@@ -50,7 +50,9 @@ function initNotificationCenter() {
         // Sort newest first
         allNotifs.sort((a, b) => new Date(b.time) - new Date(a.time));
 
+        // Filter logic: Only show UNREAD notifications in the active feed
         let filtered = allNotifs.filter(n => {
+            if (n.read) return false; // Hide read ones
             if (currentFilter === "all") return true;
             return n.cat === currentFilter;
         });
@@ -58,9 +60,9 @@ function initNotificationCenter() {
         if (filtered.length === 0) {
             notifFeed.innerHTML = `
                 <div class="empty-state">
-                    <div class="empty-icon">🔔</div>
-                    <h3>No notifications found</h3>
-                    <p>Try switching categories or come back later.</p>
+                    <div class="empty-icon">✨</div>
+                    <h3>All Clear!</h3>
+                    <p>No notifications found in this category.</p>
                 </div>
             `;
             unreadBadge.innerText = allNotifs.filter(n => !n.read).length;
@@ -72,24 +74,32 @@ function initNotificationCenter() {
             const icon = getNotifIcon(n.cat);
 
             return `
-                <div class="notif-item ${n.read ? '' : 'unread'}" data-cat="${n.cat}" data-id="${n.id}">
+                <div class="notif-item ${n.read ? 'read-state' : 'unread'}" data-cat="${n.cat}" data-id="${n.id}">
                     <div class="notif-icon-box">
-                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5">
                             ${icon}
                         </svg>
                     </div>
                     <div class="notif-content">
-                        <h4 class="notif-title">${n.title}</h4>
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <h4 class="notif-title">${n.title}</h4>
+                            ${n.read ? '<span style="color: #10b981; font-size: 1.2rem;">✓</span>' : ''}
+                        </div>
                         <p class="notif-desc">${n.desc}</p>
                         <div class="notif-meta">
                             <span>${timeStr}</span>
-                            <span>#${n.cat.toUpperCase()}</span>
+                            <span style="background: rgba(255,255,255,0.05); padding: 2px 8px; border-radius: 6px;">#${n.cat.toUpperCase()}</span>
                         </div>
                         ${!n.read ? `
                             <div class="notif-actions">
                                 <button class="notif-btn primary" onclick="markAsRead(${n.id})">Mark as Read</button>
+                                <button class="notif-btn" onclick="deleteNotif(${n.id})">Remove</button>
                             </div>
-                        ` : ''}
+                        ` : `
+                            <div class="notif-actions">
+                                <button class="notif-btn" onclick="deleteNotif(${n.id})">Delete</button>
+                            </div>
+                        `}
                     </div>
                 </div>
             `;
@@ -100,11 +110,11 @@ function initNotificationCenter() {
 
         // Entrance animation
         gsap.from(".notif-item", {
-            x: -20,
+            y: 30,
             opacity: 0,
             stagger: 0.1,
-            duration: 0.5,
-            ease: "power2.out"
+            duration: 0.6,
+            ease: "back.out(1.7)"
         });
     }
 
@@ -127,7 +137,7 @@ function initNotificationCenter() {
         const todayTxns = txns.filter(t => t.date === todayStr);
 
         if (todayTxns.length === 0) {
-            showToast("No transactions found for today to summarize! ❌");
+            showToast("No transactions found for today to summarize!", "error");
             return;
         }
 
@@ -152,19 +162,29 @@ function initNotificationCenter() {
 
     // 5. Global Actions
     markAllReadBtn.addEventListener("click", () => {
-        let allNotifs = getNotifications();
-        allNotifs.forEach(n => n.read = true);
-        localStorage.setItem("app_notifications", JSON.stringify(allNotifs));
-        renderFeed();
-        showToast("All notifications marked as read ✅");
+        if (window.AppLoader) window.AppLoader.show("Marking Notifications...");
+        
+        setTimeout(() => {
+            let allNotifs = getNotifications();
+            allNotifs.forEach(n => n.read = true);
+            localStorage.setItem("app_notifications", JSON.stringify(allNotifs));
+            renderFeed();
+            if (window.AppLoader) window.AppLoader.hide();
+            showToast("All notifications marked as read ✅");
+        }, 600);
     });
 
     clearAllBtn.addEventListener("click", async () => {
         const confirmed = await AuraDialog.confirm("Are you sure you want to clear all notifications?", "Clear All Notifications", true);
         if (confirmed) {
-            localStorage.setItem("app_notifications", "[]");
-            renderFeed();
-            showToast("Notification center cleared 🗑️");
+            if (window.AppLoader) window.AppLoader.show("Clearing History...");
+            
+            setTimeout(() => {
+                localStorage.setItem("app_notifications", "[]");
+                renderFeed();
+                if (window.AppLoader) window.AppLoader.hide();
+                showToast("Notification center cleared 🗑️");
+            }, 800);
         }
     });
 
@@ -179,14 +199,56 @@ function initNotificationCenter() {
         });
     });
 
-    // Helper: Mark Single as Read
+    // Helper: Mark Single as Read (With Slide-Out Removal)
     window.markAsRead = function (id) {
-        let allNotifs = getNotifications();
-        const idx = allNotifs.findIndex(n => n.id === id);
-        if (idx !== -1) {
-            allNotifs[idx].read = true;
-            localStorage.setItem("app_notifications", JSON.stringify(allNotifs));
-            renderFeed();
+        const el = document.querySelector(`.notif-item[data-id="${id}"]`);
+        if (el) {
+            // Cinematic Slide-Out before state change
+            gsap.to(el, {
+                x: 50,
+                opacity: 0,
+                height: 0,
+                paddingTop: 0,
+                paddingBottom: 0,
+                marginTop: 0,
+                marginBottom: 0,
+                duration: 0.4,
+                ease: "power2.inOut",
+                onComplete: () => {
+                    let allNotifs = getNotifications();
+                    const idx = allNotifs.findIndex(n => n.id === id);
+                    if (idx !== -1) {
+                        allNotifs[idx].read = true;
+                        localStorage.setItem("app_notifications", JSON.stringify(allNotifs));
+                        renderFeed();
+                    }
+                }
+            });
+        }
+    };
+
+    // Helper: Delete Single Notification (With Slide-Up Animation)
+    window.deleteNotif = function (id) {
+        const el = document.querySelector(`.notif-item[data-id="${id}"]`);
+        if (el) {
+            // Cinematic Slide and Shrink
+            gsap.to(el, {
+                x: 50,
+                opacity: 0,
+                height: 0,
+                paddingTop: 0,
+                paddingBottom: 0,
+                marginTop: 0,
+                marginBottom: 0,
+                duration: 0.4,
+                ease: "power2.inOut",
+                onComplete: () => {
+                    let allNotifs = getNotifications();
+                    const filtered = allNotifs.filter(n => n.id !== id);
+                    localStorage.setItem("app_notifications", JSON.stringify(filtered));
+                    renderFeed();
+                }
+            });
         }
     };
 

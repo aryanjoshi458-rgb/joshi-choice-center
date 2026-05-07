@@ -4,16 +4,16 @@
 */
 
 :root {
-    --quantum-bg: #030712;
-    --quantum-surface: rgba(15, 23, 42, 0.7);
+    --quantum-bg: var(--bg-color, #030712);
+    --quantum-surface: var(--card-bg, rgba(15, 23, 42, 0.7));
     --quantum-glass: rgba(255, 255, 255, 0.03);
-    --quantum-border: rgba(255, 255, 255, 0.08);
-    --quantum-accent: #6366f1;
+    --quantum-border: var(--border-color, rgba(255, 255, 255, 0.08));
+    --quantum-accent: var(--primary-color, #6366f1);
     --quantum-pink: #ec4899;
-    --quantum-cyan: #22d3ee;
+    --quantum-cyan: var(--primary-color, #22d3ee);
     --quantum-glow: rgba(99, 102, 241, 0.5);
-    --text-primary: #f8fafc;
-    --text-secondary: #94a3b8;
+    --text-primary: var(--text-main, #f8fafc);
+    --text-secondary: var(--text-muted, #94a3b8);
 }
 
 body.aura-centric-theme {
@@ -76,7 +76,7 @@ body.aura-centric-theme {
     font-weight: 800;
     margin: 0;
     letter-spacing: -0.02em;
-    background: linear-gradient(to right, #fff, var(--text-secondary));
+    background: linear-gradient(to right, var(--text-primary), var(--text-secondary));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
@@ -219,7 +219,7 @@ body.aura-centric-theme {
 /* Stats Row */
 .stats-row {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(6, 1fr);
     gap: 15px;
     margin-bottom: 20px;
 }
@@ -234,7 +234,7 @@ body.aura-centric-theme {
     font-weight: 800;
     display: block;
     margin-bottom: 8px;
-    background: linear-gradient(to bottom, #fff, var(--quantum-cyan));
+    background: linear-gradient(to bottom, var(--text-primary), var(--quantum-cyan));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
@@ -401,8 +401,8 @@ body.aura-centric-theme {
     display: flex;
     align-items: center;
     gap: 20px !important;
-    background: rgba(15, 23, 42, 0.4) !important;
-    border: 1px solid rgba(99, 102, 241, 0.15) !important;
+    background: var(--quantum-surface) !important;
+    border: 1px solid var(--quantum-border) !important;
     padding: 15px 20px !important;
     border-radius: 20px !important;
     position: relative;
@@ -495,4 +495,11 @@ body.aura-centric-theme {
 .node-card:hover {
     box-shadow: 0 10px 30px -10px rgba(99, 102, 241, 0.3);
     background: rgba(255, 255, 255, 0.04);
+}
+
+#editNameBtn:hover {
+    background: rgba(99, 102, 241, 0.15) !important;
+    border-color: rgba(99, 102, 241, 0.4) !important;
+    color: var(--quantum-cyan) !important;
+    transform: scale(1.1);
 }

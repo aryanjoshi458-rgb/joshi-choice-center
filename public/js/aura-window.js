@@ -2,15 +2,78 @@
  * Aura Window Engine v3
  * Handles custom title bar, professional menu bar, and theme syncing
  */
+
+// --- GLOBAL DATE MANAGER (DD-MM-YYYY Standard) ---
+window.AuraDate = {
+    // Standard format: DD-MM-YYYY
+    toDDMMYYYY: function(dateInput) {
+        if (!dateInput) return "";
+        let d;
+        if (dateInput instanceof Date) {
+            d = dateInput;
+        } else if (typeof dateInput === "string") {
+            const dateOnly = dateInput.split(" ")[0];
+            const timePart = dateInput.includes(" ") ? " " + dateInput.split(" ")[1] : "";
+            
+            if (dateOnly.match(/^\d{4}-\d{2}-\d{2}/)) { // YYYY-MM-DD
+                const parts = dateOnly.split("-");
+                return `${parts[2]}-${parts[1]}-${parts[0]}${timePart}`;
+            } else if (dateOnly.match(/^\d{2}-\d{2}-\d{4}/)) { // Already DD-MM-YYYY
+                return dateInput;
+            } else {
+                d = new Date(dateInput);
+            }
+        } else {
+            d = new Date(dateInput);
+        }
+
+        if (!d || isNaN(d.getTime())) return dateInput;
+
+        const dd = String(d.getDate()).padStart(2, '0');
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const yyyy = d.getFullYear();
+        const time = (typeof dateInput === "string" && dateInput.includes(" ")) ? " " + dateInput.split(" ")[1] : "";
+        return `${dd}-${mm}-${yyyy}${time}`;
+    },
+
+    // Migration logic for existing data
+    migrate: function() {
+        if (localStorage.getItem("aura_date_migrated_v1")) return;
+        
+        const keys = ["transactions", "pendingCustomers", "expenses", "customers"];
+        keys.forEach(key => {
+            try {
+                let data = JSON.parse(localStorage.getItem(key) || "[]");
+                let changed = false;
+                data.forEach(item => {
+                    const fields = ["date", "lastVisit"];
+                    fields.forEach(f => {
+                        if (item[f]) {
+                            const old = item[f];
+                            item[f] = this.toDDMMYYYY(item[f]);
+                            if (old !== item[f]) changed = true;
+                        }
+                    });
+                });
+                if (changed) localStorage.setItem(key, JSON.stringify(data));
+            } catch(e) {}
+        });
+        localStorage.setItem("aura_date_migrated_v1", "true");
+        console.log("Aura Date: Migration to DD-MM-YYYY complete.");
+    }
+};
+
 (function () {
     // --- 0. DATA SYNC ENGINE (Bridges localStorage with Disk) ---
     const isElectron = window.electronAPI !== undefined;
     if (isElectron && !window.auraSyncInitialized) {
         window.auraSyncInitialized = true;
-
+        window.isSyncing = false; // Flag to prevent recursive loops
         window.auraSyncComplete = false;
+
         async function syncFromDisk() {
             try {
+                window.isSyncing = true;
                 const diskData = await window.electronAPI.getAllData();
                 if (diskData && Object.keys(diskData).length > 0) {
                     for (const [key, value] of Object.entries(diskData)) {
@@ -21,42 +84,57 @@
                         }
                     }
                     console.log("Aura Sync: Disk data successfully merged.");
-                    
+
                     window.auraSyncComplete = true;
-                    
+
                     // Re-apply zoom if handler exists
                     if (window.applyAuraZoom) {
                         window.applyAuraZoom();
                     } else {
-                        // Fallback manual apply
                         const z = localStorage.getItem("appZoom") || "1.0";
-                        if (document.body) {
-                            document.body.style.zoom = parseFloat(z);
-                        } else {
-                            window.addEventListener('DOMContentLoaded', () => {
-                                if (document.body) document.body.style.zoom = parseFloat(z);
-                            });
-                        }
+                        if (document.body) document.body.style.zoom = parseFloat(z);
                     }
 
-                    // Re-apply theme if possible
                     window.dispatchEvent(new Event('themeChanged'));
-                    
                     window.dispatchEvent(new CustomEvent('auraDataSynced', { detail: diskData }));
                 } else {
                     window.auraSyncComplete = true;
                     window.dispatchEvent(new CustomEvent('auraDataSynced', { detail: {} }));
                 }
-            } catch (err) { 
+            } catch (err) {
                 console.error("Aura Sync Error:", err);
-                window.auraSyncComplete = true; 
+                window.auraSyncComplete = true;
+            } finally {
+                window.isSyncing = false;
             }
         }
+
+        // --- Listeners for broadcast from main process ---
+        window.electronAPI.onDataUpdated(({ key, data }) => {
+            window.isSyncing = true;
+            localStorage.setItem(key, typeof data === 'string' ? data : JSON.stringify(data));
+            window.dispatchEvent(new CustomEvent('auraDataSynced', { detail: { [key]: data } }));
+            window.isSyncing = false;
+        });
+
+        window.electronAPI.onDataDeleted((key) => {
+            window.isSyncing = true;
+            localStorage.removeItem(key);
+            window.isSyncing = false;
+        });
+
+        window.electronAPI.onDataCleared(() => {
+            window.isSyncing = true;
+            localStorage.clear();
+            window.isSyncing = false;
+        });
 
         // Intercept setItem for real-time backup
         const originalSetItem = localStorage.setItem;
         localStorage.setItem = function (key, value) {
             originalSetItem.apply(this, arguments);
+            if (window.isSyncing) return; // Don't send back to disk if we are currently syncing FROM it
+
             try {
                 let dataToSave = value;
                 try { dataToSave = JSON.parse(value); } catch (e) { }
@@ -64,19 +142,19 @@
             } catch (err) { }
         };
 
-        // Intercept removeItem for real-time deletion
         const originalRemoveItem = localStorage.removeItem;
         localStorage.removeItem = function (key) {
             originalRemoveItem.apply(this, arguments);
+            if (window.isSyncing) return;
             try {
                 window.electronAPI.deleteFromDisk(key);
             } catch (err) { }
         };
 
-        // Intercept clear for full disk wipe
         const originalClear = localStorage.clear;
         localStorage.clear = function () {
             originalClear.apply(this, arguments);
+            if (window.isSyncing) return;
             try {
                 window.electronAPI.clearDisk();
             } catch (err) { }
@@ -111,6 +189,10 @@
         `;
 
         document.body.prepend(titleBar);
+        
+        // 🔥 FIX: Add padding to body to prevent titlebar overlap
+        document.body.style.paddingTop = "32px";
+        document.body.style.position = "relative";
 
         // Menu Click Logic
         titleBar.querySelectorAll('.aura-menu-item').forEach(item => {
@@ -216,7 +298,7 @@
         if (window.auraSyncComplete) {
             syncThemeWithMain();
         }
-        
+
         // Listen for About Modal from native menu
         if (window.electronAPI && window.electronAPI.onShowAboutModal) {
             window.electronAPI.onShowAboutModal(() => {
@@ -233,13 +315,17 @@
 
         // Multiple syncs for safety
         setTimeout(syncThemeWithMain, 100);
-        setTimeout(syncThemeWithMain, 500); 
+        setTimeout(syncThemeWithMain, 500);
     }
 
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
+        document.addEventListener('DOMContentLoaded', () => {
+            init();
+            window.AuraDate.migrate();
+        });
     } else {
         init();
+        window.AuraDate.migrate();
     }
 
     // Listen for theme changes
@@ -253,8 +339,9 @@
         const isCSSFullScreen = window.matchMedia('(display-mode: fullscreen)').matches;
 
         // Method 2: Dimension Check (Fallback for Electron)
-        // In fullscreen, the window usually matches screen dimensions
-        const isDimensionFullScreen = (window.innerWidth >= screen.width - 5) && (window.innerHeight >= screen.height - 5);
+        // 🔥 MORE ROBUST: Check window size vs screen size with a small threshold for DPI scaling
+        const isDimensionFullScreen = (window.innerWidth >= screen.width - 10) && 
+                                     (window.innerHeight >= screen.height - 10);
 
         if (!document.body) return;
 
@@ -278,8 +365,7 @@
         });
     }
 
-    // Frequent check to ensure sync
-    setInterval(checkFullScreen, 500);
+    // Full screen detection is now handled via event listeners and onFullScreenState
     window.addEventListener('resize', checkFullScreen);
     checkFullScreen(); // Initial check
 
@@ -290,10 +376,6 @@
             }
         });
     });
-
-    if (document.body) {
-        observer.observe(document.body, { attributes: true });
-    }
 
     if (document.body) {
         observer.observe(document.body, { attributes: true });

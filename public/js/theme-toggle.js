@@ -7,8 +7,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const darkSound = new Audio("../public/sounds/dark-on.mp3");
   const lightSound = new Audio("../public/sounds/light-on.mp3");
-  darkSound.volume = 0.5;
-  lightSound.volume = 0.5;
+
+  // Fail-safe sound loading
+  [darkSound, lightSound].forEach(s => {
+    s.volume = 0.5;
+    s.onerror = () => { s.isBroken = true; };
+  });
 
   const ALL_THEME_CLASSES = [
     "dark-mode", "eye-protector-mode", "ocean-mode", "business-mode",
@@ -115,8 +119,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const isNowDark = !document.body.classList.contains("dark-mode");
       localStorage.setItem("theme", isNowDark ? "dark" : "light");
 
-      if (isNowDark) { darkSound.play().catch(() => { }); }
-      else { lightSound.play().catch(() => { }); }
+      if (isNowDark) { if (!darkSound.isBroken) darkSound.play().catch(() => { }); }
+      else { if (!lightSound.isBroken) lightSound.play().catch(() => { }); }
 
       applyTheme(true);
     });

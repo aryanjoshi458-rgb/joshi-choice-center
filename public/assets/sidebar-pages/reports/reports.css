@@ -322,44 +322,55 @@
 
 /* ===== PDF MODAL (FORCE FULL SCREEN OVERRIDE) ===== */
 #pdfModal {
-  padding: 0 !important;
-  background: #0f172a !important;
-  display: none;
-  /* Controlled by JS */
-  align-items: flex-start !important;
-  justify-content: center !important;
+    padding: 0 !important;
+    background: var(--aura-bg) !important;
+    display: none;
+    align-items: flex-start !important;
+    justify-content: center !important;
+}
+
+body.dark-mode #pdfModal {
+    background: #0f172a !important;
 }
 
 #pdfModal .pdf-modal-content {
-  position: relative !important;
-  width: 100vw !important;
-  height: 100vh !important;
-  max-width: none !important;
-  max-height: none !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  border: none !important;
-  border-radius: 0 !important;
-  display: flex !important;
-  flex-direction: column;
-  background: #0f172a;
-  z-index: 10000;
-  box-shadow: none !important;
-  transform: none !important;
+    position: relative !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: none !important;
+    max-height: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    border-radius: 0 !important;
+    display: flex !important;
+    flex-direction: column;
+    background: var(--aura-bg);
+    z-index: 10000;
+    box-shadow: none !important;
+    transform: none !important;
+}
+
+body.dark-mode .pdf-modal-content {
+    background: #0f172a !important;
 }
 
 .pdf-modal-content .modal-header {
-  padding: 15px 30px;
-  background: rgba(15, 23, 42, 0.95);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  z-index: 10;
+    padding: 15px 30px;
+    background: var(--aura-glass);
+    border-bottom: 1px solid var(--aura-border);
+    backdrop-filter: blur(15px);
+    z-index: 10;
+}
+
+body.dark-mode .pdf-modal-content .modal-header {
+    background: rgba(15, 23, 42, 0.95);
 }
 
 .pdf-modal-content .modal-header h2 {
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: #fff;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--aura-text-main);
 }
 
 .pdf-modal-content .modal-body {
@@ -395,13 +406,17 @@
 
 /* Ensure the modal body centers the preview */
 .pdf-modal-content .modal-body {
-  flex: 1;
-  overflow-y: auto;
-  background: #0f172a;
-  padding: 20px;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
+    flex: 1;
+    overflow-y: auto;
+    background: var(--aura-bg);
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+body.dark-mode .pdf-modal-content .modal-body {
+    background: #0f172a;
 }
 
 .pdf-report-header {
@@ -918,4 +933,100 @@ body.dark-mode .service-badge.recharge {
 body.dark-mode .service-badge.printing {
   color: #fbbf24;
 }
-
+
+/* AURA HIGHLIGHT EFFECT FOR DEEP LINKS */
+.highlight-aura-row {
+    background: rgba(99, 102, 241, 0.15) !important;
+    box-shadow: inset 0 0 15px rgba(99, 102, 241, 0.2);
+    animation: auraPulseRow 2s infinite ease-in-out;
+}
+
+@keyframes auraPulseRow {
+    0% { background: rgba(99, 102, 241, 0.1); }
+    50% { background: rgba(99, 102, 241, 0.25); }
+    100% { background: rgba(99, 102, 241, 0.1); }
+}
+
+/* --- PROFESSIONAL PDF GENERATION OVERLAY --- */
+.aura-pdf-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(12px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.4s ease;
+}
+
+.aura-pdf-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.aura-pdf-loader-card {
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 40px;
+  border-radius: 24px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+}
+
+.aura-pdf-spinner {
+  width: 60px;
+  height: 60px;
+  border: 4px solid rgba(79, 70, 229, 0.1);
+  border-left-color: #4f46e5;
+  border-radius: 50%;
+  animation: aura-pdf-spin 1s linear infinite;
+}
+
+.aura-pdf-status-title {
+  color: white;
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.aura-pdf-status-desc {
+  color: #94a3b8;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.aura-pdf-progress-bar {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+.aura-pdf-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #4f46e5, #10b981);
+  border-radius: 10px;
+  transition: width 0.3s ease;
+}
+
+@keyframes aura-pdf-spin {
+  to { transform: rotate(360deg); }
+}
+
+

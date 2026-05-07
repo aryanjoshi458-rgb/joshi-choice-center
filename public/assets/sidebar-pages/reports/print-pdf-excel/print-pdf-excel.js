@@ -175,6 +175,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // USE MODERN FILE SYSTEM ACCESS API FOR BETTER CONTROL
     if (window.showSaveFilePicker) {
+      if (window.AppLoader) window.AppLoader.show("Generating Excel Data...");
       try {
         const handle = await window.showSaveFilePicker({
           suggestedName: `Joshi_Choice_Center_Report_${new Date().toISOString().split('T')[0]}.xls`,
@@ -186,8 +187,11 @@ document.addEventListener("DOMContentLoaded", function () {
         const writable = await handle.createWritable();
         await writable.write(blob);
         await writable.close();
+        
+        if (window.AppLoader) window.AppLoader.hide();
         if (typeof showToast === "function") showToast("Excel Saved Successfully ✅");
       } catch (err) {
+        if (window.AppLoader) window.AppLoader.hide();
         if (err.name === 'AbortError') {
           if (typeof showToast === "function") showToast("Export Cancelled ⚠️", "warning");
         } else {
@@ -196,14 +200,18 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       }
     } else {
+      if (window.AppLoader) window.AppLoader.show("Preparing Download...");
       // Fallback for older browsers
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
       a.download = `Joshi_Choice_Center_Report_${new Date().toISOString().split('T')[0]}.xls`;
       a.click();
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
-      if (typeof showToast === "function") showToast("Export Initiated ✅");
+      setTimeout(() => {
+        URL.revokeObjectURL(url);
+        if (window.AppLoader) window.AppLoader.hide();
+        if (typeof showToast === "function") showToast("Excel Export Initiated ✅");
+      }, 1500);
     }
   };
 

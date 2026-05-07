@@ -290,7 +290,8 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
-        // Mouse Interactivity (from 2.0)
+        /* Container parallax disabled to prevent edge clipping */
+        /*
         if (typeof gsap !== 'undefined') {
             gsap.to(container, {
                 x: () => mouseX * 50,
@@ -304,6 +305,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             });
         }
+        */
     }
 
     /**

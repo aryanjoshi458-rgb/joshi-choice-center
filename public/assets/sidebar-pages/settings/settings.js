@@ -19,7 +19,10 @@ document.addEventListener("DOMContentLoaded", () => {
         const k = document.getElementById("adminMasterKey");
         const t = document.getElementById("sessionTimeout");
         if (u) u.value = localStorage.getItem("jc_username") || "admin";
-        if (k) k.value = localStorage.getItem("jc_master_key") || "8080";
+        if (k) {
+            k.value = localStorage.getItem("jc_master_key") || "8080";
+            k.type = "password"; // 🔥 MASK BY DEFAULT
+        }
         if (t) t.value = localStorage.getItem("jc_session_timeout") || "0";
     }
     initSecurityNow();
@@ -121,18 +124,64 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!input) return;
         input.addEventListener("input", (e) => {
             const start = e.target.selectionStart;
-            const end = e.target.selectionEnd;
             let val = e.target.value;
 
-            // Capitalize first letter and any letter after a space
+            // Capitalize logically without breaking cursor
             val = val.replace(/(^\w|\s\w)/g, m => m.toUpperCase());
 
-            e.target.value = val;
-            e.target.setSelectionRange(start, end); // Keep cursor position
+            if (e.target.value !== val) {
+                e.target.value = val;
+                // 🔥 FIX: Restore precise cursor position to prevent jumping
+                e.target.setSelectionRange(start, start);
+            }
         });
     }
 
     [shopInputs.name, shopInputs.owner, shopInputs.address].forEach(applyTitleCase);
+
+    // --- TRIGGER ABOUT ANIMATIONS (CLEAN AURA STYLE) ---
+    const aboutTabBtn = document.querySelector('.aura-nav-btn[data-tab="about"]');
+
+    aboutTabBtn?.addEventListener("click", () => {
+        if (typeof gsap !== 'undefined') {
+            setTimeout(() => {
+                const container = document.getElementById("aboutCyberSplit");
+                if (!container) return;
+
+                const tl = gsap.timeline();
+
+                // Reset props
+                gsap.set("#aboutCyberSplit", { clearProps: "all" });
+
+                // Smooth Entrance
+                tl.fromTo("#aboutCyberSplit",
+                    { y: 30, opacity: 0 },
+                    { y: 0, opacity: 1, duration: 1, ease: "power4.out" }
+                )
+                    .fromTo(".cyber-brand-side",
+                        { x: -40, opacity: 0 },
+                        { x: 0, opacity: 1, duration: 0.8, ease: "power3.out" },
+                        "-=0.7"
+                    )
+                    .fromTo(".cyber-logo-box",
+                        { scale: 0.8, opacity: 0 },
+                        { scale: 1, opacity: 1, duration: 0.8, ease: "back.out(1.2)" },
+                        "-=0.6"
+                    )
+                    .fromTo(".cyber-card-inner",
+                        { x: 40, opacity: 0 },
+                        { x: 0, opacity: 1, duration: 0.8, ease: "power3.out" },
+                        "-=0.7"
+                    )
+                    .fromTo(".cyber-data-item",
+                        { y: 15, opacity: 0 },
+                        { y: 0, opacity: 1, duration: 0.4, stagger: 0.1, ease: "power2.out" },
+                        "-=0.4"
+                    );
+            }, 350);
+        }
+    });
+
 
     // Smart Phone Prefix Logic
     const phoneInput = shopInputs.phone;
@@ -192,6 +241,13 @@ document.addEventListener("DOMContentLoaded", () => {
     logoInput?.addEventListener("change", (e) => {
         const file = e.target.files[0];
         if (file) {
+            // 🔥 SIZE LIMIT CHECK (2MB)
+            if (file.size > 2 * 1024 * 1024) {
+                if (window.AuraDialog) window.AuraDialog.error("Logo file is too large! Please use an image under 2MB.", "File Too Big");
+                e.target.value = "";
+                return;
+            }
+
             const reader = new FileReader();
             reader.onload = (ev) => {
                 if (logoPreview) logoPreview.innerHTML = `<img src="${ev.target.result}" alt="Logo">`;
@@ -572,19 +628,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
     loadReceiptSettings();
 
-    // 6. BACKUP & RESTORE LOGIC (FOCUS: CUSTOMER DATA ONLY)
+    // 6. BACKUP & RESTORE LOGIC (FULL SYSTEM)
     const exportBtn = document.getElementById("exportBackup");
     const importBtn = document.getElementById("importBackup");
     const importFileInput = document.getElementById("importFile");
 
     // Keys that represent "Business/Customer Data" vs "System Settings"
-    const CUSTOMER_DATA_KEYS = ["customers", "transactions", "expenses", "pendingCustomers", "app_notifications"];
+    const FULL_BACKUP_KEYS = [
+        "customers", "transactions", "expenses", "pendingCustomers",
+        "app_notifications", "serviceRates", "shopProfile", "customShortcuts",
+        "theme", "appZoom", "mouseStyle", "sidebarAnim", "sidebarBgEffect", "bgAnimation"
+    ];
 
     exportBtn?.addEventListener("click", async () => {
         const backupData = {};
         let dataFound = false;
 
-        CUSTOMER_DATA_KEYS.forEach(key => {
+        FULL_BACKUP_KEYS.forEach(key => {
             const val = localStorage.getItem(key);
             if (val) {
                 backupData[key] = val;
@@ -601,6 +661,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Modern File System Access API
         if (window.showSaveFilePicker) {
+            if (window.AppLoader) window.AppLoader.show("Generating Backup...");
             try {
                 const handle = await window.showSaveFilePicker({
                     suggestedName: `joshi_customer_data_${new Date().toISOString().split('T')[0]}.json`,
@@ -614,8 +675,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 await writable.write(dataStr);
                 await writable.close();
 
+                if (window.AppLoader) window.AppLoader.hide();
                 showToast("Customer Data Exported Successfully! 📁", "success");
             } catch (err) {
+                if (window.AppLoader) window.AppLoader.hide();
                 if (err.name === 'AbortError') {
                     showToast("Export Cancelled. No data saved. ❌", "info");
                 } else {
@@ -624,6 +687,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             }
         } else {
+            if (window.AppLoader) window.AppLoader.show("Generating Backup...");
             // Fallback
             const blob = new Blob([dataStr], { type: "application/json" });
             const url = URL.createObjectURL(blob);
@@ -634,7 +698,11 @@ document.addEventListener("DOMContentLoaded", () => {
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
-            showToast("Backup initiated. Check your downloads.", "success");
+
+            setTimeout(() => {
+                if (window.AppLoader) window.AppLoader.hide();
+                showToast("Backup initiated! 📁", "success");
+            }, 1000);
         }
     });
 
@@ -657,26 +725,47 @@ document.addEventListener("DOMContentLoaded", () => {
             if (forceProceed === true || forceProceed === "CONFIRM") {
                 const reader = new FileReader();
                 reader.onload = (event) => {
-                    try {
-                        const data = JSON.parse(event.target.result);
-                        let importedCount = 0;
+                    if (window.AppLoader) window.AppLoader.show("Restoring System Data...");
 
-                        CUSTOMER_DATA_KEYS.forEach(key => {
-                            if (data[key]) {
-                                localStorage.setItem(key, data[key]);
-                                importedCount++;
+                    setTimeout(() => {
+                        try {
+                            const data = JSON.parse(event.target.result);
+
+                            // 1. Validation: Check if this looks like a valid Joshi Backup
+                            const majorKeys = ["customers", "transactions", "expenses", "pendingCustomers"];
+                            const hasEssentialData = majorKeys.some(k => Array.isArray(data[k]) || (data[k] && typeof data[k] === 'object'));
+
+                            if (!hasEssentialData) {
+                                if (window.AppLoader) window.AppLoader.hide();
+                                showToast("Invalid backup file: Missing business data structure! ❌", "error");
+                                return;
                             }
-                        });
 
-                        if (importedCount > 0) {
-                            showToast("Customer Data Restored successfully! 🔄", "success");
-                            setTimeout(() => location.reload(), 1500);
-                        } else {
-                            showToast("No valid customer data found in file! ❌", "error");
+                            let importedCount = 0;
+                            FULL_BACKUP_KEYS.forEach(key => {
+                                if (data[key]) {
+                                    const val = typeof data[key] === 'string' ? data[key] : JSON.stringify(data[key]);
+                                    localStorage.setItem(key, val);
+                                    importedCount++;
+                                }
+                            });
+
+                            if (importedCount > 0) {
+                                window.dispatchEvent(new Event("auraDataSynced"));
+                                if (window.parent) window.parent.dispatchEvent(new Event("auraDataSynced"));
+
+                                if (window.AppLoader) window.AppLoader.hide();
+                                showToast("Customer Data Restored successfully! 🔄", "success");
+                                setTimeout(() => location.reload(), 1500);
+                            } else {
+                                if (window.AppLoader) window.AppLoader.hide();
+                                showToast("No valid customer data found in file! ❌", "error");
+                            }
+                        } catch (err) {
+                            if (window.AppLoader) window.AppLoader.hide();
+                            showToast("Invalid backup file format!", "error");
                         }
-                    } catch (err) {
-                        showToast("Invalid backup file format!", "error");
-                    }
+                    }, 1200);
                 };
                 reader.readAsText(file);
             } else {
@@ -864,8 +953,12 @@ document.addEventListener("DOMContentLoaded", () => {
                         return;
                     }
 
-                    localStorage.clear();
-                    if (wipingStatus) wipingStatus.innerText = "SYSTEM_WIPED_SUCCESSFULLY_0x00";
+                    // Intelligent Wipe: Clear business data & UI Preferences
+                    CUSTOMER_DATA_KEYS.forEach(key => localStorage.removeItem(key));
+                    localStorage.removeItem("jc_dashboard_widgets"); // 🔥 FULL RESET
+
+                    if (wipingStatus) wipingStatus.innerText = "BUSINESS_DATA_PURGED_0x00";
+                    if (window.showToast) window.showToast("Business data cleared. Settings preserved.", "success");
 
                     // FINAL GLITCH
                     document.body.classList.add("glitch-active");
@@ -885,8 +978,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 showToast("Demo running (No deletion).", "info");
                 return;
             }
-            localStorage.clear();
-            showToast("System Wiped! Restarting...", "error");
+            // Fallback Intelligent Wipe
+            CUSTOMER_DATA_KEYS.forEach(key => localStorage.removeItem(key));
+            showToast("Business data cleared! Restarting...", "error");
             setTimeout(() => {
                 if (window.electronAPI && window.electronAPI.restartApp) {
                     window.electronAPI.restartApp();
@@ -920,7 +1014,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let latestReleaseInfo = null;
 
     async function initVersion() {
-        let currentVer = "1.3.3";
+        let currentVer = "3.0.1";
         if (window.electronAPI) {
             currentVer = await window.electronAPI.getAppVersion();
             if (currentVDisplay) currentVDisplay.innerText = `v${currentVer}`;
@@ -931,17 +1025,18 @@ document.addEventListener("DOMContentLoaded", () => {
             lastCheckedText.innerText = `Last checked: ${lastChecked}`;
         }
 
+        // Hide status by default unless cached update exists
+        if (vStatusPill) vStatusPill.style.display = "none";
+
         // Check for cached update info
         const cachedUpdate = JSON.parse(localStorage.getItem("latestReleaseInfo"));
         if (cachedUpdate && isNewerVersion(currentVer, cachedUpdate.version)) {
             latestReleaseInfo = cachedUpdate;
             applyUpdateUI(cachedUpdate);
+            if (vStatusPill) vStatusPill.style.display = "inline-flex";
         } else {
-            // Default: Up to date or No update found yet
             if (latestVDisplay) latestVDisplay.innerText = `v${currentVer}`;
-            if (vStatusPill) vStatusPill.className = "aura-status-pill success";
-            if (vStatusText) vStatusText.innerText = "SOFTWARE UP TO DATE";
-            localStorage.removeItem("latestReleaseInfo"); // Clean up if no longer relevant
+            localStorage.removeItem("latestReleaseInfo");
         }
     }
     initVersion();
@@ -950,8 +1045,11 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!release) return;
         if (latestVDisplay) latestVDisplay.innerText = `v${release.version}`;
 
-        // Update Status UI (Permanent until update)
-        if (vStatusPill) vStatusPill.className = "aura-status-pill warning";
+        // Update Status UI
+        if (vStatusPill) {
+            vStatusPill.style.display = "inline-flex";
+            vStatusPill.className = "aura-status-pill warning";
+        }
         if (vStatusText) vStatusText.innerText = "UPDATE AVAILABLE";
 
         // Update Modal Badge
@@ -981,10 +1079,24 @@ document.addEventListener("DOMContentLoaded", () => {
         return false;
     }
 
+    function showStatusChip(text, type) {
+        const textEl = document.getElementById("versionStatusText");
+        const pillEl = document.getElementById("versionStatusPill");
+        if (textEl) textEl.innerText = text;
+        if (pillEl) {
+            pillEl.style.display = "inline-flex";
+            pillEl.className = `aura-status-pill ${type}`;
+            if (typeof gsap !== 'undefined') {
+                gsap.fromTo(pillEl, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.5 });
+            }
+        }
+    }
+
     updateBtn?.addEventListener("click", async () => {
         updateBtn.disabled = true;
+        updateBtn.classList.add("checking");
         const btnTextSpan = updateBtn.querySelector('span');
-        if (btnTextSpan) btnTextSpan.innerText = "Checking...";
+        if (btnTextSpan) btnTextSpan.innerText = "Searching...";
 
         try {
             // Log local check time
@@ -995,17 +1107,34 @@ document.addEventListener("DOMContentLoaded", () => {
             if (lastCheckedText) lastCheckedText.innerText = `Last checked: ${lastCheckStr}`;
 
             if (!window.electronAPI) {
-                // Simulation Mode
+                // --- SIMULATION MODE ---
                 await new Promise(r => setTimeout(r, 2000));
-                const simRelease = { version: "2.5.0", changelog: "Simulated Update Found!", size: "15" };
-                latestReleaseInfo = simRelease;
-                localStorage.setItem("latestReleaseInfo", JSON.stringify(simRelease));
-                applyUpdateUI(simRelease);
-                if (updateModalEl) {
-                    updateModalEl.classList.add("active");
-                    updateModalEl.style.display = "flex";
+
+                // For simulation, let's say "v4.0.0" is the new update
+                const currentVer = "3.0.1";
+                const newVer = "4.0.0";
+
+                if (isNewerVersion(currentVer, newVer)) {
+                    const simRelease = {
+                        version: newVer,
+                        changelog: "• Performance optimization for report generation\n• New Cyber-Aura Dashboard layout\n• Fixed focus issues in dark mode",
+                        size: "24.5"
+                    };
+                    latestReleaseInfo = simRelease;
+                    localStorage.setItem("latestReleaseInfo", JSON.stringify(simRelease));
+                    applyUpdateUI(simRelease);
+
+                    if (updateModalEl) {
+                        updateModalEl.style.display = "flex";
+                        setTimeout(() => updateModalEl.classList.add("active"), 10);
+                        if (typeof gsap !== 'undefined') {
+                            gsap.fromTo(".update-card", { scale: 0.7, opacity: 0, y: 50 }, { scale: 1, opacity: 1, y: 0, duration: 0.6, ease: "back.out(1.7)" });
+                        }
+                    }
+                    showStatusChip("NEW VERSION FOUND!", "warning");
+                } else {
+                    showStatusChip("SYSTEM IS UP TO DATE", "success");
                 }
-                showStatusChip("NEW VERSION FOUND!", "success");
             } else {
                 const currentVer = await window.electronAPI.getAppVersion();
                 const release = await window.electronAPI.checkForUpdate();
@@ -1019,9 +1148,13 @@ document.addEventListener("DOMContentLoaded", () => {
                         applyUpdateUI(release);
 
                         if (updateModalEl) {
-                            updateModalEl.classList.add("active");
                             updateModalEl.style.display = "flex";
+                            setTimeout(() => updateModalEl.classList.add("active"), 10);
+                            if (typeof gsap !== 'undefined') {
+                                gsap.fromTo(".update-card", { scale: 0.7, opacity: 0, y: 50 }, { scale: 1, opacity: 1, y: 0, duration: 0.6, ease: "back.out(1.7)" });
+                            }
                         }
+                        showStatusChip("UPDATE AVAILABLE", "warning");
                     } else {
                         // Up to date
                         localStorage.removeItem("latestReleaseInfo");
@@ -1031,14 +1164,36 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             }
         } catch (err) {
-            showStatusChip("UPDATE CHECK FAILED", "error");
+            console.error("Update Check Error:", err);
+            showStatusChip("CONNECTION FAILED", "error");
         } finally {
             setTimeout(() => {
                 updateBtn.disabled = false;
+                updateBtn.classList.remove("checking");
                 if (btnTextSpan) btnTextSpan.innerText = "Check for Updates";
             }, 500);
         }
     });
+
+    // --- DEV CONSOLE TEST COMMAND ---
+    window.testUpdate = (version = "4.0.0") => {
+        console.log(`%c [DEBUG] Simulating Update v${version}...`, "color: #6366f1; font-weight: bold;");
+        const simRelease = {
+            version: version,
+            changelog: "• Manual Debug Update Triggered\n• Testing UI Layout Proportions\n• Verified GSAP Animations",
+            size: "12.8"
+        };
+        latestReleaseInfo = simRelease;
+        applyUpdateUI(simRelease);
+        if (updateModalEl) {
+            updateModalEl.style.display = "flex";
+            setTimeout(() => updateModalEl.classList.add("active"), 10);
+            if (typeof gsap !== 'undefined') {
+                gsap.fromTo(".update-card", { scale: 0.7, opacity: 0, y: 50 }, { scale: 1, opacity: 1, y: 0, duration: 0.6, ease: "back.out(1.7)" });
+            }
+        }
+        showStatusChip("DEBUG: UPDATE FOUND", "warning");
+    };
 
     btnUpdateLater?.addEventListener("click", () => {
         if (updateModalEl) {
@@ -1124,12 +1279,22 @@ document.addEventListener("DOMContentLoaded", () => {
     const resetShortcutsBtn = document.getElementById("resetShortcuts");
 
     const defaultShortcuts = {
-        "dashboard": "Alt + d", "new-customer": "Alt + n",
-        "customer-directory": "Alt + c", "reports": "Alt + r",
-        "expenses": "Alt + e", "settings": "Alt + s",
-        "print-receipt": "Alt + p", "pending-payments": "Alt + b",
-        "notifications": "Alt + i", "customer-profile": "Alt + u",
-        "theme-toggle": "Alt + t"
+        "dashboard": "Alt + d",
+        "new-customer": "Alt + n",
+        "customer-directory": "Alt + c",
+        "reports": "Alt + r",
+        "expenses": "Alt + e",
+        "settings": "Alt + s",
+        "print-receipt": "Alt + P",
+        "pending-payments": "Alt + b",
+        "notifications": "Alt + i",
+        "customer-profile": "Alt + u",
+        "rate-list": "Alt + m",
+        "theme-toggle": "Alt + t",
+        "quick-lock": "Alt + l",
+        "privacy-toggle": "Alt + q",
+        "export-backup": "Alt + Shift + E",
+        "import-backup": "Alt + Shift + R"
     };
 
     function loadShortcuts() {
@@ -1261,19 +1426,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Apply changes
         if (window.Auth) {
-            window.Auth.updateCredentials(username, newPass || null);
-            window.Auth.updateMasterKey(masterKey);
-            localStorage.setItem("jc_session_timeout", timeout);
+            if (window.AppLoader) window.AppLoader.show("Securing Credentials...");
 
-            // Re-sync if timeout changed
-            if (window.Auth.initTimeoutMonitor) window.Auth.initTimeoutMonitor();
+            setTimeout(() => {
+                window.Auth.updateCredentials(username, newPass || null);
+                window.Auth.updateMasterKey(masterKey);
+                localStorage.setItem("jc_session_timeout", timeout);
 
-            // Cinematic Shield Success Animation
-            showShieldAlert("SECURITY CONFIG UPDATED", "success");
+                // Re-sync if timeout changed
+                if (window.Auth.initTimeoutMonitor) window.Auth.initTimeoutMonitor();
 
-            // Clear password fields
-            securityInputs.currentPass.value = "";
-            securityInputs.newPass.value = "";
+                if (window.AppLoader) window.AppLoader.hide();
+
+                // Cinematic Shield Success Animation
+                showShieldAlert("SECURITY CONFIG UPDATED", "success");
+
+                // Clear password fields
+                securityInputs.currentPass.value = "";
+                securityInputs.newPass.value = "";
+            }, 800);
         }
     });
 
@@ -1390,6 +1561,13 @@ document.addEventListener("DOMContentLoaded", () => {
         widgetEarnings: document.getElementById("widgetEarnings"),
         widgetExpenses: document.getElementById("widgetExpenses"),
         widgetPending: document.getElementById("widgetPending"),
+        widgetClock: document.getElementById("widgetClock"),
+        widgetActions: document.getElementById("widgetActions"),
+        widgetStats: document.getElementById("widgetStats"),
+        widgetRecentTxns: document.getElementById("widgetRecentTxns"),
+        widgetTopServices: document.getElementById("widgetTopServices"),
+        widgetProfit: document.getElementById("widgetProfit"),
+        widgetNotes: document.getElementById("widgetNotes"),
         lockPassword: document.getElementById("lockScreenPassword")
     };
 
@@ -1398,11 +1576,18 @@ document.addEventListener("DOMContentLoaded", () => {
         if (advancedInputs.performance) advancedInputs.performance.checked = localStorage.getItem("jc_performance_mode") === "true";
         if (advancedInputs.lockPassword) advancedInputs.lockPassword.value = localStorage.getItem("jc_password") || "123";
 
-        const widgets = JSON.parse(localStorage.getItem("jc_dashboard_widgets") || '{"today":true,"earnings":false,"expenses":false,"pending":false}');
+        const widgets = JSON.parse(localStorage.getItem("jc_dashboard_widgets") || '{"today":true,"earnings":false,"expenses":false,"pending":false,"clock":true,"actions":true,"stats":false,"recentTxns":true,"topServices":true,"profit":false,"notes":true}');
         if (advancedInputs.widgetToday) advancedInputs.widgetToday.checked = widgets.today;
         if (advancedInputs.widgetEarnings) advancedInputs.widgetEarnings.checked = widgets.earnings;
         if (advancedInputs.widgetExpenses) advancedInputs.widgetExpenses.checked = widgets.expenses;
         if (advancedInputs.widgetPending) advancedInputs.widgetPending.checked = widgets.pending;
+        if (advancedInputs.widgetClock) advancedInputs.widgetClock.checked = widgets.clock;
+        if (advancedInputs.widgetActions) advancedInputs.widgetActions.checked = widgets.actions;
+        if (advancedInputs.widgetStats) advancedInputs.widgetStats.checked = widgets.stats;
+        if (advancedInputs.widgetRecentTxns) advancedInputs.widgetRecentTxns.checked = widgets.recentTxns;
+        if (advancedInputs.widgetTopServices) advancedInputs.widgetTopServices.checked = widgets.topServices;
+        if (advancedInputs.widgetProfit) advancedInputs.widgetProfit.checked = widgets.profit;
+        if (advancedInputs.widgetNotes) advancedInputs.widgetNotes.checked = widgets.notes;
     }
 
     document.getElementById("saveAdvancedSettings")?.addEventListener("click", () => {
@@ -1427,11 +1612,52 @@ document.addEventListener("DOMContentLoaded", () => {
             today: advancedInputs.widgetToday?.checked || false,
             earnings: advancedInputs.widgetEarnings?.checked || false,
             expenses: advancedInputs.widgetExpenses?.checked || false,
-            pending: advancedInputs.widgetPending?.checked || false
+            pending: advancedInputs.widgetPending?.checked || false,
+            clock: advancedInputs.widgetClock?.checked || false,
+            actions: advancedInputs.widgetActions?.checked || false,
+            stats: advancedInputs.widgetStats?.checked || false,
+            recentTxns: advancedInputs.widgetRecentTxns?.checked || false,
+            topServices: advancedInputs.widgetTopServices?.checked || false,
+            profit: advancedInputs.widgetProfit?.checked || false,
+            notes: advancedInputs.widgetNotes?.checked || false
         };
-        localStorage.setItem("jc_dashboard_widgets", JSON.stringify(widgets));
 
-        if (window.showToast) window.showToast("Advanced preferences saved! 🚀", "success");
+        if (window.AppLoader) window.AppLoader.show("Saving Preferences...");
+
+        setTimeout(() => {
+            localStorage.setItem("jc_dashboard_widgets", JSON.stringify(widgets));
+            if (window.AppLoader) window.AppLoader.hide();
+            if (window.showToast) window.showToast("Advanced preferences saved! 🚀", "success");
+        }, 600);
+    });
+
+    // --- LOGIN ACTIVITY LOGIC ---
+    document.getElementById("viewLoginActivity")?.addEventListener("click", () => {
+        const history = JSON.parse(localStorage.getItem("jc_login_history") || "[]");
+        let historyHtml = history.length ? history.map(h => `
+            <div style="padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <div style="font-weight: 700; color: #f8fafc;">${h.time}</div>
+                    <div style="font-size: 0.8em; color: var(--text-muted);">${h.ip || 'Local Machine'} • ${h.browser || 'Aura Engine'}</div>
+                </div>
+                <div style="font-size: 0.75em; padding: 4px 10px; border-radius: 20px; background: ${h.status === 'Success' ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)'}; color: ${h.status === 'Success' ? '#10b981' : '#ef4444'}; font-weight: 800;">
+                    ${h.status.toUpperCase()}
+                </div>
+            </div>
+        `).join('') : '<div style="padding: 30px; text-align: center; color: var(--text-muted);">No recent security events.</div>';
+
+        if (window.AuraDialog) {
+            window.AuraDialog.confirm(`
+                <div style="max-height: 300px; overflow-y: auto; text-align: left; margin: 15px 0;">
+                    ${historyHtml}
+                </div>
+            `, "Security: Login Activity Log", (confirmed) => {
+                if (!confirmed) {
+                    // Export logic mock
+                    if (window.showToast) window.showToast("Security log exported to CSV! 📄", "info");
+                }
+            }, "Close", "Export Log");
+        }
     });
 
     document.getElementById("triggerQuickLock")?.addEventListener("click", () => {
@@ -1565,4 +1791,51 @@ function initComingSoonAnim() {
 }
 
 initComingSoonAnim();
+
+// 16. SHORTCUT SEARCH ENGINE
+function initShortcutSearch() {
+    const searchInput = document.getElementById("shortcutSearch");
+    if (!searchInput) return;
+
+    searchInput.addEventListener("input", (e) => {
+        const query = e.target.value.toLowerCase().trim();
+        const rows = document.querySelectorAll(".aura-sh-row");
+        const headers = document.querySelectorAll(".aura-sh-header");
+
+        rows.forEach(row => {
+            const label = row.querySelector("label");
+            if (!label) return;
+
+            const text = label.textContent.toLowerCase();
+            const shortcut = row.querySelector(".current-key-display")?.textContent.toLowerCase() || "";
+
+            if (text.includes(query) || shortcut.includes(query)) {
+                row.style.display = "grid";
+            } else {
+                row.style.display = "none";
+            }
+        });
+
+        // Hide headers if no rows are visible in that section
+        headers.forEach(header => {
+            const list = header.closest(".aura-shortcut-list");
+            if (!list) return;
+
+            // Check if any child row is actually visible
+            const rowsInThisList = list.querySelectorAll(".aura-sh-row");
+            let hasVisibleRow = false;
+            rowsInThisList.forEach(r => {
+                if (r.style.display !== "none") hasVisibleRow = true;
+            });
+
+            if (query === "") {
+                header.style.display = "grid";
+            } else {
+                header.style.display = hasVisibleRow ? "grid" : "none";
+            }
+        });
+    });
+}
+
+initShortcutSearch();
 

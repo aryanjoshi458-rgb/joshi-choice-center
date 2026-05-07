@@ -30,5 +30,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
     getAllData: () => ipcRenderer.invoke('storage:get-all'),
     saveToDisk: (key, data) => ipcRenderer.send('storage:save', { key, data }),
     deleteFromDisk: (key) => ipcRenderer.send('storage:delete', key),
-    clearDisk: () => ipcRenderer.send('storage:clear')
+    clearDisk: () => ipcRenderer.send('storage:clear'),
+
+    // Sync Broadcast Listeners
+    onDataUpdated: (callback) => ipcRenderer.on('aura-data-updated', (event, data) => callback(data)),
+    onDataDeleted: (callback) => ipcRenderer.on('aura-data-deleted', (event, key) => callback(key)),
+    onDataCleared: (callback) => ipcRenderer.on('aura-data-cleared', () => callback())
 });

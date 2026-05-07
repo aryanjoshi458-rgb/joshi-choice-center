@@ -47,8 +47,25 @@ body.dark-mode, .dark-mode {
 body {
     background-color: transparent;
     color: var(--aura-text-main);
-    transition: background-color 0.4s ease, color 0.4s ease;
+    transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
+                color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     font-family: 'Poppins', 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+/* Global Smooth Theme Transition */
+*, *::before, *::after {
+    transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
+                border-color 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
+                color 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
+                box-shadow 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Exception for animations and transforms that shouldn't be global */
+.aura-chat-panel, .aura-sidebar, .aura-card:hover {
+    transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1), 
+                opacity 0.5s cubic-bezier(0.19, 1, 0.22, 1),
+                background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                border-color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* --- Standard Button Components --- */
@@ -85,14 +102,29 @@ body {
 }
 
 .aura-btn-save, .aura-btn-success {
-    background: var(--aura-success);
+    background: linear-gradient(135deg, #10b981, #059669);
     color: white;
-    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+    position: relative;
+    overflow: hidden;
 }
-.aura-btn-save:hover {
-    background: var(--aura-success-hover);
-    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.45);
+.aura-btn-save::before, .aura-btn-success::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: 0.5s ease;
+}
+.aura-btn-save:hover, .aura-btn-success:hover {
+    background: linear-gradient(135deg, #059669, #047857);
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.45);
     transform: translateY(-2px);
+}
+.aura-btn-save:hover::before, .aura-btn-success:hover::before {
+    left: 100%;
 }
 
 .aura-btn-delete, .aura-btn-danger {

@@ -1,37 +1,42 @@
-// ===== SHARED TOAST UTILITY =====
-// Requires: gsap and #toastBox in HTML
-
 function showToast(msg, type = "success") {
   const toastBox = document.getElementById("toastBox");
-  if (!toastBox) {
-    console.warn("toastBox not found in DOM");
-    return;
-  }
+  if (!toastBox) return;
 
   const toast = document.createElement("div");
   toast.className = "toast " + type;
-  toast.innerHTML = msg + `<div class="progress"></div>`;
+  
+  // Icon based on type
+  let icon = "✨";
+  if (type === "error") icon = "❌";
+  if (type === "info") icon = "ℹ️";
+
+  toast.innerHTML = `<span class="toast-icon">${icon}</span> <span class="toast-msg">${msg}</span><div class="progress"></div>`;
   toastBox.appendChild(toast);
 
   const progress = toast.querySelector(".progress");
 
-  // GSAP Animations
-  gsap.to(toast, { x: 0, opacity: 1, duration: 0.5 });
+  // GSAP Entrance
+  gsap.to(toast, { 
+    x: 0, 
+    opacity: 1, 
+    duration: 0.6, 
+    ease: "back.out(1.7)" 
+  });
 
+  // Progress Bar
   gsap.fromTo(progress,
     { scaleX: 1 },
-    { scaleX: 0, duration: 3, ease: "linear" }
+    { scaleX: 0, duration: 4, ease: "linear" }
   );
 
+  // Exit
   setTimeout(() => {
     gsap.to(toast, {
-      x: 120,
+      x: 150,
       opacity: 0,
-      duration: 0.4,
+      duration: 0.5,
+      ease: "power2.in",
       onComplete: () => toast.remove()
     });
-  }, 3000);
+  }, 4000);
 }
-
-// Make it globally accessible
-window.showToast = showToast;

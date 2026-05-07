@@ -20,10 +20,10 @@
 .dashboard-card {
   padding: 25px 30px;
   border-radius: 24px;
-  color: white;
+  color: var(--text-color, white);
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -47,6 +47,7 @@
 .dashboard-card:nth-child(1) { animation-delay: 0.1s; }
 .dashboard-card:nth-child(2) { animation-delay: 0.2s; }
 .dashboard-card:nth-child(3) { animation-delay: 0.3s; }
+.dashboard-card:nth-child(4) { animation-delay: 0.4s; }
 
 .dashboard-card:hover {
   transform: translateY(-8px) scale(1.02);
@@ -62,19 +63,24 @@
 .dashboard-card .icon {
   width: 42px;
   height: 42px;
-  background: rgba(255, 255, 255, 0.15);
+  background: var(--hover-bg);
   border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border-color);
+}
+
+.blue .icon, .orange .icon, .green .icon, .purple .icon, .clock-card .icon {
+  background: rgba(255, 255, 255, 0.2) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
 }
 
 .dashboard-card .icon svg {
   width: 20px;
   height: 20px;
-  stroke: white;
+  stroke: currentColor;
 }
 
 .dashboard-card h3 {
@@ -103,7 +109,7 @@
 .card-trend {
   font-size: 0.75rem;
   font-weight: 800;
-  background: rgba(255, 255, 255, 0.15);
+  background: var(--hover-bg);
   padding: 6px 12px;
   border-radius: 100px;
   display: flex;
@@ -112,8 +118,17 @@
   text-transform: uppercase;
 }
 
+.blue .card-trend, .orange .card-trend, .green .card-trend, .purple .card-trend, .clock-card .card-trend {
+  background: rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
+}
+
 .card-trend.up { background: rgba(16, 185, 129, 0.2); color: #10b981; }
 .card-trend.safe { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+
+.blue, .orange, .green, .purple, .clock-card {
+  color: white !important;
+}
 
 .blue {
   background: var(--card-1-gradient);
@@ -125,6 +140,10 @@
 
 .green {
   background: var(--card-3-gradient);
+}
+
+.purple {
+  background: linear-gradient(135deg, #6366f1, #a855f7);
 }
 
 /* NEW: Chart Card Styles - Refined */
@@ -163,7 +182,7 @@
   align-items: center;
   padding: 15px 5px;
   margin-bottom: 25px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .mini-greeting {
@@ -188,14 +207,14 @@
 
 /* THE DYNAMIC ALERT PILL (AS PER IMAGE) */
 .mini-alert-pill {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--hover-bg);
   padding: 8px 20px;
   border-radius: 50px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border-color);
   display: flex;
   align-items: center;
   gap: 12px;
-  color: white;
+  color: var(--text-color);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: default;
@@ -239,4 +258,220 @@
     align-items: flex-start;
     gap: 15px;
   }
+}
+
+/* NEW: Clock Widget */
+.clock-card {
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 30px !important;
+    min-height: 200px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.clock-time {
+    font-size: 3.5rem;
+    font-weight: 900;
+    font-family: 'Outfit', sans-serif;
+    letter-spacing: -2px;
+    background: linear-gradient(to bottom, #fff, #94a3b8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1;
+}
+
+.clock-date {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #94a3b8;
+    margin-top: 15px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+/* Quick Actions */
+.quick-actions-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 15px;
+}
+
+.quick-action-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 15px;
+    background: var(--hover-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    color: var(--text-color);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 700;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.quick-action-btn:hover {
+    background: rgba(255,255,255,0.08);
+    border-color: #6366f1;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.quick-action-btn .btn-icon {
+    width: 32px;
+    height: 32px;
+    background: rgba(99, 102, 241, 0.1);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6366f1;
+}
+
+.quick-action-btn .btn-icon svg {
+    width: 18px;
+    height: 18px;
+}
+
+/* System Insights Card */
+.stats-list {
+    margin-top: 15px;
+}
+
+.stat-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.stat-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.stat-value {
+    font-weight: 800;
+    color: var(--text-color);
+}
+
+/* Profit Overview Widget */
+.profit-bar-container {
+    margin-top: 15px;
+    height: 8px;
+    background: var(--hover-bg);
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex;
+}
+
+.profit-bar-fill {
+    height: 100%;
+    transition: width 1s ease-out;
+}
+
+.profit-bar-fill.earnings { background: #10b981; }
+.profit-bar-fill.expenses { background: #ef4444; }
+
+.profit-legend {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+/* Service Item Styles */
+.service-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    background: var(--hover-bg);
+    border-radius: 10px;
+    margin-bottom: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.service-name {
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.service-rate {
+    font-weight: 800;
+    color: var(--primary-color);
+}
+
+/* Transaction Item Styles */
+.txn-mini-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.txn-mini-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.txn-mini-name {
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.txn-mini-date {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+}
+
+.txn-mini-amount {
+    font-weight: 800;
+    font-size: 0.9rem;
+    color: #10b981;
+}
+
+/* Mini Calculator Styles */
+.calc-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.calc-display {
+/* Quick Notes Widget */
+.notes-area {
+    width: 100%;
+    min-height: 120px;
+    background: var(--hover-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 12px;
+    color: var(--text-main);
+    font-family: inherit;
+    font-size: 0.85rem;
+    resize: none;
+    transition: all 0.3s ease;
+    margin-top: 15px;
+}
+
+.notes-area:focus {
+    border-color: var(--primary-color);
+}
+
+.stat-value {
+    font-weight: 800;
+    color: var(--text-color);
 }

@@ -12,31 +12,56 @@ document.addEventListener("DOMContentLoaded", () => {
     let allCustomers = [];
     let currentFilter = "all";
     let currentSort = "lastSeen";
+    let currentView = "grid"; // grid or list
 
-    // Helper for robust date parsing
+    // View Toggle Logic
+    const viewToggle = document.getElementById("viewToggle");
+    viewToggle?.querySelectorAll(".view-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            viewToggle.querySelectorAll(".view-btn").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            currentView = btn.dataset.view;
+
+            // Switch container class
+            if (currentView === "list") {
+                customerGrid.classList.remove("customer-grid");
+                customerGrid.classList.add("customer-list");
+            } else {
+                customerGrid.classList.remove("customer-list");
+                customerGrid.classList.add("customer-grid");
+            }
+
+            applyFiltersAndSearch();
+        });
+    });
+
+    // Helper for robust date parsing (Handles ISO, YYYY-MM-DD, DD-MM-YYYY with time)
     const parseSafeDate = (dateStr) => {
         if (!dateStr) return new Date(0);
-        let d = new Date(dateStr);
-        if (!isNaN(d)) return d;
-        if (typeof dateStr === 'string' && dateStr.includes("-")) {
-            const parts = dateStr.split("-");
-            if (parts[0].length === 2 && parts[2].substring(0, 4).length === 4) {
-                const year = parts[2].substring(0, 4);
-                const month = parts[1];
-                const day = parts[0];
-                const time = parts[2].includes(" ") ? parts[2].split(" ")[1] : "";
-                const iso = time ? `${year}-${month}-${day}T${time}` : `${year}-${month}-${day}`;
-                d = new Date(iso);
-            } else if (parts[0].length === 4) {
-                const year = parts[0];
-                const month = parts[1];
-                const day = parts[2].substring(0, 2);
-                const time = parts[2].includes(" ") ? parts[2].split(" ")[1] : "";
-                const iso = time ? `${year}-${month}-${day}T${time}` : `${year}-${month}-${day}`;
-                d = new Date(iso);
+        if (dateStr instanceof Date) return dateStr;
+
+        if (typeof dateStr === 'string') {
+            const datePart = dateStr.split(" ")[0];
+            const timePart = dateStr.includes(" ") ? "T" + dateStr.split(" ")[1] : "T00:00:00";
+            const parts = datePart.split("-");
+
+            if (parts.length === 3) {
+                let y, m, d;
+                if (parts[0].length === 4) { // YYYY-MM-DD
+                    y = parts[0]; m = parts[1]; d = parts[2];
+                } else if (parts[2].length === 4) { // DD-MM-YYYY
+                    d = parts[0]; m = parts[1]; y = parts[2];
+                }
+                
+                if (y && m && d) {
+                    const isoStr = `${y}-${m.toString().padStart(2, '0')}-${d.toString().padStart(2, '0')}${timePart}`;
+                    const res = new Date(isoStr);
+                    if (!isNaN(res.getTime())) return res;
+                }
             }
         }
-        return isNaN(d) ? new Date(0) : d;
+        const res = new Date(dateStr);
+        return isNaN(res.getTime()) ? new Date(0) : res;
     };
 
     // 1. DATA EXTRACTION & STATS (Optimized for CID System)
@@ -58,7 +83,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (!cid) return; // Skip guest txns with no ID
 
-            const txnAmount = Number(t.totalAmount || 0);
+            const txnAmount = Number(t.amount || 0);
             totalBusiness += txnAmount;
 
             if (!statsMap.has(cid)) {
@@ -97,22 +122,28 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         // Build the display list
-        allCustomers = savedCustomers.map(c => {
+        allCustomers = savedCustomers.map((c, index) => {
             const s = statsMap.get(c.id) || {
                 totalVisits: 0,
                 totalSpend: 0,
-                lastSeen: parseSafeDate(c.lastVisit),
+                lastSeen: new Date(0),
                 banks: {},
                 history: []
             };
 
+            const lastVisitDate = parseSafeDate(c.lastVisit);
+            const txnDate = s.lastSeen.getTime() === 0 ? lastVisitDate : s.lastSeen;
+
+            // Use the later of the two dates (Profile Update vs Last Transaction)
+            const finalLastSeen = lastVisitDate > txnDate ? lastVisitDate : txnDate;
             const sortedBanks = Object.entries(s.banks).sort((a, b) => b[1] - a[1]);
 
             return {
                 ...c,
+                originalIndex: index,
                 totalVisits: s.totalVisits,
                 totalSpend: s.totalSpend,
-                lastSeen: s.lastSeen.getTime() === 0 ? parseSafeDate(c.lastVisit) : s.lastSeen,
+                lastSeen: finalLastSeen,
                 history: s.history,
                 primaryBank: sortedBanks.length > 0 ? sortedBanks[0][0] : null
             };
@@ -120,8 +151,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Mark Top 3 with stars (on cards only)
         const sortedBySpend = [...allCustomers].sort((a, b) => b.totalSpend - a.totalSpend);
-        allCustomers.forEach(c => c.isTop = false);
+        allCustomers.forEach(c => { c.isTop = false; c.isRecent = false; });
         sortedBySpend.slice(0, 3).filter(c => c.totalSpend > 0).forEach(c => c.isTop = true);
+
+        // ✅ Mark Newest/Current Profile (Latest Activity or Latest Added)
+        const sortedByDate = [...allCustomers].sort((a, b) => (b.lastSeen - a.lastSeen) || (b.originalIndex - a.originalIndex));
+        if (sortedByDate.length > 0) sortedByDate[0].isRecent = true;
 
         // Dashboard Stats
         totalCustCount.innerText = allCustomers.length;
@@ -134,62 +169,110 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function createCustomerCard(c) {
-        const initial = (c.name || "C").charAt(0).toUpperCase();
+        const initial = (c.name || "Walk-in Customer").charAt(0).toUpperCase();
         const lastDate = c.lastSeen.getTime() === 0 ? "N/A" : c.lastSeen.toLocaleDateString("en-GB").replace(/\//g, "-");
-        const starHtml = c.isTop ? `<div class="star-badge" title="Top 3 Customer">★</div>` : "";
+        const recentClass = c.isRecent ? "is-recent-highlight" : "";
         const topClass = c.isTop ? "is-top-elite" : "";
-        const isGuest = c.mobile === "Guest";
-
-        const bankHtml = c.primaryBank ? `
-            <div class="preferred-bank">
-                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v3M12 14v3M16 14v3"/></svg>
-                <span>${c.primaryBank}</span>
-            </div>
-        ` : "";
+        const avatarColor = c.isTop ? "linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)" : "linear-gradient(135deg, #6366f1 0%, #a855f7 100%)";
 
         let historyHtml = "";
         if (c.history && c.history.length > 0) {
-            historyHtml = `<div class="quick-preview">
-                ${c.history.map(h => `
-                    <div class="preview-item">
-                        <span class="p-service">${h.service}</span>
-                        <div style="display:flex; align-items:center;">
-                            <span class="p-amount">₹${h.amount}</span>
-                            <div class="p-status ${(h.status || 'success').toLowerCase()}"></div>
+            historyHtml = `
+                <div class="card-activity">
+                    <p class="activity-label">LATEST ACTIVITY</p>
+                    ${c.history.slice(0, 2).map(h => `
+                        <div class="activity-row">
+                            <span class="act-name">${h.serviceName || h.service || "Service"}</span>
+                            <span class="act-amt">₹${h.amount}</span>
                         </div>
-                    </div>
-                `).join('')}
-            </div>`;
+                    `).join('')}
+                </div>
+            `;
         }
 
         return `
-            <div class="customer-card premium-shadow ${topClass}" onclick="viewProfile('${c.id}')" style="opacity: 1;">
-                ${starHtml}
-                <div class="card-top">
-                    <div class="avatar ${isGuest ? 'guest-avatar' : ''}">${initial}</div>
-                    <div class="info">
-                        <h3>${c.name}</h3>
-                        <div class="mobile">${(c.mobile && c.mobile !== "Guest") ? c.mobile : '<span style="opacity:0.6; font-size:0.9em;">No Mobile</span>'}</div>
-                        ${bankHtml}
+            <div class="customer-card ${topClass} ${recentClass}" onclick="viewProfile('${c.id}')">
+                <div class="card-glass-glow"></div>
+                <div class="btn-delete-profile" onclick="deleteCustomerProfile(event, '${c.id}', '${c.name}')" title="Delete Profile">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2M10 11v6M14 11v6"/></svg>
+                </div>
+                
+                <div class="card-header">
+                    <div class="avatar-wrap">
+                        <div class="avatar-main" style="background: ${avatarColor}">${initial}</div>
+                        ${c.isTop ? '<div class="elite-crown">👑</div>' : ''}
+                    </div>
+                    <div class="header-content">
+                        <h3 title="${c.name || "Walk-in Customer"}">${c.name || "Walk-in Customer"}</h3>
+                        <span class="sub-text">${(c.mobile && c.mobile !== "Guest") ? c.mobile : "No Mobile Linked"}</span>
                     </div>
                 </div>
-                <div class="card-stats">
-                    <div class="stat-item">
-                        <span class="val">${c.totalVisits}</span>
-                        <span class="lab">Visits</span>
+
+                <div class="card-stats-v2">
+                    <div class="stat-v2-item">
+                        <span class="v2-val">${c.totalVisits}</span>
+                        <span class="v2-lab">Visits</span>
                     </div>
-                    <div class="stat-item">
-                        <span class="val">₹${new Intl.NumberFormat('en-IN').format(c.totalSpend.toFixed(0))}</span>
-                        <span class="lab">Spent</span>
+                    <div class="stat-v2-item">
+                        <span class="v2-val">₹${new Intl.NumberFormat('en-IN').format(c.totalSpend.toFixed(0))}</span>
+                        <span class="v2-lab">Business</span>
                     </div>
                 </div>
+
+                <div class="card-footer-v2">
+                    <div class="meta-v2">
+                        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        <span>${lastDate}</span>
+                    </div>
+                    <div class="action-chip">
+                        Profile
+                        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    </div>
+                </div>
+
                 ${historyHtml}
-                <div class="card-footer">
-                    <div class="last-seen">Last: ${lastDate}</div>
-                    <div class="view-link">
-                        <span>Profile</span>
-                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </div>
+        `;
+    }
+
+    function createCustomerRow(c) {
+        const initial = (c.name || "Walk-in Customer").charAt(0).toUpperCase();
+        const lastDate = c.lastSeen.getTime() === 0 ? "N/A" : c.lastSeen.toLocaleDateString("en-GB").replace(/\//g, "-");
+        const recentClass = c.isRecent ? "is-recent-highlight" : "";
+        const topClass = c.isTop ? "is-top-elite" : "";
+        const avatarColor = c.isTop ? "linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)" : "linear-gradient(135deg, #6366f1 0%, #a855f7 100%)";
+
+        return `
+            <div class="customer-row ${topClass} ${recentClass}" onclick="viewProfile('${c.id}')">
+                <div class="card-glass-glow"></div>
+                <div class="row-avatar-wrap">
+                    <div class="row-avatar" style="background: ${avatarColor}">${initial}</div>
+                    ${c.isTop ? '<div class="row-crown">👑</div>' : ''}
+                </div>
+                <div class="row-info-main">
+                    <h3>${c.name || "Walk-in Customer"}</h3>
+                    <span class="row-sub">${(c.mobile && c.mobile !== "Guest") ? c.mobile : "N/A"}</span>
+                </div>
+                <div class="row-stat-v2">
+                    <span class="v2-lab">VISITS</span>
+                    <span class="v2-val">${c.totalVisits}</span>
+                </div>
+                <div class="row-stat-v2">
+                    <span class="v2-lab">BUSINESS</span>
+                    <span class="v2-val">₹${new Intl.NumberFormat('en-IN').format(c.totalSpend.toFixed(0))}</span>
+                </div>
+                <div class="row-meta-v2">
+                    <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" style="opacity:0.5; margin-right:4px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    <span>${lastDate}</span>
+                </div>
+                <div class="row-action-v2">
+                    <div class="action-chip">
+                        Profile
+                        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                     </div>
+                </div>
+                <div class="btn-delete-profile" onclick="deleteCustomerProfile(event, '${c.id}', '${c.name}')" title="Delete Profile">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2M10 11v6M14 11v6"/></svg>
                 </div>
             </div>
         `;
@@ -207,16 +290,29 @@ document.addEventListener("DOMContentLoaded", () => {
             if (currentFilter === "all") return true;
             if (currentFilter === "regular") return c.totalVisits >= 3;
             if (currentFilter === "top") return c.isTop;
-            if (currentFilter === "new") return c.lastVisit > thirtyDaysAgo;
+            if (currentFilter === "new") return parseSafeDate(c.lastVisit) > thirtyDaysAgo;
             return true;
         });
 
         filtered.sort((a, b) => {
-            if (currentSort === "lastSeen") return b.lastSeen - a.lastSeen;
+            if (currentSort === "lastSeen") {
+                // FORCE Recent/Newest Profile to the very top only when sorting by Last Active
+                if (a.isRecent && !b.isRecent) return -1;
+                if (!a.isRecent && b.isRecent) return 1;
+                
+                const diff = b.lastSeen.getTime() - a.lastSeen.getTime();
+                return diff !== 0 ? diff : (b.originalIndex - a.originalIndex);
+            }
             if (currentSort === "spend") return b.totalSpend - a.totalSpend;
             if (currentSort === "visits") return b.totalVisits - a.totalVisits;
-            if (currentSort === "name") return a.name.localeCompare(b.name);
-            return 0;
+            if (currentSort === "name") {
+                const nameA = a.name ? a.name.toLowerCase() : "";
+                const nameB = b.name ? b.name.toLowerCase() : "";
+                return nameA.localeCompare(nameB);
+            }
+
+            // Fallback to Creation Order
+            return b.originalIndex - a.originalIndex;
         });
 
         renderCustomers(filtered);
@@ -229,21 +325,38 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        customerGrid.innerHTML = data.map(c => createCustomerCard(c)).join('');
+        if (currentView === "list") {
+            customerGrid.innerHTML = data.map(c => createCustomerRow(c)).join('');
+        } else {
+            customerGrid.innerHTML = data.map(c => createCustomerCard(c)).join('');
+        }
 
         if (window.gsap) {
-            gsap.to("#customerGrid .customer-card", {
-                opacity: 1,
-                y: 0,
+            const selector = currentView === "list" ? ".customer-row" : ".customer-card";
+
+            // Standard stagger reveal
+            gsap.from("#customerGrid " + selector, {
+                opacity: 0,
+                y: 20,
                 duration: 0.5,
                 stagger: 0.05,
-                ease: "back.out(1.4)"
+                ease: "back.out(1.4)",
+                clearProps: "all"
+            });
+
+            // ✅ Extra 1s Pop for the Recent/Current Profile
+            gsap.from("#customerGrid .is-recent-highlight", {
+                scale: 0.9,
+                duration: 1,
+                delay: 0.2,
+                ease: "elastic.out(1, 0.3)",
+                clearProps: "all"
             });
         }
     }
 
     customerSearch?.addEventListener("input", applyFiltersAndSearch);
-    filterTabs?.querySelectorAll(".filter-btn").forEach(btn => {
+    filterTabs?.querySelectorAll("button").forEach(btn => {
         btn.addEventListener("click", () => {
             const active = filterTabs.querySelector(".active");
             if (active) active.classList.remove("active");
@@ -256,6 +369,17 @@ document.addEventListener("DOMContentLoaded", () => {
         currentSort = e.target.value;
         applyFiltersAndSearch();
     });
+    
+    // Alt + G for Search Focus
+    window.addEventListener("keydown", (e) => {
+        if (e.altKey && e.key.toLowerCase() === 'g') {
+            e.preventDefault();
+            customerSearch?.focus();
+            
+            // Subtle scroll to search box if needed
+            customerSearch?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    });
 
     // Listen for Disk Sync Completion
     const refreshDirectory = () => {
@@ -266,6 +390,30 @@ document.addEventListener("DOMContentLoaded", () => {
 
     loadCustomers();
 });
+
+async function deleteCustomerProfile(event, cid, name) {
+    if (event) event.stopPropagation();
+
+    const confirm = window.AuraDialog ?
+        await AuraDialog.confirm(`Are you sure you want to delete the profile for <b>${name}</b>? This action cannot be undone.`, "Delete Profile") :
+        window.confirm(`Delete profile for ${name}?`);
+
+    if (confirm) {
+        if (window.AppLoader) window.AppLoader.show("Deleting Profile...");
+
+        setTimeout(() => {
+            let customers = JSON.parse(localStorage.getItem("customers") || "[]");
+            customers = customers.filter(c => c.id !== cid);
+            localStorage.setItem("customers", JSON.stringify(customers));
+
+            if (window.AppLoader) window.AppLoader.hide();
+            if (typeof showToast === "function") showToast("Profile deleted successfully. 🗑️");
+
+            // Trigger a global sync event if needed
+            window.dispatchEvent(new CustomEvent('auraDataSynced'));
+        }, 600);
+    }
+}
 
 function viewProfile(cid) {
     window.location.href = `customer-profile.html?cid=${encodeURIComponent(cid)}`;
