@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (isSuccess) {
                     addLog(`${serviceName} request AUTHENTICATED by Gateway.`, "info");
                     setTimeout(() => {
-                        resolve({ status: "Success", txnId: "TXN" + Date.now() });
+                        resolve({ status: "Success", txnId: "TXN-" + Date.now() });
                     }, 1000);
                 } else {
                     addLog(`${serviceName} request REJECTED by Bank.`, "error");

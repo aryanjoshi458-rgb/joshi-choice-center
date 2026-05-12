@@ -79,7 +79,8 @@ document.addEventListener("DOMContentLoaded", () => {
                                (serviceType === "Banking & Financial Services" && 
                                 document.getElementById("bankService")?.value === "Cash Withdrawal") ||
                                (serviceType === "Mobile & Utility Services" && 
-                                document.getElementById("transferType")?.value === "Withdraw");
+                                (document.getElementById("transferType")?.value === "Withdraw" || 
+                                 document.getElementById("transferType")?.value === "QR_Withdraw"));
 
             if (isWithdrawal) {
                 net = Math.max(0, amount - charge);
@@ -190,7 +191,8 @@ document.addEventListener("DOMContentLoaded", () => {
         if (editNetPayable) {
             const isWithdrawal = s.toLowerCase().includes("withdrawal") || 
                                s.toLowerCase().includes("withdraw") || 
-                               s.toLowerCase().includes("payout");
+                               s.toLowerCase().includes("payout") ||
+                               s.toLowerCase().includes("qr pay");
 
             if (isWithdrawal) {
                 editNetPayable.value = formatWithCommas(Math.max(0, a - c));

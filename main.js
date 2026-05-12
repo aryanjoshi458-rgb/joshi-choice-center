@@ -55,21 +55,10 @@ class StorageManager {
 // Force dark mode for native menus/dialogs
 nativeTheme.themeSource = 'dark';
 
-// --- SINGLE INSTANCE LOCK ---
-const gotTheLock = app.requestSingleInstanceLock();
+// --- MULTI-INSTANCE ENABLED ---
+// Single instance lock removed to allow multiple EXE launches.
+// Caution: Instances share the same storage folder.
 
-if (!gotTheLock) {
-  app.quit();
-} else {
-  app.on('second-instance', (event, commandLine, workingDirectory) => {
-    // Someone tried to run a second instance, we should focus our window.
-    if (windows.size > 0) {
-      const mainWin = [...windows][0];
-      if (mainWin.isMinimized()) mainWin.restore();
-      mainWin.focus();
-    }
-  });
-}
 
 let windows = new Set();
 

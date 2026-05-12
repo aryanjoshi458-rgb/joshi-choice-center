@@ -39,6 +39,7 @@
 </head>
 
 <body>
+    <div id="toastBox"></div>
     <!-- GLOBAL BACKGROUND KA CODE HAI -->
     <div class="animated-bg"></div>
 
@@ -235,6 +236,24 @@
                             <path
                                 d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
                         </svg> Customer Information</h3>
+
+                    <!-- 🔥 PENDING AMOUNT ALERT (MOVED OUTSIDE GRID) -->
+                    <div id="pendingAmountAlert" class="pending-alert-banner" style="display:none;">
+                        <div class="p-alert-content">
+                            <div class="p-alert-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                                    <line x1="12" y1="9" x2="12" y2="13"/>
+                                    <line x1="12" y1="17" x2="12.01" y2="17"/>
+                                </svg>
+                            </div>
+                            <div class="p-alert-text">
+                                <span class="p-label">Pending Payment Found:</span>
+                                <span id="pendingAmountValue" class="p-value">₹0</span>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="form-grid">
                         <div class="floating-group">
                             <input id="custMobile" type="text" placeholder="10 digit mobile">
@@ -296,6 +315,7 @@
                             <select id="bankSelect">
                                 <option>-- Select Bank --</option>
                                 <option>Axis Bank</option>
+                                <option>Allahabad Bank</option>
                                 <option>Airtel Payments Bank</option>
                                 <option>Bank of Baroda</option>
                                 <option>Bank of India</option>
@@ -395,8 +415,7 @@
                             <label>Electricity Provider</label>
                             <select id="electricitySelect">
                                 <option>-- Select --</option>
-                                <option>State Electricity Board</option>
-                                <option>Private Electricity Company</option>
+                                <option>Chhattisgarh State Power Distribution Company Limited (CSPDCL)</option>
                             </select>
                         </div>
 
@@ -405,6 +424,7 @@
                             <select id="transferType">
                                 <option value="Send">Send Money (Cash to UPI)</option>
                                 <option value="Withdraw">Withdraw Money (UPI to Cash)</option>
+                                <option value="QR_Withdraw">QR Payment (UPI to Cash)</option>
                             </select>
                         </div>
                     </div>
@@ -612,35 +632,25 @@
     </main>
     </div>
 
-    <!-- JS LINK -->
-
-    <!-- Modern Alert -->
-
+    <div id="toastBox"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="../public/assets/features/notification/toast.js"></script>
     <script src="../public/js/aura-modals.js"></script>
     <script src="../public/js/button-animations.js"></script>
-    <!-- Transaction / Customer logic -->
-    <!-- Transaction / Customer logic -->
     <script src="../public/js/script.js"></script>
     <script src="../public/js/calculation.js"></script>
     <script src="../public/js/assistant-speaker.js"></script>
     <script src="../public/js/theme-toggle.js"></script>
     <script src="../public/js/today-report.js"></script>
-
     <script src="../public/js/pagination.js"></script>
     <script src="../public/js/denomination.js"></script>
-
     <div id="scrollArrow">▲</div>
     <script src="../public/assets/features/scroll-toggle.js"></script>
     <script src="../public/assets/features/sidebar/sidebar.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="../public/assets/features/modern-datepicker/modern-datepicker.js"></script>
-
-    <script src="../public/assets/features/notification/toast.js"></script>
     <script src="../public/assets/sidebar-pages/global/global-background-animation.js"></script>
     <script src="../public/assets/features/notification/notification.js"></script>
 
-    <!-- Professional Toast Success Popup styles -->
-    <div id="toastBox"></div>
     <!-- EDIT TRANSACTION MODAL (SYNCED WITH REPORTS) -->
     <div id="editModal" class="modal">
         <div class="modal-content edit-modal-content">

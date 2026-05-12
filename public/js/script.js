@@ -69,7 +69,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Helper to check pending amount
   function checkPendingAmount(mobile, aadhar) {
-    // 🔥 FRESH DATA RETRIEVAL
+    const alertEl = document.getElementById("pendingAmountAlert");
+    if (!mobile && !aadhar) {
+      if (alertEl) alertEl.style.display = "none";
+      return;
+    }
     const pendingCustomers = JSON.parse(localStorage.getItem("pendingCustomers") || "[]");
     const transactions = JSON.parse(localStorage.getItem("transactions") || "[]");
 
@@ -108,7 +112,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    const alertEl = document.getElementById("pendingAmountAlert");
     const valueEl = document.getElementById("pendingAmountValue");
 
     if (totalPending > 0) {
@@ -127,7 +130,8 @@ document.addEventListener("DOMContentLoaded", () => {
   // 1. Mobile Formatting & Auto-Lookup (Smart +91 Prefix)
   if (custMobile) {
     custMobile.addEventListener("focus", () => {
-      if (custMobile.value.length === 0) custMobile.value = "+91 ";
+      const isElectricity = document.getElementById("serviceName")?.value === "Electricity Bill Payment";
+      if (!isElectricity && custMobile.value.length === 0) custMobile.value = "+91 ";
     });
 
     custMobile.addEventListener("blur", () => {
@@ -139,7 +143,16 @@ document.addEventListener("DOMContentLoaded", () => {
     custMobile.addEventListener("input", (e) => {
       let val = e.target.value;
 
-      // Ensure +91 remains
+      const isElectricity = document.getElementById("serviceName")?.value === "Electricity Bill Payment";
+      
+      if (isElectricity) {
+        // Simple 10 digit restriction for BP No
+        let digits = val.replace(/\D/g, "").slice(0, 10);
+        e.target.value = digits;
+        return;
+      }
+
+      // Ensure +91 remains for normal mobile
       if (!val.startsWith("+91 ")) {
         val = "+91 " + val.replace(/^\+91\s?/, "");
       }
@@ -368,19 +381,19 @@ document.addEventListener("DOMContentLoaded", () => {
     if (allTxns.length > 0) {
       const ids = allTxns.map(t => {
         const idStr = String(t.transactionId || t.txnId || t.id || "0");
-        // Only match short sequential IDs (TXN + 3-6 digits)
-        const match = idStr.match(/^TXN(\d{3,6})$/);
+        // Only match short sequential IDs (TXN- or TXN + 3-6 digits)
+        const match = idStr.match(/^TXN-?(\d{3,6})$/);
         return match ? parseInt(match[1]) : 0;
       });
       const maxShortId = Math.max(...ids, 0);
       nextNum = maxShortId > 0 ? maxShortId + 1 : allTxns.length + 1;
     }
-    let transactionId = "TXN" + String(nextNum).padStart(3, "0");
+    let transactionId = "TXN-" + String(nextNum).padStart(5, "0");
 
     // 🔥 FIX: Ensure generated ID doesn't already exist to prevent collision on deletion
     while (allTxns.some(t => String(t.transactionId || t.txnId || t.id) === transactionId)) {
       nextNum++;
-      transactionId = "TXN" + String(nextNum).padStart(3, "0");
+      transactionId = "TXN-" + String(nextNum).padStart(5, "0");
     }
 
     // Determine the full service name based on category (Shortened for readability)
@@ -429,7 +442,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (uService && uService !== "-- Select --") {
         if (uService === "Money Transfer (PhonePe/UPI)") {
           const tType = document.getElementById("transferType")?.value;
-          const tTypeText = tType === "Withdraw" ? "(Withdraw)" : "(Send)";
+          const tTypeText = tType === "Withdraw" ? "(Withdraw)" : (tType === "QR_Withdraw" ? "(QR Pay)" : "(Send)");
           subService = `${shortUS} ${tTypeText}`;
         } else {
           subService = (opName && opName !== "-- Select --") ? `${opName} ${shortUS}` : shortUS;
@@ -527,7 +540,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const onDone = () => {
         loadTransactionsToTable();
-        resetTransactionForm();
+        resetTransactionForm(true);
         isSavingTransaction = false; // 🔥 RESET AFTER SUCCESS
       };
 
@@ -553,7 +566,6 @@ document.addEventListener("DOMContentLoaded", () => {
   if (resetFormBtn) {
     resetFormBtn.addEventListener("click", () => {
       resetTransactionForm();
-      if (typeof showToast === "function") showToast("Form Reset 🗑️");
     });
   }
 
@@ -752,11 +764,29 @@ document.addEventListener("DOMContentLoaded", () => {
     serviceNameSelect.addEventListener("change", function () {
       const val = this.value;
       const needsOperator = ["Mobile Recharge"];
+      const isElectricity = val === "Electricity Bill Payment";
       const isTransfer = val === "Money Transfer (PhonePe/UPI)";
+      const mobileLabel = document.querySelector('label[for="custMobile"]') || document.getElementById("custMobile")?.nextElementSibling;
+
+      if (isElectricity) {
+        if (mobileLabel) mobileLabel.innerHTML = `BP No <span id="mobileReqStar" style="display:inline;" class="required-star">*</span>`;
+        if (custMobile) {
+          custMobile.placeholder = "Enter 10 Digit BP No";
+          // Clear prefix if switching to Electricity
+          if (custMobile.value.startsWith("+91 ")) custMobile.value = custMobile.value.replace("+91 ", "").trim();
+        }
+        if (nameStar) nameStar.style.display = "inline";
+        if (custAadhar) custAadhar.closest('.floating-group').style.display = "none";
+      } else {
+        if (mobileLabel) mobileLabel.innerHTML = `Mobile Number <span id="mobileReqStar" style="display:none;" class="required-star">*</span>`;
+        if (custMobile) custMobile.placeholder = "10 digit mobile";
+        if (nameStar) nameStar.style.display = "none";
+        if (custAadhar) custAadhar.closest('.floating-group').style.display = "block";
+      }
 
       blocks.operator.style.display = needsOperator.includes(val) ? "block" : "none";
-      if (mobileStar) mobileStar.style.display = (val === "Mobile Recharge") ? "inline" : "none";
-      blocks.electricity.style.display = (val === "Electricity Bill Payment") ? "block" : "none";
+      if (mobileStar) mobileStar.style.display = (val === "Mobile Recharge" || isElectricity) ? "inline" : "none";
+      blocks.electricity.style.display = isElectricity ? "block" : "none";
       if (isTransfer) {
         blocks.transfer.style.display = "block";
         // Default to Send logic
@@ -780,7 +810,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (transferTypeSelect) {
     transferTypeSelect.addEventListener("change", function () {
       const val = this.value;
-      const isWithdraw = val === "Withdraw";
+      const isWithdraw = (val === "Withdraw" || val === "QR_Withdraw");
 
       // Toggle Labels & Groups
       if (blocks.netPayableGroup) blocks.netPayableGroup.style.display = isWithdraw ? "block" : "none";
@@ -1092,19 +1122,19 @@ window.updateNextTransactionId = function () {
   if (txns.length > 0) {
     const ids = txns.map(t => {
       const idStr = String(t.transactionId || t.txnId || t.id || "0");
-      // Only match short sequential IDs (TXN + 3-6 digits) to avoid timestamped ones
-      const match = idStr.match(/^TXN(\d{3,6})$/);
+      // Only match short sequential IDs (TXN- or TXN + 3-6 digits) to avoid timestamped ones
+      const match = idStr.match(/^TXN-?(\d{3,6})$/);
       return match ? parseInt(match[1]) : 0;
     });
     const maxShortId = Math.max(...ids, 0);
     nextNum = maxShortId > 0 ? maxShortId + 1 : txns.length + 1;
   }
 
-  const nextId = "TXN" + String(nextNum).padStart(3, "0");
+  const nextId = "TXN-" + String(nextNum).padStart(5, "0");
   if (text) text.innerText = nextId;
 };
 
-window.resetTransactionForm = function () {
+window.resetTransactionForm = function (silent = false) {
   const form = document.querySelector(".unified-card");
   if (!form) return;
 
@@ -1141,6 +1171,19 @@ window.resetTransactionForm = function () {
   });
   const mobileStar = document.getElementById("mobileReqStar");
   if (mobileStar) mobileStar.style.display = "none";
+  const alertEl = document.getElementById("pendingAmountAlert");
+  if (alertEl) alertEl.style.display = "none";
+
+  // Reset Mobile Label
+  const mobileLabel = document.querySelector('label[for="custMobile"]') || document.getElementById("custMobile")?.nextElementSibling;
+  if (mobileLabel) mobileLabel.innerHTML = `Mobile Number <span id="mobileReqStar" style="display:none;" class="required-star">*</span>`;
+  const custMobile = document.getElementById("custMobile");
+  if (custMobile) custMobile.placeholder = "10 digit mobile";
+  // Reset Aadhar & Name
+  const custAadhar = document.getElementById("custAadhar");
+  const nameStar = document.getElementById("nameReqStar");
+  if (custAadhar) custAadhar.closest('.floating-group').style.display = "block";
+  if (nameStar) nameStar.style.display = "none";
 
   // Reset Sub-groups visibility
   const subGroups = ["amountGroup", "chargeGroup", "totalGroup", "paymentModeGroup", "receivedChargeGroup", "pendingChargeGroup", "netPayableGroup"];
@@ -1150,10 +1193,55 @@ window.resetTransactionForm = function () {
   });
 
   if (typeof updateNextTransactionId === "function") updateNextTransactionId();
+  
+  if (!silent && typeof showToast === "function") {
+    showToast("Form Reset Successfully! ✨");
+  }
 };
 
 // Set initial date
 (function () {
   const txnDate = document.getElementById("txnDate");
   if (txnDate) txnDate.value = new Date().toISOString().split("T")[0];
+
+  // --- AUTO MIGRATION: TXN### to TXN-### ---
+  try {
+    const transactions = JSON.parse(localStorage.getItem("transactions") || "[]");
+    const pending = JSON.parse(localStorage.getItem("pendingCustomers") || "[]");
+    let migrated = false;
+
+    // 1. Migrate Transactions
+    transactions.forEach(t => {
+      const id = String(t.transactionId || t.txnId || t.id || "");
+      const match = id.match(/^TXN(\d+)$/);
+      if (match) {
+        const num = match[1];
+        const newId = "TXN-" + String(num).padStart(5, "0");
+        t.transactionId = newId;
+        if (t.txnId) t.txnId = newId;
+        if (t.id && String(t.id).startsWith("TXN")) t.id = newId;
+        migrated = true;
+      }
+    });
+
+    // 2. Migrate Pending Customers (Keep links intact)
+    pending.forEach(p => {
+      if (p.txnId) {
+        const match = String(p.txnId).match(/^TXN(\d+)$/);
+        if (match) {
+          const num = match[1];
+          p.txnId = "TXN-" + String(num).padStart(5, "0");
+          migrated = true;
+        }
+      }
+    });
+
+    if (migrated) {
+      localStorage.setItem("transactions", JSON.stringify(transactions));
+      localStorage.setItem("pendingCustomers", JSON.stringify(pending));
+      console.log("Aura Migration: Transaction IDs updated to TXN-### format.");
+    }
+  } catch (err) {
+    console.error("Migration Error:", err);
+  }
 })();
