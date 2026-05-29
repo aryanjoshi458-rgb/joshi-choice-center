@@ -150,6 +150,28 @@ window.initAuraSelects = function () {
         new AuraSelect(onlyStatusFilter);
         onlyStatusFilter.dataset.auraInit = "true";
     }
+
+    // AEPS & Recharge Selects
+    const aepsService = document.getElementById('aeps-service');
+    if (aepsService && !aepsService.dataset.auraInit) {
+        new AuraSelect(aepsService);
+        aepsService.dataset.auraInit = "true";
+    }
+    const aepsBank = document.getElementById('aeps-bank');
+    if (aepsBank && !aepsBank.dataset.auraInit) {
+        new AuraSelect(aepsBank);
+        aepsBank.dataset.auraInit = "true";
+    }
+    const recType = document.getElementById('rec-type');
+    if (recType && !recType.dataset.auraInit) {
+        new AuraSelect(recType);
+        recType.dataset.auraInit = "true";
+    }
+    const recOperator = document.getElementById('rec-operator');
+    if (recOperator && !recOperator.dataset.auraInit) {
+        new AuraSelect(recOperator);
+        recOperator.dataset.auraInit = "true";
+    }
 };
 
 document.addEventListener('DOMContentLoaded', () => {

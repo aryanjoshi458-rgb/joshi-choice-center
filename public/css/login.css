@@ -586,3 +586,47 @@ body.dark-mode .floating-group input:focus~label span {
 .theme-switch__checkbox:checked+.theme-switch__container .theme-switch__clouds {
     bottom: -4.062em;
 }
+
+/* ===== GLOBAL PREMIUM HOVER SHIMMER EFFECT FOR ALL BUTTONS ===== */
+
+/* Disable old custom button shimmer before elements */
+button::before,
+.btn-print-final::before,
+#gallaSaveBtn::before,
+.login-btn::before,
+.aura-btn-save::before,
+.aura-btn-success::before {
+  display: none !important;
+}
+
+/* Enable new premium shimmer and hover effects for all buttons */
+button:not(.galla-arrow-btn):not(.password-toggle-btn):not(.toggle-password):not(.remove-range):not(.nav-scroll-btn):not(#sidebarToggle):not(#themeToggle):not(#themeToggleV4):not(.notification-alert):not(#globalAlertBtn) {
+  position: relative !important;
+  overflow: hidden !important;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease, background-image 0.25s ease !important;
+}
+
+button:not(.galla-arrow-btn):not(.password-toggle-btn):not(.toggle-password):not(.remove-range):not(.nav-scroll-btn):not(#sidebarToggle):not(#themeToggle):not(#themeToggleV4):not(.notification-alert):not(#globalAlertBtn)::after {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: -100% !important;
+  width: 60% !important;
+  height: 100% !important;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.18), transparent) !important;
+  transition: left 0.45s ease !important;
+  pointer-events: none !important;
+  z-index: 1 !important;
+}
+
+button:not(.galla-arrow-btn):not(.password-toggle-btn):not(.toggle-password):not(.remove-range):not(.nav-scroll-btn):not(#sidebarToggle):not(#themeToggle):not(#themeToggleV4):not(.notification-alert):not(#globalAlertBtn):hover::after {
+  left: 140% !important;
+}
+
+button:not(.galla-arrow-btn):not(.password-toggle-btn):not(.toggle-password):not(.remove-range):not(.nav-scroll-btn):not(#sidebarToggle):not(#themeToggle):not(#themeToggleV4):not(.notification-alert):not(#globalAlertBtn):hover {
+  transform: translateY(-2px) !important;
+}
+
+button:not(.galla-arrow-btn):not(.password-toggle-btn):not(.toggle-password):not(.remove-range):not(.nav-scroll-btn):not(#sidebarToggle):not(#themeToggle):not(#themeToggleV4):not(.notification-alert):not(#globalAlertBtn):active {
+  transform: translateY(0) !important;
+}

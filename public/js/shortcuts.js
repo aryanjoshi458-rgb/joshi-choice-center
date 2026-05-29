@@ -39,6 +39,9 @@
         lock() {
             if (document.getElementById("quickLockOverlay")) return;
 
+            const currentPage = window.location.pathname.split("/").pop();
+            if (currentPage === "login.html" || currentPage === "index.html" || currentPage === "") return;
+
             const overlay = document.createElement("div");
             overlay.id = "quickLockOverlay";
             overlay.className = "quick-lock-overlay active";
@@ -121,7 +124,8 @@
         "quick-lock": "Alt + l",
         "privacy-toggle": "Alt + q",
         "export-backup": "Alt + Shift + E",
-        "import-backup": "Alt + Shift + R"
+        "import-backup": "Alt + Shift + R",
+        "focus-search": "Alt + k"
     };
 
     const actionToPage = {
@@ -140,7 +144,15 @@
 
     function getShortcuts() {
         const saved = localStorage.getItem("customShortcuts");
-        return saved ? JSON.parse(saved) : defaultShortcuts;
+        if (saved) {
+            try {
+                const parsed = JSON.parse(saved);
+                return { ...defaultShortcuts, ...parsed };
+            } catch (e) {
+                console.error("Shortcuts parse error", e);
+            }
+        }
+        return defaultShortcuts;
     }
 
     function handleShortcut(e) {
@@ -226,6 +238,26 @@
                     const btn = document.getElementById("importBackup");
                     if (btn) btn.click();
                     else if (window.showToast) window.showToast("Restore only available on Settings Page", "info");
+                    return;
+                }
+
+                if (action === "focus-search") {
+                    const searchInput = document.getElementById("searchInput") || 
+                                        document.getElementById("bestInput") || 
+                                        document.getElementById("customerSearch") || 
+                                        document.getElementById("search") || 
+                                        document.querySelector(".search-input") || 
+                                        document.querySelector("input[type='search']") || 
+                                        document.querySelector(".search-box input");
+                    if (searchInput) {
+                        const searchExpand = document.getElementById("searchExpand") || 
+                                             document.getElementById("bestSearch");
+                        if (searchExpand) {
+                            searchExpand.classList.add("active");
+                        }
+                        searchInput.focus();
+                        searchInput.select();
+                    }
                     return;
                 }
 

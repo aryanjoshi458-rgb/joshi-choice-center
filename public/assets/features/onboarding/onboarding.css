@@ -1,0 +1,604 @@
+/* ═══════════════════════════════════════════════════════════════
+   JOSHI CHOICE CENTER — FULL-SCREEN ONBOARDING SLIDESHOW v3.0
+   ═══════════════════════════════════════════════════════════════ */
+
+@keyframes iconBounce {
+
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+
+  50% {
+    transform: translateY(-8px) scale(1.04);
+  }
+}
+
+/* ── MAIN FULL-SCREEN CONTAINER ──────────────────────────────── */
+#jcOnboardingOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #060b1a;
+  font-family: 'Outfit', 'Inter', sans-serif;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+
+#jcOnboardingOverlay.visible {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* Animated background orbs */
+#jcOnboardingOverlay::before {
+  content: '';
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(79, 70, 229, 0.18) 0%, transparent 70%);
+  top: -150px;
+  right: -100px;
+  pointer-events: none;
+  animation: orbFloat1 8s ease-in-out infinite;
+}
+
+#jcOnboardingOverlay::after {
+  content: '';
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.12) 0%, transparent 70%);
+  bottom: -100px;
+  left: -80px;
+  pointer-events: none;
+  animation: orbFloat2 10s ease-in-out infinite;
+}
+
+@keyframes orbFloat1 {
+
+  0%,
+  100% {
+    transform: translate(0, 0)
+  }
+
+  50% {
+    transform: translate(-30px, 30px)
+  }
+}
+
+@keyframes orbFloat2 {
+
+  0%,
+  100% {
+    transform: translate(0, 0)
+  }
+
+  50% {
+    transform: translate(30px, -20px)
+  }
+}
+
+/* ── SLIDE WRAPPER ───────────────────────────────────────────── */
+.jc-ob-slide-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 900px;
+  height: 100%;
+  max-height: 580px;
+  display: flex;
+  flex-direction: column;
+  z-index: 1;
+  padding: 0 24px;
+  box-sizing: border-box;
+}
+
+/* ── HEADER BAR ──────────────────────────────────────────────── */
+.jc-ob-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 0 16px;
+  flex-shrink: 0;
+}
+
+.jc-ob-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.jc-ob-logo-badge {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #4f46e5, #818cf8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+}
+
+.jc-ob-logo-text {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #94a3b8;
+  letter-spacing: 0.2px;
+}
+
+.jc-ob-skip-btn {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #64748b;
+  padding: 7px 16px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Outfit', sans-serif;
+}
+
+.jc-ob-skip-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #94a3b8;
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* ── SLIDE CARD ──────────────────────────────────────────────── */
+.jc-ob-card {
+  flex: 1;
+  background: linear-gradient(145deg, rgba(15, 22, 50, 0.8), rgba(10, 15, 38, 0.9));
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 28px;
+  padding: 0;
+  display: flex;
+  overflow: hidden;
+  box-shadow: 0 40px 80px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  position: relative;
+}
+
+/* ── LEFT PANEL (Icon + Visual) ──────────────────────────────── */
+.jc-ob-left {
+  width: 42%;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 30px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Dynamic gradient bg per slide — set via JS */
+.jc-ob-left::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--slide-gradient, linear-gradient(135deg, rgba(79, 70, 229, 0.25), rgba(129, 140, 248, 0.1)));
+  z-index: 0;
+}
+
+.jc-ob-left-divider {
+  position: absolute;
+  right: 0;
+  top: 10%;
+  height: 80%;
+  width: 1px;
+  background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.07), transparent);
+}
+
+.jc-ob-icon-circle {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  position: relative;
+  z-index: 1;
+  margin-bottom: 20px;
+  animation: iconBounce 3s ease-in-out infinite;
+  box-shadow: var(--icon-shadow, 0 8px 32px rgba(79, 70, 229, 0.4));
+  background: var(--icon-bg, linear-gradient(135deg, rgba(79, 70, 229, 0.3), rgba(129, 140, 248, 0.2)));
+  border: 1px solid var(--icon-border, rgba(129, 140, 248, 0.3));
+}
+
+@keyframes iconBounce {
+
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+
+  50% {
+    transform: translateY(-8px) scale(1.03);
+  }
+}
+
+.jc-ob-mini-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+}
+
+.jc-ob-tag {
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #94a3b8;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 20px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.jc-ob-tag:hover {
+  background: linear-gradient(135deg, rgba(79, 70, 229, 0.25), rgba(129, 140, 248, 0.15));
+  border-color: rgba(129, 140, 248, 0.5);
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
+}
+
+/* ── RIGHT PANEL (Text content) ──────────────────────────────── */
+.jc-ob-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 44px 40px 44px 36px;
+  position: relative;
+}
+
+.jc-ob-slide-num {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--slide-accent, #818cf8);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.jc-ob-slide-num::before {
+  content: '';
+  width: 20px;
+  height: 2px;
+  background: var(--slide-accent, #818cf8);
+  border-radius: 2px;
+  display: inline-block;
+}
+
+.jc-ob-slide-title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.2;
+  margin: 0 0 14px;
+  letter-spacing: -0.5px;
+}
+
+.jc-ob-slide-title span {
+  background: var(--title-gradient, linear-gradient(135deg, #818cf8, #a5b4fc));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.jc-ob-slide-desc {
+  font-size: 0.88rem;
+  color: #94a3b8;
+  line-height: 1.7;
+  margin: 0 0 22px;
+}
+
+/* Feature list items */
+.jc-ob-features {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.jc-ob-feature-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.82rem;
+  color: #cbd5e1;
+  line-height: 1.4;
+}
+
+.jc-ob-feature-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  flex-shrink: 0;
+  margin-top: 1px;
+  background: var(--dot-bg, rgba(79, 70, 229, 0.2));
+  border: 1px solid var(--dot-border, rgba(99, 102, 241, 0.4));
+  color: var(--slide-accent, #818cf8);
+  font-weight: 700;
+}
+
+/* ── FOOTER ──────────────────────────────────────────────────── */
+.jc-ob-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 0 12px;
+  flex-shrink: 0;
+}
+
+/* Progress dots */
+.jc-ob-dots {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.jc-ob-dot {
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.15);
+  cursor: pointer;
+  transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  width: 6px;
+}
+
+.jc-ob-dot.active {
+  width: 24px;
+  background: linear-gradient(90deg, #4f46e5, #818cf8);
+  box-shadow: 0 0 8px rgba(129, 140, 248, 0.5);
+}
+
+.jc-ob-dot.done {
+  background: rgba(129, 140, 248, 0.4);
+}
+
+/* Navigation buttons */
+.jc-ob-nav {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.jc-ob-back-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #64748b;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  font-family: 'Outfit', sans-serif;
+}
+
+.jc-ob-back-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #94a3b8;
+}
+
+.jc-ob-back-btn:disabled {
+  opacity: 0.2;
+  cursor: not-allowed;
+}
+
+.jc-ob-next-btn {
+  padding: 11px 26px;
+  border-radius: 24px;
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
+  border: none;
+  color: #fff;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 20px rgba(79, 70, 229, 0.4);
+  font-family: 'Outfit', sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+
+.jc-ob-next-btn::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.18), transparent);
+  transition: left 0.45s ease;
+}
+
+.jc-ob-next-btn:hover::after {
+  left: 140%;
+}
+
+.jc-ob-next-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(79, 70, 229, 0.55);
+}
+
+.jc-ob-next-btn svg {
+  transition: transform 0.2s ease;
+}
+
+.jc-ob-next-btn:hover svg {
+  transform: translateX(3px);
+}
+
+/* ── SLIDE TRANSITION ────────────────────────────────────────── */
+.jc-ob-slide-content {
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+
+.jc-ob-card.slide-exit-left {
+  animation: slideExitLeft 0.35s cubic-bezier(0.4, 0, 1, 1) both;
+}
+
+.jc-ob-card.slide-enter-right {
+  animation: slideEnterRight 0.35s cubic-bezier(0, 0, 0.2, 1) both;
+}
+
+.jc-ob-card.slide-exit-right {
+  animation: slideExitRight 0.35s cubic-bezier(0.4, 0, 1, 1) both;
+}
+
+.jc-ob-card.slide-enter-left {
+  animation: slideEnterLeft 0.35s cubic-bezier(0, 0, 0.2, 1) both;
+}
+
+@keyframes slideExitLeft {
+  from {
+    opacity: 1;
+    transform: translateX(0)
+  }
+
+  to {
+    opacity: 0;
+    transform: translateX(-48px)
+  }
+}
+
+@keyframes slideEnterRight {
+  from {
+    opacity: 0;
+    transform: translateX(48px)
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0)
+  }
+}
+
+@keyframes slideExitRight {
+  from {
+    opacity: 1;
+    transform: translateX(0)
+  }
+
+  to {
+    opacity: 0;
+    transform: translateX(48px)
+  }
+}
+
+@keyframes slideEnterLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-48px)
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0)
+  }
+}
+
+/* ── WELCOME (FIRST) SLIDE SPECIAL ──────────────────────────── */
+.jc-ob-welcome-slide .jc-ob-left {
+  width: 100%;
+  text-align: center;
+  padding: 48px 40px;
+}
+
+.jc-ob-welcome-slide .jc-ob-right {
+  display: none;
+}
+
+/* ── FINISH SLIDE ────────────────────────────────────────────── */
+.jc-ob-finish-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 48px 40px;
+  gap: 0;
+}
+
+/* ── CONFETTI ────────────────────────────────────────────────── */
+.jc-confetti {
+  position: fixed;
+  pointer-events: none;
+  z-index: 1000001;
+  border-radius: 2px;
+  animation: confettiFall linear both;
+}
+
+@keyframes confettiFall {
+  0% {
+    transform: translateY(-20px) rotate(0deg) scale(1);
+    opacity: 1;
+  }
+
+  80% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateY(105vh) rotate(900deg) scale(0.5);
+    opacity: 0;
+  }
+}
+
+/* ── RESPONSIVE ──────────────────────────────────────────────── */
+@media (max-width: 680px) {
+  .jc-ob-left {
+    display: none;
+  }
+
+  .jc-ob-right {
+    padding: 32px 24px;
+  }
+
+  .jc-ob-slide-title {
+    font-size: 1.4rem;
+  }
+}
+
+/* Hide everything else when the onboarding tour is active to prevent flash/visible loader */
+.tour-active #proSidebar,
+.tour-active .main,
+.tour-active #scrollArrow,
+.tour-active #auraChatContainer,
+.tour-active .aura-chat-container,
+.tour-active #global-loader,
+.tour-active .loader-wrapper {
+  display: none !important;
+}

@@ -136,7 +136,7 @@ body.dark-mode .omni-result-item {
 
 .omni-result-item:hover,
 .omni-result-item.selected {
-    background: rgba(99, 102, 241, 0.1);
+    background: rgba(59, 130, 246, 0.1);
     transform: translateX(5px);
 }
 
@@ -158,7 +158,7 @@ body.dark-mode .omni-result-icon {
 
 .omni-result-item:hover .omni-result-icon,
 .omni-result-item.selected .omni-result-icon {
-    background: #6366f1;
+    background: var(--primary-color, #3b82f6);
     color: white;
     transform: scale(1.1);
 }
@@ -212,4 +212,169 @@ body.dark-mode .omni-result-title {
 .omni-no-results p {
     font-size: 0.9rem;
     font-weight: 500;
+}
+
+/* MINI PROFILE MODAL ENGINE */
+.mini-profile-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(10, 15, 25, 0.7);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    z-index: 31000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mini-profile-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.mini-profile-card {
+    background: rgba(30, 41, 59, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
+    border-radius: 24px;
+    width: 90%;
+    max-width: 400px;
+    padding: 30px;
+    transform: scale(0.9) translateY(20px);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    color: #f8fafc;
+    font-family: 'Outfit', sans-serif;
+    text-align: center;
+}
+
+.mini-profile-overlay.active .mini-profile-card {
+    transform: scale(1) translateY(0);
+}
+
+.mini-profile-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-color, #3b82f6), #1d4ed8);
+    color: white;
+    font-size: 2.2rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 15px auto;
+    box-shadow: 0 8px 24px rgba(37, 99, 235, 0.4);
+    text-transform: uppercase;
+    animation: avatarPulse 2.5s infinite ease-in-out;
+}
+
+.mini-profile-name {
+    font-size: 1.4rem;
+    font-weight: 800;
+    margin-bottom: 5px;
+    color: #ffffff;
+}
+
+.mini-profile-title {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--primary-color, #3b82f6);
+    font-weight: 700;
+    margin-bottom: 25px;
+}
+
+.mini-profile-details {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    text-align: left;
+    margin-bottom: 30px;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 20px;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.mini-profile-field {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.05);
+    padding-bottom: 8px;
+}
+
+.mini-profile-field:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.mini-profile-label {
+    color: #94a3b8;
+    font-weight: 600;
+}
+
+.mini-profile-value {
+    color: #f8fafc;
+    font-weight: 700;
+}
+
+.mini-profile-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.mini-profile-btn {
+    flex: 1;
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    outline: none;
+}
+
+.mini-profile-btn.close {
+    background: rgba(255, 255, 255, 0.1);
+    color: #f8fafc;
+}
+
+.mini-profile-btn.close:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.mini-profile-btn.view {
+    background: var(--primary-color, #3b82f6);
+    color: white;
+}
+
+.mini-profile-btn.view:hover {
+    background: #1d4ed8;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+@keyframes avatarPulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 8px 24px rgba(37, 99, 235, 0.4);
+    }
+    50% {
+        transform: scale(1.06);
+        box-shadow: 0 14px 32px rgba(37, 99, 235, 0.7);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 8px 24px rgba(37, 99, 235, 0.4);
+    }
 }

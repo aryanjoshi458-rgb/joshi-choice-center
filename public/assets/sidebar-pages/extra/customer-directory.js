@@ -1,4 +1,4 @@
-/* ADVANCED CUSTOMER DIRECTORY LOGIC - JOSHI CHOICE CENTER */
+﻿/* ADVANCED CUSTOMER DIRECTORY LOGIC - JOSHI CHOICE CENTER */
 
 document.addEventListener("DOMContentLoaded", () => {
     const customerGrid = document.getElementById("customerGrid");
@@ -160,7 +160,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Dashboard Stats
         totalCustCount.innerText = allCustomers.length;
-        totalBusinessValue.innerText = `₹${new Intl.NumberFormat('en-IN').format(totalBusiness)}`;
+        totalBusinessValue.innerText = `\u20B9${new Intl.NumberFormat('en-IN').format(totalBusiness)}`;
         const returningCusts = allCustomers.filter(c => c.totalVisits > 1).length;
         const rate = allCustomers.length > 0 ? Math.round((returningCusts / allCustomers.length) * 100) : 0;
         returningRate.innerText = `${rate}%`;
@@ -183,7 +183,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     ${c.history.slice(0, 2).map(h => `
                         <div class="activity-row">
                             <span class="act-name">${h.serviceName || h.service || "Service"}</span>
-                            <span class="act-amt">₹${h.amount}</span>
+                            <span class="act-amt">\u20B9${h.amount}</span>
                         </div>
                     `).join('')}
                 </div>
@@ -214,7 +214,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         <span class="v2-lab">Visits</span>
                     </div>
                     <div class="stat-v2-item">
-                        <span class="v2-val">₹${new Intl.NumberFormat('en-IN').format(c.totalSpend.toFixed(0))}</span>
+                        <span class="v2-val">\u20B9${new Intl.NumberFormat('en-IN').format(c.totalSpend.toFixed(0))}</span>
                         <span class="v2-lab">Business</span>
                     </div>
                 </div>
@@ -259,7 +259,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 </div>
                 <div class="row-stat-v2">
                     <span class="v2-lab">BUSINESS</span>
-                    <span class="v2-val">₹${new Intl.NumberFormat('en-IN').format(c.totalSpend.toFixed(0))}</span>
+                    <span class="v2-val">\u20B9${new Intl.NumberFormat('en-IN').format(c.totalSpend.toFixed(0))}</span>
                 </div>
                 <div class="row-meta-v2">
                     <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" style="opacity:0.5; margin-right:4px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>

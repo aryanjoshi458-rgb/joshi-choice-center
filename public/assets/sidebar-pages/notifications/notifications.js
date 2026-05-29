@@ -1,4 +1,4 @@
-/* ADVANCED NOTIFICATION CENTER JS - JOSHI CHOICE CENTER */
+﻿/* ADVANCED NOTIFICATION CENTER JS - JOSHI CHOICE CENTER */
 
 document.addEventListener("DOMContentLoaded", () => {
     initNotificationCenter();
@@ -121,23 +121,44 @@ function initNotificationCenter() {
     // 3. Daily Summary Logic
     function updateDailySummary() {
         const txns = JSON.parse(localStorage.getItem("transactions") || "[]");
-        const todayStr = new Date().toISOString().split("T")[0];
+        const today = new Date();
+        const dd = String(today.getDate()).padStart(2, '0');
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const yyyy = today.getFullYear();
+        const todayStr = `${dd}-${mm}-${yyyy}`;
 
-        const todayTxns = txns.filter(t => t.date === todayStr);
+        const todayTxns = txns.filter(t => {
+            if (!t.date) return false;
+            const status = (t.status || "Success").toLowerCase();
+            if (status !== "success") return false;
+            const datePart = t.date.split(" ")[0].trim();
+            return datePart === todayStr;
+        });
         const totalAmount = todayTxns.reduce((sum, t) => sum + Number(t.totalAmount || 0), 0);
 
-        document.getElementById("sumBusiness").innerText = `₹${new Intl.NumberFormat('en-IN').format(totalAmount)}`;
+        document.getElementById("sumBusiness").innerText = `\u20B9${new Intl.NumberFormat('en-IN').format(totalAmount)}`;
         document.getElementById("sumTxns").innerText = todayTxns.length;
     }
 
     // 4. Generate Business Summary Notification
     function generateDailySummaryNotif() {
         const txns = JSON.parse(localStorage.getItem("transactions") || "[]");
-        const todayStr = new Date().toISOString().split("T")[0];
-        const todayTxns = txns.filter(t => t.date === todayStr);
+        const today = new Date();
+        const dd = String(today.getDate()).padStart(2, '0');
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const yyyy = today.getFullYear();
+        const todayStr = `${dd}-${mm}-${yyyy}`;
+
+        const todayTxns = txns.filter(t => {
+            if (!t.date) return false;
+            const status = (t.status || "Success").toLowerCase();
+            if (status !== "success") return false;
+            const datePart = t.date.split(" ")[0].trim();
+            return datePart === todayStr;
+        });
 
         if (todayTxns.length === 0) {
-            showToast("No transactions found for today to summarize!", "error");
+            showToast("No successful transactions found for today to summarize!", "error");
             return;
         }
 
@@ -147,7 +168,7 @@ function initNotificationCenter() {
         const newNotif = {
             id: Date.now(),
             title: "Daily Business Summary",
-            desc: `Today's Summary: Total Transactions: ${todayTxns.length}, Business: ₹${new Intl.NumberFormat('en-IN').format(totalAmount)}, Service Profit: ₹${new Intl.NumberFormat('en-IN').format(totalCharge)}.`,
+            desc: `Today's Summary: Total Transactions: ${todayTxns.length}, Business: \u20B9${new Intl.NumberFormat('en-IN').format(totalAmount)}, Service Profit: \u20B9${new Intl.NumberFormat('en-IN').format(totalCharge)}.`,
             cat: "reminder",
             time: new Date().toISOString(),
             read: false

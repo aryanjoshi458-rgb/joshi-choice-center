@@ -152,10 +152,10 @@ window.AuraDialog = (() => {
     }
 
     return {
-        alert: (msg, title = "Alert") => show({ msg, title, showCancel: false, confirmText: "Dismiss" }),
-        confirm: (msg, title = "Confirm", isDanger = false) => show({
-            msg, title, showCancel: true, confirmText: "Yes, Proceed", cancelText: "Cancel",
-            type: isDanger ? "warning" : "info", icon: isDanger ? "⚠️" : "❓", isDanger
+        alert: (msg, title = "Alert", icon = "🔔", confirmText = "Dismiss") => show({ msg, title, showCancel: false, confirmText, icon }),
+        confirm: (msg, title = "Confirm", isDanger = false, confirmText = "Yes, Proceed", cancelText = "Cancel", customIcon = null) => show({
+            msg, title, showCancel: true, confirmText, cancelText,
+            type: isDanger ? "warning" : "info", icon: customIcon ? customIcon : (isDanger ? "⚠️" : "❓"), isDanger
         }),
         success: (msg, title = "Success") => show({ msg, title, type: "success", icon: "✅", confirmText: "Great" }),
         error: (msg, title = "Error") => show({ msg, title, type: "error", icon: "❌", confirmText: "Got it" }),

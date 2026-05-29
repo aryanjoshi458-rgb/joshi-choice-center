@@ -1,4 +1,4 @@
-/* 
+﻿/* 
    AURA QUANTUM - CUSTOMER INTELLIGENCE LOGIC 
    Handles Data Fetching, Stat Calculation, and Tree Rendering
 */
@@ -108,7 +108,11 @@ async function initProfile() {
     const customerRecords = pendingData.filter(p => {
         const cleanP = (p.mobile || "").replace(/^\+91\s?/, "").replace(/\D/g, "");
         const cleanC = (customer.mobile || "").replace(/^\+91\s?/, "").replace(/\D/g, "");
-        return cleanP === cleanC && cleanC !== "";
+        if (cleanP === cleanC && cleanC !== "") return true;
+
+        const nameP = (p.name || "").trim().toLowerCase();
+        const nameC = (customer.name || "").trim().toLowerCase();
+        return nameP === nameC && nameC !== "";
     });
 
     const unpaidCount = customerRecords.filter(p => p.status === "Pending").length;
@@ -122,7 +126,7 @@ async function initProfile() {
     });
     const statPending = document.getElementById("statPending");
     if (statPending) {
-        statPending.innerText = `₹${new Intl.NumberFormat('en-IN').format(totalPendingAmount)}`;
+        statPending.innerText = `\u20B9${new Intl.NumberFormat('en-IN').format(totalPendingAmount)}`;
     }
     let score = 100;
     if (customerRecords.length > 0) {
@@ -144,10 +148,9 @@ async function initProfile() {
     // Stats Calculation
     let totalSpend = 0; let totalCharges = 0; let lastPulse = new Date(0);
     const bankFreq = {}; const simFreq = {};
+    let successTxnCount = 0;
 
     customerTxns.forEach(t => {
-        totalSpend += Number(t.amount || 0);
-        totalCharges += Number(t.charge || 0);
         const d = parseSafeDate(t.date);
         if (d > lastPulse) lastPulse = d;
         const sName = (t.serviceName || "").toString();
@@ -158,6 +161,13 @@ async function initProfile() {
         if (sName.includes("Recharge") || sName.includes("Mobile")) {
             ["Jio", "Airtel", "Vi", "BSNL"].forEach(op => { if (sName.toLowerCase().includes(op.toLowerCase())) simFreq[op] = (simFreq[op] || 0) + 1; });
         }
+
+        const status = (t.status || "Success").toLowerCase();
+        if (status === "success") {
+            totalSpend += Number(t.amount || 0);
+            totalCharges += Number(t.charge || 0);
+            successTxnCount++;
+        }
     });
 
     const sortedBanks = Object.entries(bankFreq).sort((a, b) => b[1] - a[1]);
@@ -165,11 +175,11 @@ async function initProfile() {
     const sortedSIMs = Object.entries(simFreq).sort((a, b) => b[1] - a[1]);
     document.getElementById("profileSIM").innerText = sortedSIMs.length > 0 ? sortedSIMs[0][0] : "Unknown";
 
-    document.getElementById("statVisits").innerText = customerTxns.length;
-    document.getElementById("statSpend").innerText = `₹${new Intl.NumberFormat('en-IN').format(totalSpend)}`;
-    document.getElementById("statCharges").innerText = `₹${new Intl.NumberFormat('en-IN').format(totalCharges)}`;
+    document.getElementById("statVisits").innerText = successTxnCount;
+    document.getElementById("statSpend").innerText = `\u20B9${new Intl.NumberFormat('en-IN').format(totalSpend)}`;
+    document.getElementById("statCharges").innerText = `\u20B9${new Intl.NumberFormat('en-IN').format(totalCharges)}`;
     document.getElementById("statLastDate").innerText = lastPulse.getTime() === 0 ? "N/A" : lastPulse.toLocaleDateString("en-GB");
-    document.getElementById("statAvg").innerText = `₹${customerTxns.length ? (totalSpend / customerTxns.length).toFixed(0) : 0}`;
+    document.getElementById("statAvg").innerText = `\u20B9${successTxnCount ? (totalSpend / successTxnCount).toFixed(0) : 0}`;
 
     // LOYALTY MILESTONE CELEBRATION (10+ VISITS)
     if (customerTxns.length >= 10 && typeof confetti === 'function') {
@@ -224,12 +234,12 @@ async function initProfile() {
                             <span style="font-size: 0.7rem; color: var(--quantum-cyan); opacity: 0.8; font-weight: 700;">🕒 ${time}</span>
                         </div>
                         <div class="node-details">
-                            <span class="detail-pill">${label1}: ₹${amt}</span>
-                            <span class="detail-pill">Charge: ₹${charge}</span>
-                            <span class="detail-pill" style="color: var(--quantum-cyan)">${label3}: ₹${val3}</span>
+                            <span class="detail-pill">${label1}: \u20B9${amt}</span>
+                            <span class="detail-pill">Charge: \u20B9${charge}</span>
+                            <span class="detail-pill" style="color: var(--quantum-cyan)">${label3}: \u20B9${val3}</span>
                         </div>
                     </div>
-                    <div class="node-price"><span class="amt">₹${amt}</span><span class="status">${t.status || "SUCCESS"}</span></div>
+                    <div class="node-price"><span class="amt">\u20B9${amt}</span><span class="status">${t.status || "SUCCESS"}</span></div>
                 </div>
             </div>
         `;

@@ -515,10 +515,10 @@ document.addEventListener("DOMContentLoaded", () => {
             const termsHtml = ps.terms ? `<div style="margin-top:12px; padding:8px; background:#f8fafc; border-radius:6px; font-size:0.7em; color:#64748b; border:1px solid #f1f5f9;"><strong>T&C:</strong> ${ps.terms}</div>` : "";
 
             html = `
-            <div style="font-family: sans-serif; padding: 5px; color: #1e293b;">
+            <div style="font-family: sans-serif; padding: 15px; background: #ffffff; color: #1e293b; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
               <div style="text-align: center; margin-bottom: 12px;">
                 ${logoHtml}
-                <div style="font-size: 1.1em; font-weight: 800; color: #4f46e5; text-transform: uppercase;">${shop.name}</div>
+                <div style="font-size: 1.1em; font-weight: 800; color: #1e293b; text-transform: uppercase;">${shop.name}</div>
                 ${addrHtml}
               </div>
               <div style="background: linear-gradient(135deg, #4f46e5, #818cf8); color: white; padding: 10px; border-radius: 8px; text-align: center; margin-bottom: 12px;">
@@ -534,12 +534,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 ${contactHtml}
               </div>
               <div style="background: white; border: 1px solid #e2e8f0; padding: 10px; border-radius: 8px;">
-                <div style="display: flex; justify-content: space-between; font-size: 0.85em; margin-bottom: 5px;"><span>Amount:</span><span>₹${dummy.amount}</span></div>
-                <div style="display: flex; justify-content: space-between; font-size: 0.85em; margin-bottom: 5px;"><span>Charge:</span><span>₹${dummy.charge}</span></div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.85em; margin-bottom: 5px;"><span>Amount:</span><span>\u20B9${dummy.amount}</span></div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.85em; margin-bottom: 5px;"><span>Charge:</span><span>\u20B9${dummy.charge}</span></div>
                 ${modeHtml}
               </div>
               <div style="background: #1e293b; color: white; padding: 12px; border-radius: 8px; margin-top: 10px; display: flex; justify-content: space-between; align-items: center;">
-                <span style="font-weight: 800;">TOTAL: ₹${dummy.total}</span>
+                <span style="font-weight: 800;">TOTAL: \u20B9${dummy.total}</span>
                 <span style="background: #10b981; padding: 3px 8px; border-radius: 10px; font-size: 0.7em;">${dummy.status}</span>
               </div>
               ${termsHtml}
@@ -558,12 +558,12 @@ document.addEventListener("DOMContentLoaded", () => {
               </div>
               <table style="width: 100%; font-size: 0.8em; margin-bottom: 12px;">
                 <tr style="background: #f1f5f9;"><th style="text-align: left; padding: 8px;">Description</th><th style="text-align: right; padding: 8px;">Total</th></tr>
-                <tr><td style="padding: 8px; border-bottom: 1px solid #f1f5f9;">${dummy.service}</td><td style="padding: 8px; text-align: right; border-bottom: 1px solid #f1f5f9; font-weight: 700;">₹${dummy.total}</td></tr>
+                <tr><td style="padding: 8px; border-bottom: 1px solid #f1f5f9;">${dummy.service}</td><td style="padding: 8px; text-align: right; border-bottom: 1px solid #f1f5f9; font-weight: 700;">\u20B9${dummy.total}</td></tr>
               </table>
               <div style="text-align: right; font-size: 0.8em;">
-                <div>Subtotal: ₹${dummy.amount}</div>
-                <div>Charges: ₹${dummy.charge}</div>
-                <div style="font-size: 1.1em; font-weight: 800; color: #4f46e5; margin-top: 5px;">GRAND TOTAL: ₹${dummy.total}</div>
+                <div>Subtotal: \u20B9${dummy.amount}</div>
+                <div>Charges: \u20B9${dummy.charge}</div>
+                <div style="font-size: 1.1em; font-weight: 800; color: #4f46e5; margin-top: 5px;">GRAND TOTAL: \u20B9${dummy.total}</div>
               </div>
               ${termsHtml}
             </div>`;
@@ -637,8 +637,30 @@ document.addEventListener("DOMContentLoaded", () => {
     const FULL_BACKUP_KEYS = [
         "customers", "transactions", "expenses", "pendingCustomers",
         "app_notifications", "serviceRates", "shopProfile", "customShortcuts",
-        "theme", "appZoom", "mouseStyle", "sidebarAnim", "sidebarBgEffect", "bgAnimation"
+        "theme", "appZoom", "mouseStyle", "sidebarAnim", "sidebarBgEffect", "bgAnimation",
+        "printSettings", "jc_default_receipt_format", "appLanguage", "jc_session_timeout",
+        "jc_privacy_mode", "jc_performance_mode", "jc_dashboard_widgets", "sidebarLayout", "sidebarStyle",
+        "jc_digital_hub_active", "jc_payment_api_active", "jc_razorpay_key_id",
+        "jc_recharge_api_active", "jc_recharge_api_url", "jc_recharge_api_token", "jc_recharge_lapu_balance"
     ];
+
+    const triggerBlobDownload = (dataStr) => {
+        if (window.AppLoader) window.AppLoader.show("Generating Backup...");
+        const blob = new Blob([dataStr], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `joshi_customer_data_${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        setTimeout(() => {
+            if (window.AppLoader) window.AppLoader.hide();
+            showToast("Backup initiated! 📁", "success");
+        }, 1000);
+    };
 
     exportBtn?.addEventListener("click", async () => {
         const backupData = {};
@@ -682,27 +704,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (err.name === 'AbortError') {
                     showToast("Export Cancelled. No data saved. ❌", "info");
                 } else {
-                    console.error("Export Error:", err);
-                    showToast("Export failed!", "error");
+                    console.warn("Modern save picker failed, falling back to download blob:", err);
+                    triggerBlobDownload(dataStr);
                 }
             }
         } else {
-            if (window.AppLoader) window.AppLoader.show("Generating Backup...");
-            // Fallback
-            const blob = new Blob([dataStr], { type: "application/json" });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = `joshi_customer_data_${new Date().toISOString().split('T')[0]}.json`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-
-            setTimeout(() => {
-                if (window.AppLoader) window.AppLoader.hide();
-                showToast("Backup initiated! 📁", "success");
-            }, 1000);
+            triggerBlobDownload(dataStr);
         }
     });
 
@@ -730,10 +737,27 @@ document.addEventListener("DOMContentLoaded", () => {
                     setTimeout(() => {
                         try {
                             const data = JSON.parse(event.target.result);
+                            
+                            // Early type safety check
+                            if (!data || typeof data !== 'object') {
+                                throw new Error("Parsed data is not a valid JSON object");
+                            }
 
                             // 1. Validation: Check if this looks like a valid Joshi Backup
                             const majorKeys = ["customers", "transactions", "expenses", "pendingCustomers"];
-                            const hasEssentialData = majorKeys.some(k => Array.isArray(data[k]) || (data[k] && typeof data[k] === 'object'));
+                            const hasEssentialData = majorKeys.some(k => {
+                                if (!data[k]) return false;
+                                if (Array.isArray(data[k]) || typeof data[k] === 'object') return true;
+                                if (typeof data[k] === 'string') {
+                                    try {
+                                        const parsed = JSON.parse(data[k]);
+                                        return Array.isArray(parsed) || (parsed && typeof parsed === 'object');
+                                    } catch (e) {
+                                        return false;
+                                    }
+                                }
+                                return false;
+                            });
 
                             if (!hasEssentialData) {
                                 if (window.AppLoader) window.AppLoader.hide();
@@ -788,6 +812,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 } catch (err) {
                     if (err.name === 'AbortError') {
                         showToast("Restore Point Cancelled. No file selected. ❌", "info");
+                    } else {
+                        console.warn("Modern open picker failed, falling back to hidden file input:", err);
+                        importFileInput?.click();
                     }
                 }
             } else {
@@ -857,8 +884,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const glitchOverlay = document.querySelector(".glitch-overlay");
 
         if (wipeOverlay && typeof gsap !== 'undefined') {
-            // Hide Theme Toggle & Other UI during wipe
-            gsap.to("#themeToggleV4, #assistantSpeaker, #sidebarToggle, #proSidebar", {
+            // Hide Theme Toggle, Alerts Button & Other UI during wipe
+            gsap.to("#themeToggleV4, #assistantSpeaker, #sidebarToggle, #proSidebar, #globalAlertBtn", {
                 opacity: 0,
                 duration: 0.4,
                 pointerEvents: "none"
@@ -942,7 +969,7 @@ document.addEventListener("DOMContentLoaded", () => {
                                 opacity: 0, duration: 1, onComplete: () => {
                                     gsap.set(wipeOverlay, { display: "none", pointerEvents: "none" });
                                     // Restore UI
-                                    gsap.to("#themeToggleV4, #assistantSpeaker, #sidebarToggle, #proSidebar", {
+                                    gsap.to("#themeToggleV4, #assistantSpeaker, #sidebarToggle, #proSidebar, #globalAlertBtn", {
                                         opacity: 1,
                                         duration: 0.5,
                                         pointerEvents: "auto"
@@ -953,12 +980,11 @@ document.addEventListener("DOMContentLoaded", () => {
                         return;
                     }
 
-                    // Intelligent Wipe: Clear business data & UI Preferences
-                    CUSTOMER_DATA_KEYS.forEach(key => localStorage.removeItem(key));
-                    localStorage.removeItem("jc_dashboard_widgets"); // 🔥 FULL RESET
+                    // Intelligent Wipe: Clear all business data & UI Preferences
+                    localStorage.clear();
 
-                    if (wipingStatus) wipingStatus.innerText = "BUSINESS_DATA_PURGED_0x00";
-                    if (window.showToast) window.showToast("Business data cleared. Settings preserved.", "success");
+                    if (wipingStatus) wipingStatus.innerText = "ALL_DATA_PURGED_0x00";
+                    if (window.showToast) window.showToast("System fully reset. Restarting...", "success");
 
                     // FINAL GLITCH
                     document.body.classList.add("glitch-active");
@@ -979,8 +1005,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
             // Fallback Intelligent Wipe
-            CUSTOMER_DATA_KEYS.forEach(key => localStorage.removeItem(key));
-            showToast("Business data cleared! Restarting...", "error");
+            localStorage.clear();
+            showToast("System fully reset! Restarting...", "error");
             setTimeout(() => {
                 if (window.electronAPI && window.electronAPI.restartApp) {
                     window.electronAPI.restartApp();
@@ -1294,7 +1320,8 @@ document.addEventListener("DOMContentLoaded", () => {
         "quick-lock": "Alt + l",
         "privacy-toggle": "Alt + q",
         "export-backup": "Alt + Shift + E",
-        "import-backup": "Alt + Shift + R"
+        "import-backup": "Alt + Shift + R",
+        "focus-search": "Alt + k"
     };
 
     function loadShortcuts() {
@@ -1407,6 +1434,16 @@ document.addEventListener("DOMContentLoaded", () => {
         if (timeoutSelect) {
             const savedTimeout = localStorage.getItem("jc_session_timeout") || "0";
             timeoutSelect.value = savedTimeout;
+            
+            timeoutSelect.addEventListener("change", () => {
+                localStorage.setItem("jc_session_timeout", timeoutSelect.value);
+                if (window.Auth && window.Auth.initTimeoutMonitor) {
+                    window.Auth.initTimeoutMonitor();
+                }
+                if (window.showToast) {
+                    window.showToast("Auto Logout timer auto-saved!", "success");
+                }
+            });
         }
     }
 
@@ -1568,6 +1605,7 @@ document.addEventListener("DOMContentLoaded", () => {
         widgetTopServices: document.getElementById("widgetTopServices"),
         widgetProfit: document.getElementById("widgetProfit"),
         widgetNotes: document.getElementById("widgetNotes"),
+        widgetGalla: document.getElementById("widgetGalla"),
         lockPassword: document.getElementById("lockScreenPassword")
     };
 
@@ -1576,7 +1614,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (advancedInputs.performance) advancedInputs.performance.checked = localStorage.getItem("jc_performance_mode") === "true";
         if (advancedInputs.lockPassword) advancedInputs.lockPassword.value = localStorage.getItem("jc_password") || "123";
 
-        const widgets = JSON.parse(localStorage.getItem("jc_dashboard_widgets") || '{"today":true,"earnings":false,"expenses":false,"pending":false,"clock":true,"actions":true,"stats":false,"recentTxns":true,"topServices":true,"profit":false,"notes":true}');
+        const widgets = JSON.parse(localStorage.getItem("jc_dashboard_widgets") || '{"today":true,"earnings":false,"expenses":false,"pending":true,"clock":false,"actions":true,"stats":false,"recentTxns":false,"topServices":false,"profit":false,"notes":false,"galla":true}');
         if (advancedInputs.widgetToday) advancedInputs.widgetToday.checked = widgets.today;
         if (advancedInputs.widgetEarnings) advancedInputs.widgetEarnings.checked = widgets.earnings;
         if (advancedInputs.widgetExpenses) advancedInputs.widgetExpenses.checked = widgets.expenses;
@@ -1588,9 +1626,10 @@ document.addEventListener("DOMContentLoaded", () => {
         if (advancedInputs.widgetTopServices) advancedInputs.widgetTopServices.checked = widgets.topServices;
         if (advancedInputs.widgetProfit) advancedInputs.widgetProfit.checked = widgets.profit;
         if (advancedInputs.widgetNotes) advancedInputs.widgetNotes.checked = widgets.notes;
+        if (advancedInputs.widgetGalla) advancedInputs.widgetGalla.checked = widgets.galla !== false;
     }
 
-    document.getElementById("saveAdvancedSettings")?.addEventListener("click", () => {
+    function saveAndApplyAdvancedSettings(silent = false) {
         const privacy = advancedInputs.privacy?.checked || false;
         const performance = advancedInputs.performance?.checked || false;
 
@@ -1598,7 +1637,7 @@ document.addEventListener("DOMContentLoaded", () => {
         localStorage.setItem("jc_performance_mode", performance);
 
         if (advancedInputs.lockPassword) {
-            localStorage.setItem("jc_password", advancedInputs.lockPassword.value);
+             localStorage.setItem("jc_password", advancedInputs.lockPassword.value);
         }
 
         // Apply classes immediately
@@ -1619,16 +1658,38 @@ document.addEventListener("DOMContentLoaded", () => {
             recentTxns: advancedInputs.widgetRecentTxns?.checked || false,
             topServices: advancedInputs.widgetTopServices?.checked || false,
             profit: advancedInputs.widgetProfit?.checked || false,
-            notes: advancedInputs.widgetNotes?.checked || false
+            notes: advancedInputs.widgetNotes?.checked || false,
+            galla: advancedInputs.widgetGalla?.checked || false
         };
 
-        if (window.AppLoader) window.AppLoader.show("Saving Preferences...");
+        localStorage.setItem("jc_dashboard_widgets", JSON.stringify(widgets));
 
-        setTimeout(() => {
-            localStorage.setItem("jc_dashboard_widgets", JSON.stringify(widgets));
-            if (window.AppLoader) window.AppLoader.hide();
-            if (window.showToast) window.showToast("Advanced preferences saved! 🚀", "success");
-        }, 600);
+        // Dispatch a sync/refresh event
+        window.dispatchEvent(new Event("auraDataSynced"));
+
+        if (!silent && window.showToast) {
+            window.showToast("Settings applied & saved! 🚀", "success");
+        }
+    }
+
+    // Attach automatic change event listeners to all advanced settings checkboxes
+    Object.keys(advancedInputs).forEach(key => {
+        const el = advancedInputs[key];
+        if (el) {
+            if (el.type === "checkbox") {
+                el.addEventListener("change", () => {
+                    saveAndApplyAdvancedSettings(false);
+                });
+            } else if (el.tagName === "SELECT") {
+                el.addEventListener("change", () => {
+                    saveAndApplyAdvancedSettings(false);
+                });
+            } else if (el.type === "password") {
+                el.addEventListener("change", () => {
+                    saveAndApplyAdvancedSettings(false);
+                });
+            }
+        }
     });
 
     // --- LOGIN ACTIVITY LOGIC ---

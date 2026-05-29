@@ -12,8 +12,10 @@
     border-radius: 24px;
     padding: 30px;
     backdrop-filter: blur(20px);
-    height: calc(100vh - 250px);
-    overflow-y: auto;
+    height: 620px; /* Locked console height */
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 .terminal-header {
@@ -71,6 +73,9 @@
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .hub-tab.active {
@@ -162,6 +167,12 @@
     font-size: 0.8rem;
     height: calc(100% - 40px);
     overflow-y: auto;
+    scrollbar-width: none; /* Hide scrollbar for Firefox */
+    -ms-overflow-style: none; /* Hide scrollbar for IE/Edge */
+}
+
+.log-container::-webkit-scrollbar {
+    display: none; /* Hide scrollbar for Chrome/Safari/Opera */
 }
 
 .log-entry {
@@ -386,4 +397,191 @@
 
 .orbiting-icon {
     filter: drop-shadow(0 0 10px currentColor);
+}
+
+/* AuraSelect Form Alignment Overrides */
+.form-group .aura-select-container {
+    width: 100% !important;
+    margin-top: 6px;
+    display: block;
+}
+
+.form-group .aura-select-trigger {
+    height: 42px; /* matches standard input heights */
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    color: var(--text-main);
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.form-group .aura-select-trigger:hover {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: var(--primary-color);
+}
+
+.form-group .aura-select-dropdown {
+    background: #0f172a; /* Deep dark slate to look extremely premium in dark mode */
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+.form-group .aura-select-options {
+    max-height: 230px;
+}
+
+/* Input with Visibility Toggle Wrapper */
+.input-with-icon {
+    position: relative;
+    width: 100%;
+}
+
+.input-with-icon input {
+    width: 100%;
+    padding-right: 45px !important; /* Leave space for the eye icon */
+}
+
+.toggle-password {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    z-index: 10;
+}
+
+.toggle-password:hover {
+    color: var(--text-main);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.toggle-password svg {
+    pointer-events: none;
+}
+
+/* Premium Switch Toggle CSS */
+.api-toggle-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-color);
+    padding: 15px 20px;
+    border-radius: 14px;
+    margin-top: 10px;
+    margin-bottom: 5px;
+    transition: all 0.3s ease;
+}
+
+.api-toggle-wrapper:hover {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(99, 102, 241, 0.4);
+}
+
+.toggle-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.toggle-title {
+    font-weight: 700;
+    color: var(--text-main);
+    font-size: 0.95rem;
+    margin: 0 !important;
+}
+
+.toggle-desc {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+/* The switch - the box around the slider */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 26px;
+  flex-shrink: 0;
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.1);
+  transition: .4s;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .4s;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+}
+
+input:checked + .slider {
+  background-color: #6366f1;
+  border-color: #6366f1;
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #6366f1;
+}
+
+input:checked + .slider:before {
+  transform: translateX(24px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+.hub-panels {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    scrollbar-width: none; /* Hide scrollbar for Firefox */
+    -ms-overflow-style: none; /* Hide scrollbar for IE/Edge */
+}
+
+.hub-panels::-webkit-scrollbar {
+    display: none; /* Hide scrollbar for Chrome/Safari/Opera */
 }

@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", () => {
+﻿document.addEventListener("DOMContentLoaded", () => {
     const expenseForm = document.getElementById("expenseForm");
     const expenseTableBody = document.getElementById("expenseTableBody");
     const expenseSearch = document.getElementById("expenseSearch");
@@ -107,13 +107,13 @@ document.addEventListener("DOMContentLoaded", () => {
         if (window.parent && window.parent.createAppNotification) {
             window.parent.createAppNotification(
                 "Expense Logged",
-                `Category: ${expense.category}, Amount: ₹${expense.amount}, Desc: ${expense.description}`,
+                `Category: ${expense.category}, Amount: \u20B9${expense.amount}, Desc: ${expense.description}`,
                 "system"
             );
         } else if (window.createAppNotification) {
             window.createAppNotification(
                 "Expense Logged",
-                `Category: ${expense.category}, Amount: ₹${expense.amount}, Desc: ${expense.description}`,
+                `Category: ${expense.category}, Amount: \u20B9${expense.amount}, Desc: ${expense.description}`,
                 "system"
             );
         }

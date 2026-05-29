@@ -91,7 +91,12 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         if (pendingChargeInput) {
-            const pending = Math.max(0, charge - received);
+            let pending = 0;
+            if (serviceType === "Printing & Document Services") {
+                pending = Math.max(0, amount - received);
+            } else {
+                pending = Math.max(0, charge - received);
+            }
             pendingChargeInput.value = formatWithCommas(pending);
         }
 
@@ -153,9 +158,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 charge = rate.charge || 0;
             }
 
-            if (chargeInput) {
-                chargeInput.value = formatWithCommas(charge);
-                calculateTotal();
+            if (serviceType === "Printing & Document Services") {
+                if (amountInput) {
+                    amountInput.value = formatWithCommas(charge);
+                    calculateTotal();
+                }
+            } else {
+                if (chargeInput) {
+                    chargeInput.value = formatWithCommas(charge);
+                    calculateTotal();
+                }
             }
         }
     }

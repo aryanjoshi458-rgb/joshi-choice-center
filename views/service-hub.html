@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self';">
+    <meta charset="UTF-8"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com https://checkout.razorpay.com 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://*.razorpay.com; connect-src 'self' https://api.razorpay.com; frame-src 'self' https://api.razorpay.com https://checkout.razorpay.com;">
     <title>Digital Banking Hub | Joshi Choice Center</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../public/css/style.css">
@@ -9,9 +9,16 @@
     <link rel="stylesheet" href="../public/css/aura-titlebar.css">
     <link rel="stylesheet" href="../public/css/aura-design-system.css">
     <link rel="stylesheet" href="../public/assets/features/sidebar/sidebar.css">
+    <link rel="stylesheet" href="../public/css/assistant-speaker.css">
     <link rel="stylesheet" href="../public/css/theme-toggle.css">
+    <link rel="stylesheet" href="../public/assets/features/notification/notification.css">
     <link rel="stylesheet" href="../public/assets/sidebar-pages/global/global-background-animation.css">
+    <link rel="stylesheet" href="../public/assets/features/onboarding/onboarding.css">
     <link rel="stylesheet" href="../public/assets/sidebar-pages/service-hub/service-hub.css">
+    <link rel="stylesheet" href="../public/css/aura-modals.css">
+    <link rel="stylesheet" href="../public/css/aura-assistant.css">
+    <link rel="stylesheet" href="../public/css/aura-select.css">
+    <link rel="stylesheet" href="../public/assets/features/notification/toast.css">
     
     <script src="../public/js/aura-window.js"></script>
     <script src="../public/js/loader.js"></script>
@@ -123,6 +130,62 @@
 
     </div>
 
+    <!-- Toggle Button (Speak ke niche) -->
+    <button id="sidebarToggle">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+            stroke-linejoin="round">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+    </button>
+
+    <!-- VOICE + THEME CONTROLS -->
+    <div class="assistant-speaker" id="assistantSpeaker">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M11 5L6 9H2v6h4l5 4V5z"></path>
+            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+        </svg>
+        <span>Speak</span>
+    </div>
+
+    <!-- AURA CELESTIAL v4 THEME SLIDER -->
+    <div class="aura-celestial-v4" id="themeToggleV4">
+        <div class="celestial-sky-window"></div>
+        <div class="celestial-knob-v4" id="celestialKnob"></div>
+    </div>
+
+    <!-- AURA SMART CHAT PANEL -->
+    <div id="auraChatPanel" class="aura-chat-panel">
+        <div class="aura-chat-header">
+            <div class="aura-chat-header-left">
+                <div class="aura-chat-logo">AI</div>
+                <div class="aura-chat-header-info">
+                    <h3>Aura Assistant</h3>
+                    <p>Your Smart Companion</p>
+                </div>
+            </div>
+            <div class="aura-chat-controls">
+                <div class="aura-chat-control min"></div>
+                <div class="aura-chat-control max"></div>
+                <div id="closeAuraChat" class="aura-chat-control close"></div>
+            </div>
+        </div>
+        <div class="aura-chat-history" id="auraChatHistory">
+            <!-- Messages appear here -->
+        </div>
+        <div class="aura-chat-input-area">
+            <input type="text" id="auraChatInput" placeholder="Ask about the software...">
+            <button class="aura-chat-send" id="auraChatSend">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="22" y1="2" x2="11" y2="13" />
+                    <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                </svg>
+            </button>
+        </div>
+    </div>
+
     <!-- Main Content -->
     <main class="main">
         <header class="brand">
@@ -141,10 +204,34 @@
                 </div>
 
                 <div class="hub-tabs">
-                    <button class="hub-tab active" data-target="aeps-panel">AEPS (Banking)</button>
-                    <button class="hub-tab" data-target="recharge-panel">Recharge & Bills</button>
-                    <button class="hub-tab" data-target="dmt-panel">Money Transfer</button>
-                    <button class="hub-tab" data-target="api-panel">API Settings</button>
+                    <button class="hub-tab active" data-target="aeps-panel">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="tab-icon">
+                            <path d="M3 22h18M6 22V9M10 22V9M14 22V9M18 22V9M12 2L2 9h20L12 2z"/>
+                        </svg>
+                        AEPS (Banking)
+                    </button>
+                    <button class="hub-tab" data-target="recharge-panel">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="tab-icon">
+                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                        </svg>
+                        Recharge & Bills
+                    </button>
+                    <button class="hub-tab" data-target="dmt-panel">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="tab-icon">
+                            <polyline points="17 1 21 5 17 9"/>
+                            <path d="M3 11V9a4 4 0 0 1 4-4h14"/>
+                            <polyline points="7 23 3 19 7 15"/>
+                            <path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+                        </svg>
+                        Money Transfer
+                    </button>
+                    <button class="hub-tab" data-target="api-panel">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="tab-icon">
+                            <circle cx="12" cy="12" r="3"/>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                        </svg>
+                        API Settings
+                    </button>
                 </div>
 
                 <div class="hub-panels">
@@ -154,6 +241,8 @@
                             <div class="form-group">
                                 <label>Service Type</label>
                                 <select id="aeps-service">
+                                    <option value="">-- Select --</option>
+                                    <option value="deposit">Cash Deposit</option>
                                     <option value="withdrawal">Cash Withdrawal</option>
                                     <option value="balance">Balance Enquiry</option>
                                     <option value="statement">Mini Statement</option>
@@ -162,19 +251,82 @@
                             <div class="form-group">
                                 <label>Select Bank</label>
                                 <select id="aeps-bank">
-                                    <option>State Bank of India</option>
-                                    <option>Bank of Baroda</option>
-                                    <option>HDFC Bank</option>
-                                    <option>Airtel Payments Bank</option>
+                                    <option value="">-- Select --</option>
+                                    <option value="Airtel Payments Bank">Airtel Payments Bank</option>
+                                    <option value="Andhra Pragathi Grameena Bank">Andhra Pragathi Grameena Bank</option>
+                                    <option value="AU Small Finance Bank">AU Small Finance Bank</option>
+                                    <option value="Axis Bank">Axis Bank</option>
+                                    <option value="Bandhan Bank">Bandhan Bank</option>
+                                    <option value="Bank of Baroda">Bank of Baroda</option>
+                                    <option value="Bank of India">Bank of India</option>
+                                    <option value="Bank of Maharashtra">Bank of Maharashtra</option>
+                                    <option value="Baroda Gujarat Gramin Bank">Baroda Gujarat Gramin Bank</option>
+                                    <option value="Baroda Rajasthan Kshetriya Gramin Bank">Baroda Rajasthan Kshetriya Gramin Bank</option>
+                                    <option value="Baroda Uttar Pradesh Gramin Bank">Baroda Uttar Pradesh Gramin Bank</option>
+                                    <option value="Canara Bank">Canara Bank</option>
+                                    <option value="Central Bank of India">Central Bank of India</option>
+                                    <option value="City Union Bank">City Union Bank</option>
+                                    <option value="CSB Bank">CSB Bank</option>
+                                    <option value="DCB Bank">DCB Bank</option>
+                                    <option value="Dhanlaxmi Bank">Dhanlaxmi Bank</option>
+                                    <option value="Equitas Small Finance Bank">Equitas Small Finance Bank</option>
+                                    <option value="ESAF Small Finance Bank">ESAF Small Finance Bank</option>
+                                    <option value="Federal Bank">Federal Bank</option>
+                                    <option value="Fino Payments Bank">Fino Payments Bank</option>
+                                    <option value="HDFC Bank">HDFC Bank</option>
+                                    <option value="ICICI Bank">ICICI Bank</option>
+                                    <option value="IDBI Bank">IDBI Bank</option>
+                                    <option value="IDFC First Bank">IDFC First Bank</option>
+                                    <option value="India Post Payments Bank">India Post Payments Bank</option>
+                                    <option value="Indian Bank">Indian Bank</option>
+                                    <option value="Indian Overseas Bank">Indian Overseas Bank</option>
+                                    <option value="IndusInd Bank">IndusInd Bank</option>
+                                    <option value="Jammu & Kashmir Bank">Jammu & Kashmir Bank</option>
+                                    <option value="Jana Small Finance Bank">Jana Small Finance Bank</option>
+                                    <option value="Jio Payments Bank">Jio Payments Bank</option>
+                                    <option value="Karnataka Bank">Karnataka Bank</option>
+                                    <option value="Karnataka Gramin Bank">Karnataka Gramin Bank</option>
+                                    <option value="Karur Vysya Bank">Karur Vysya Bank</option>
+                                    <option value="Kotak Mahindra Bank">Kotak Mahindra Bank</option>
+                                    <option value="Madhya Pradesh Gramin Bank">Madhya Pradesh Gramin Bank</option>
+                                    <option value="Maharashtra Gramin Bank">Maharashtra Gramin Bank</option>
+                                    <option value="Nainital Bank">Nainital Bank</option>
+                                    <option value="NSDL Payments Bank">NSDL Payments Bank</option>
+                                    <option value="Paytm Payments Bank">Paytm Payments Bank</option>
+                                    <option value="Prathama UP Gramin Bank">Prathama UP Gramin Bank</option>
+                                    <option value="Punjab & Sind Bank">Punjab & Sind Bank</option>
+                                    <option value="Punjab National Bank">Punjab National Bank</option>
+                                    <option value="Rajasthan Marudhara Gramin Bank">Rajasthan Marudhara Gramin Bank</option>
+                                    <option value="RBL Bank">RBL Bank</option>
+                                    <option value="Saurashtra Gramin Bank">Saurashtra Gramin Bank</option>
+                                    <option value="South Indian Bank">South Indian Bank</option>
+                                    <option value="State Bank of India">State Bank of India</option>
+                                    <option value="Suryoday Small Finance Bank">Suryoday Small Finance Bank</option>
+                                    <option value="Tamilnad Mercantile Bank">Tamilnad Mercantile Bank</option>
+                                    <option value="UCO Bank">UCO Bank</option>
+                                    <option value="Ujjivan Small Finance Bank">Ujjivan Small Finance Bank</option>
+                                    <option value="Union Bank of India">Union Bank of India</option>
+                                    <option value="Utkarsh Small Finance Bank">Utkarsh Small Finance Bank</option>
+                                    <option value="Uttar Bihar Gramin Bank">Uttar Bihar Gramin Bank</option>
+                                    <option value="Yes Bank">Yes Bank</option>
                                 </select>
                             </div>
                             <div class="form-group full-width">
                                 <label>Aadhaar Number</label>
-                                <input type="text" id="aeps-aadhaar" placeholder="XXXX XXXX XXXX">
+                                <div class="input-with-icon">
+                                    <input type="password" id="aeps-aadhaar" placeholder="XXXX-XXXX-XXXX" maxlength="14" autocomplete="off">
+                                    <button type="button" class="toggle-password" id="toggle-aadhaar">
+                                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                            <circle cx="12" cy="12" r="3"></circle>
+                                            <line id="eye-slash" x1="2" y1="2" x2="22" y2="22" style="display: block; stroke: currentColor;"></line>
+                                        </svg>
+                                    </button>
+                                </div>
                             </div>
                             <div class="form-group">
-                                <label>Amount (₹)</label>
-                                <input type="number" id="aeps-amount" placeholder="0">
+                                <label>Amount (&#8377;)</label>
+                                <input type="text" id="aeps-amount" placeholder="0">
                             </div>
                             <div class="form-group">
                                 <label>Fingerprint Auth</label>
@@ -189,10 +341,16 @@
 
                     <!-- Recharge Panel -->
                     <div id="recharge-panel" class="hub-panel">
+                        <!-- LAPU Wallet Balance Bar -->
+                        <div class="lapu-balance-bar" id="lapuBalanceBar" style="display: none; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 12px; padding: 12px 18px; margin-bottom: 20px; justify-content: space-between; align-items: center; font-family: 'Outfit', sans-serif;">
+                            <span style="font-weight: 600; color: var(--text-muted); font-size: 0.9rem;">💼 LAPU Wallet Balance:</span>
+                            <span id="lapuBalanceVal" style="font-weight: 800; color: #10b981; font-size: 1.1rem;">&#8377;5,000.00</span>
+                        </div>
                         <div class="form-grid">
                             <div class="form-group">
                                 <label>Service</label>
                                 <select id="rec-type">
+                                    <option value="">--Select--</option>
                                     <option value="mobile">Mobile Recharge</option>
                                     <option value="dth">DTH Recharge</option>
                                     <option value="electricity">Electricity Bill</option>
@@ -201,6 +359,7 @@
                             <div class="form-group">
                                 <label>Operator</label>
                                 <select id="rec-operator">
+                                    <option value="">--Select--</option>
                                     <option>Jio</option>
                                     <option>Airtel</option>
                                     <option>VI</option>
@@ -211,8 +370,8 @@
                                 <input type="text" id="rec-number" placeholder="Enter number">
                             </div>
                             <div class="form-group">
-                                <label>Amount (₹)</label>
-                                <input type="number" id="rec-amount" placeholder="0">
+                                <label>Amount (&#8377;)</label>
+                                <input type="text" id="rec-amount" placeholder="0">
                             </div>
                             <div class="form-group">
                                 <label>Plan Details</label>
@@ -234,8 +393,8 @@
                                 <input type="text" id="dmt-ifsc" placeholder="SBIN000XXXX">
                             </div>
                             <div class="form-group">
-                                <label>Amount (₹)</label>
-                                <input type="number" id="dmt-amount" placeholder="0">
+                                <label>Amount (&#8377;)</label>
+                                <input type="text" id="dmt-amount" placeholder="0">
                             </div>
                         </div>
                         <button class="execute-btn" id="btn-dmt">Transfer Money</button>
@@ -243,27 +402,83 @@
 
                     <!-- API Panel -->
                     <div id="api-panel" class="hub-panel">
-                        <div class="api-info-box">
-                            <p><strong>Note:</strong> Enter your Fintech API credentials here to connect to real-time banking servers.</p>
+                        <div class="api-info-box" style="background: rgba(37, 99, 235, 0.08); border-color: #2563eb; color: var(--text-main);">
+                            <p><strong>Razorpay Gateway Credentials:</strong> Configure your API credentials to process live transactions or toggle sandbox mode.</p>
                         </div>
                         <div class="form-grid">
-                            <div class="form-group full-width">
-                                <label>Merchant ID</label>
-                                <input type="password" value="JC-12345678" readonly>
+                            <div class="form-group full-width api-toggle-wrapper">
+                                <div class="toggle-info">
+                                    <label class="toggle-title">Activate Razorpay Gateway</label>
+                                    <span class="toggle-desc">Process all transactions in Digital Hub using your real Razorpay credentials.</span>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="paymentApiActive">
+                                    <span class="slider round"></span>
+                                </label>
                             </div>
+
                             <div class="form-group full-width">
-                                <label>API Secret Key</label>
-                                <input type="password" value="••••••••••••••••" placeholder="Enter Key">
+                                <span style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1.5px; color: #2563eb; font-weight: 800; display: block; margin-bottom: 6px;">Razorpay Payment Gateway</span>
+                                <label for="razorpayKeyId">Razorpay Key ID</label>
+                                <div class="input-with-icon">
+                                    <input type="password" id="razorpayKeyId" placeholder="rzp_test_..." style="font-family: monospace; letter-spacing: 0.5px;">
+                                    <button type="button" class="toggle-password" id="toggle-razorpay-key">
+                                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                            <circle cx="12" cy="12" r="3"></circle>
+                                            <line id="razorpay-eye-slash" x1="2" y1="2" x2="22" y2="22" style="display: block; stroke: currentColor;"></line>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <p style="font-size: 0.8em; color: var(--text-muted); margin-top: 6px; line-height: 1.4;">
+                                    Enter your Razorpay Key ID (starts with rzp_test_ or rzp_live_). Obtain this from Razorpay Dashboard > Settings > API Keys.
+                                </p>
                             </div>
+
+                            <div class="form-group full-width api-toggle-wrapper" style="margin-top: 10px;">
+                                <div class="toggle-info">
+                                    <label class="toggle-title">Activate Digital Banking Hub</label>
+                                    <span class="toggle-desc">Enable the full Digital Banking Hub interface and bypass the 'Coming Soon' overlay.</span>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="digitalHubActive">
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+
+                            <!-- B2B Mobile Recharge API Settings -->
+                            <div class="form-group full-width" style="border-top: 1px dashed rgba(255,255,255,0.1); margin-top: 20px; padding-top: 20px;">
+                                <span style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1.5px; color: #10b981; font-weight: 800; display: block; margin-bottom: 6px;">B2B Auto-Recharge API Gateway</span>
+                            </div>
+
+                            <div class="form-group full-width api-toggle-wrapper">
+                                <div class="toggle-info">
+                                    <label class="toggle-title">Activate Auto-Recharge API</label>
+                                    <span class="toggle-desc">Route all recharges through the configured B2B API gateway.</span>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="rechargeApiActive">
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+
                             <div class="form-group">
-                                <label>Environment</label>
-                                <select>
-                                    <option>Sandbox (Testing)</option>
-                                    <option disabled>Production (Live)</option>
-                                </select>
+                                <label for="rechargeApiUrl">API Provider Endpoint</label>
+                                <input type="text" id="rechargeApiUrl" placeholder="https://api.rechargeservice.in/v2/pay">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="rechargeApiToken">API Auth Token</label>
+                                <input type="password" id="rechargeApiToken" placeholder="rec_tok_...">
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label for="rechargeLapuBalance">LAPU Wallet Balance (&#8377;)</label>
+                                <input type="number" id="rechargeLapuBalance" placeholder="5000">
                             </div>
                         </div>
-                        <button class="execute-btn" style="background: #10b981;">Save Settings</button>
+
+                        <button class="execute-btn" id="savePaymentSettings" style="background: #2563eb; border-color: #2563eb; margin-top: 25px;">Save & Apply Credentials</button>
                     </div>
                 </div>
             </div>
@@ -293,7 +508,7 @@
     </div>
 
     <!-- "The Orbit" Coming Soon Overlay -->
-    <div class="cs-overlay" id="hubComingSoon">
+    <div class="cs-overlay" id="hubComingSoon" style="display: none;">
         <div class="orbit-container">
             <!-- Animated SVG Rings -->
             <svg class="orbit-svg" viewBox="0 0 500 500">
@@ -301,18 +516,18 @@
                 <circle class="orbit-ring ring-2" cx="250" cy="250" r="160" />
                 <circle class="orbit-ring ring-3" cx="250" cy="250" r="220" />
                 
-                <!-- Orbiting Icons (Holographic) -->
+                <!-- Orbiting Icons (Holographic Banking Blue, Gold, and Emerald) -->
                 <g class="orbiting-icon icon-1">
-                    <circle r="15" fill="rgba(99, 102, 241, 0.2)" stroke="#6366f1" stroke-width="2" />
-                    <path d="M-5 0h10M0 -5v10" stroke="#6366f1" stroke-width="2" />
+                    <circle r="15" fill="rgba(37, 99, 235, 0.2)" stroke="#2563eb" stroke-width="2" />
+                    <path d="M-5 0h10M0 -5v10" stroke="#2563eb" stroke-width="2" />
                 </g>
                 <g class="orbiting-icon icon-2">
-                    <circle r="12" fill="rgba(168, 85, 247, 0.2)" stroke="#a855f7" stroke-width="2" />
-                    <circle r="5" stroke="#a855f7" stroke-width="1.5" />
+                    <circle r="12" fill="rgba(197, 160, 89, 0.2)" stroke="#c5a059" stroke-width="2" />
+                    <circle r="5" stroke="#c5a059" stroke-width="1.5" />
                 </g>
                 <g class="orbiting-icon icon-3">
-                    <circle r="18" fill="rgba(37, 99, 235, 0.2)" stroke="#2563eb" stroke-width="2" />
-                    <rect x="-6" y="-6" width="12" height="12" stroke="#2563eb" stroke-width="2" />
+                    <circle r="18" fill="rgba(16, 185, 129, 0.2)" stroke="#10b981" stroke-width="2" />
+                    <rect x="-6" y="-6" width="12" height="12" stroke="#10b981" stroke-width="2" />
                 </g>
             </svg>
 
@@ -332,15 +547,26 @@
                         <button type="submit" id="notify-btn">Notify</button>
                     </div>
                 </form>
+                <a href="#" id="unlock-hub-link" style="color: #2563eb; font-size: 0.75rem; text-decoration: underline; margin-top: 20px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; display: block; text-shadow: 0 0 10px rgba(37, 99, 235, 0.3);">Bypass Developer Access</a>
             </div>
         </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/MotionPathPlugin.min.js"></script>
-    <script src="../public/assets/sidebar-pages/service-hub/service-hub.js"></script>
     <script src="../public/assets/features/sidebar/sidebar.js"></script>
+    <script src="../public/js/assistant-speaker.js"></script>
     <script src="../public/js/theme-toggle.js"></script>
+    <script src="../public/assets/sidebar-pages/global/global-background-animation.js"></script>
+    <script src="../public/js/aura-select.js"></script>
+    <script src="../public/assets/sidebar-pages/service-hub/service-hub.js"></script>
+    <script src="../public/js/shortcuts.js"></script>
+    <script src="../public/js/aura-modals.js"></script>
+    <script src="../public/js/button-animations.js"></script>
+    <script src="../public/assets/sidebar-pages/service-hub/digital-hub-tour.js"></script>
+    <script src="../public/assets/features/notification/toast.js"></script>
+
+    <div id="toastBox"></div>
 </body>
 </html>
 

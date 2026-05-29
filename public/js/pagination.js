@@ -148,8 +148,16 @@
             circlesHtml += `<div class="pg-circle" data-page="${totalPages}">${totalPages}</div>`;
         }
 
+        let sectionLabel = "Reports";
+        const path = window.location.pathname.toLowerCase();
+        if (path.includes("pending-payments")) {
+            sectionLabel = "Pending";
+        } else if (path.includes("new-customer")) {
+            sectionLabel = "Customers";
+        }
+
         pager.innerHTML = `
-            <div class="pg-section-label">Reports</div>
+            <div class="pg-section-label">${sectionLabel}</div>
             <div class="pg-nav-btn ${currentPage === 1 ? 'disabled' : ''}" id="pgPrev">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
             </div>

@@ -1,18 +1,23 @@
-// ===== LOAD DATA =====
+﻿// ===== LOAD DATA =====
 function loadCustomers() {
     let list = JSON.parse(localStorage.getItem("pendingCustomers") || "[]");
+    
+    // Ye code tumhare purane aur naye sabhi data ko hamesha Date ke hisab se (newest first) sort karke fix kar dega
+    list.sort((a, b) => b.id - a.id);
+    localStorage.setItem("pendingCustomers", JSON.stringify(list));
+
     let html = "";
 
     list.forEach((c, i) => {
         let statusClass = c.status == "Paid" ? "paid" : "pending";
         html += `
         <tr data-id="${c.id}" class="aura-table-row">
-            <td><span class="aura-index">${i + 1}</span></td>
-            <td style="font-weight: 600; opacity: 0.9;">${c.date}</td>
+            <td><span class="aura-index">${list.length - i}</span></td>
+            <td style="font-weight: 600; opacity: 0.9; white-space: nowrap;">${c.date}</td>
             <td style="font-weight: 700;">${c.name}</td>
-            <td><span class="aura-mobile-tag">${c.mobile}</span></td>
+            <td style="white-space: nowrap;"><span class="aura-mobile-tag">${c.mobile}</span></td>
             <td>${c.work}</td>
-            <td style="font-weight: 700; color: var(--primary-color);">₹${c.charge}</td>
+            <td style="font-weight: 700; color: var(--primary-color);">\u20B9${c.charge}</td>
             <td>
                 <span class="status ${statusClass}">
                     ${c.status}
@@ -26,6 +31,9 @@ function loadCustomers() {
                     <button class="btn btn-pending" onclick="markPending(${i})" title="Mark as Pending">
                         <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                     </button>
+                    <button class="btn" onclick="editCustomer(${i})" title="Edit Record" style="background: linear-gradient(135deg, #10b981, #059669); color: white; box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3); margin-right: 6px;">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                    </button>
                     <button class="btn btn-delete" onclick="deleteCustomer(${i})" title="Delete Record">
                         <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
                     </button>
@@ -38,6 +46,7 @@ function loadCustomers() {
     const tableBody = document.getElementById("customerTable");
     if (tableBody) tableBody.innerHTML = html;
     updatePendingTotal();
+    filterTable();
 }
 
 
@@ -90,7 +99,7 @@ function addCustomer() {
         let list = JSON.parse(localStorage.getItem("pendingCustomers") || "[]");
 
         // ✅ FIX: ID ADD KIYA
-        list.push({
+        list.unshift({
             id: Date.now().toString(),   // 🔥 IMPORTANT
             date: window.AuraDate ? window.AuraDate.toDDMMYYYY(date) : date,
             name: name,
@@ -115,7 +124,7 @@ function addCustomer() {
         if (window.parent && window.parent.createAppNotification) {
             window.parent.createAppNotification(
                 "New Pending Payment",
-                `Customer: ${name}, Service: ${work}, Amount: ₹${charge}`,
+                `Customer: ${name}, Service: ${work}, Amount: \u20B9${charge}`,
                 "reminder"
             );
         }
@@ -153,7 +162,7 @@ function markPaid(i) {
         if (window.parent && window.parent.createAppNotification) {
             window.parent.createAppNotification(
                 "Payment Received",
-                `Customer: ${record.name} has paid ₹${record.charge}`,
+                `Customer: ${record.name} has paid \u20B9${record.charge}`,
                 "transaction"
             );
         }
@@ -315,8 +324,10 @@ const statusFilter = document.getElementById("onlyStatusFilter");
 const searchInput = document.getElementById("searchInput");
 
 function filterTable() {
-    const searchValue = searchInput ? searchInput.value.toLowerCase() : "";
-    const statusValue = statusFilter ? statusFilter.value.toLowerCase() : "all";
+    const searchEl = document.getElementById("searchInput");
+    const statusEl = document.getElementById("onlyStatusFilter");
+    const searchValue = searchEl ? searchEl.value.toLowerCase() : "";
+    const statusValue = statusEl ? statusEl.value.toLowerCase() : "all";
 
     const rows = document.querySelectorAll("#customerTable tr");
 
@@ -330,8 +341,14 @@ function filterTable() {
                            (statusValue === "paid" && statusText.includes("paid")) ||
                            (statusValue === "pending" && statusText.includes("pending"));
 
-        row.style.display = (matchSearch && matchStatus) ? "" : "none";
+        const isVisible = matchSearch && matchStatus;
+        row.style.display = isVisible ? "" : "none";
+        row.setAttribute("data-filtered", isVisible ? "false" : "true");
     });
+
+    if (typeof window.refreshPagination === "function") {
+        window.refreshPagination();
+    }
 }
 
 if (statusFilter) statusFilter.addEventListener("change", filterTable);
@@ -358,5 +375,119 @@ function updatePendingTotal() {
         totalEl.innerText = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(total);
         gsap.fromTo(totalEl, { scale: 1.2, color: "#f59e0b" }, { scale: 1, color: "inherit", duration: 0.5 });
     }
+}
+
+// ===== EDIT RECORD FUNCTIONS =====
+function editCustomer(index) {
+    const list = JSON.parse(localStorage.getItem("pendingCustomers") || "[]");
+    const record = list[index];
+    if (!record) return;
+
+    document.getElementById("editCustomerIndex").value = index;
+
+    // Convert DD-MM-YYYY to YYYY-MM-DD for input[type=date]
+    let dateVal = "";
+    if (record.date) {
+        const parts = record.date.split("-");
+        if (parts.length === 3) {
+            dateVal = `${parts[2]}-${parts[1]}-${parts[0]}`;
+        }
+    }
+    document.getElementById("editDate").value = dateVal;
+    document.getElementById("editName").value = record.name || "";
+
+    // Mobile number might have "+91 " prefix, strip it if we want raw input
+    let mobileVal = record.mobile || "";
+    if (mobileVal.startsWith("+91 ")) {
+        mobileVal = mobileVal.substring(4);
+    }
+    document.getElementById("editMobile").value = mobileVal;
+    document.getElementById("editWork").value = record.work || "";
+    document.getElementById("editCharge").value = record.charge || "";
+    document.getElementById("editStatus").value = record.status || "Pending";
+
+    // Show modal
+    const modal = document.getElementById("editModal");
+    if (modal) modal.style.display = "flex";
+}
+
+function closeEditModal() {
+    const modal = document.getElementById("editModal");
+    if (modal) modal.style.display = "none";
+}
+
+function saveCustomerEdit() {
+    const index = parseInt(document.getElementById("editCustomerIndex").value);
+    const list = JSON.parse(localStorage.getItem("pendingCustomers") || "[]");
+    const record = list[index];
+    if (!record) return;
+
+    const dateVal = document.getElementById("editDate").value;
+    const rawName = document.getElementById("editName").value.trim();
+    const mobileRaw = document.getElementById("editMobile").value.trim();
+    const work = document.getElementById("editWork").value.trim();
+    const charge = document.getElementById("editCharge").value.trim();
+    const status = document.getElementById("editStatus").value;
+
+    if (!dateVal || !rawName || !mobileRaw || !work || !charge) {
+        AuraDialog.error("Please fill all fields", "Validation Error");
+        return;
+    }
+
+    // Capitalize name
+    const name = rawName
+        .toLowerCase()
+        .split(" ")
+        .filter(w => w)
+        .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+        .join(" ");
+
+    // Format mobile
+    let digits = mobileRaw.replace(/\D/g, '');
+    if (digits.startsWith("91")) {
+        digits = digits.slice(2);
+    }
+    digits = digits.slice(0, 10);
+    if (digits.length !== 10) {
+        AuraDialog.error("Enter valid 10 digit mobile number", "Invalid Mobile");
+        return;
+    }
+    const mobile = "+91 " + digits;
+
+    // Update record
+    record.date = window.AuraDate ? window.AuraDate.toDDMMYYYY(dateVal) : dateVal;
+    record.name = name;
+    record.mobile = mobile;
+    record.work = work;
+    record.charge = charge;
+    record.status = status;
+
+    // 🔥 SYNC: Update main transactions database if txnId exists
+    if (record.txnId) {
+        let txns = JSON.parse(localStorage.getItem("transactions") || "[]");
+        const tIdx = txns.findIndex(t => (t.transactionId || t.txnId).toString() === record.txnId.toString());
+        if (tIdx >= 0) {
+            txns[tIdx].date = record.date;
+            txns[tIdx].customerName = name;
+            txns[tIdx].mobileNumber = mobile;
+            txns[tIdx].serviceType = work;
+            txns[tIdx].charge = charge;
+            txns[tIdx].status = status === "Paid" ? "Success" : "Pending";
+            if (status === "Paid") {
+                txns[tIdx].pendingCharge = "0";
+                txns[tIdx].receivedCharge = charge;
+            } else {
+                txns[tIdx].pendingCharge = charge;
+                txns[tIdx].receivedCharge = "0";
+            }
+            localStorage.setItem("transactions", JSON.stringify(txns));
+        }
+    }
+
+    localStorage.setItem("pendingCustomers", JSON.stringify(list));
+    closeEditModal();
+    loadCustomers();
+
+    if (typeof showToast === "function") showToast("Record Updated! 📝");
 }
 

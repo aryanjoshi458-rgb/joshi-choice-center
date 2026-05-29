@@ -5,7 +5,9 @@ const fs = require('fs');
 const { exec } = require('child_process');
 
 // --- STORAGE PERSISTENCE ENGINE ---
+// Data will be stored in the OS default user data folder (e.g. AppData on Windows)
 const storagePath = path.join(app.getPath('userData'), 'storage');
+
 if (!fs.existsSync(storagePath)) {
   fs.mkdirSync(storagePath, { recursive: true });
 }
@@ -211,11 +213,6 @@ ipcMain.on('storage:clear', async (event) => {
   }
 });
 
-ipcMain.on('reset-zoom-level', (event) => {
-  const win = BrowserWindow.fromWebContents(event.sender);
-  if (win) win.webContents.setZoomLevel(0);
-});
-
 // IPC handler to finalize quit after user confirms in UI
 ipcMain.on('confirm-app-quit', () => {
   app.exit();
@@ -266,7 +263,7 @@ const template = [
       { type: 'separator' },
       {
         label: 'Search Anything...',
-        accelerator: 'Alt+F',
+        accelerator: 'Ctrl+F',
         click: (menuItem, browserWindow) => {
           if (browserWindow) browserWindow.webContents.send('trigger-omni-search');
         }
@@ -345,6 +342,13 @@ const template = [
   {
     role: 'help',
     submenu: [
+      {
+        label: 'Software Tour',
+        click: (menuItem, browserWindow) => {
+          if (browserWindow) browserWindow.webContents.send('trigger-software-tour');
+        }
+      },
+      { type: 'separator' },
       {
         label: 'About Software',
         click: (menuItem, browserWindow) => {

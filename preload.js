@@ -22,9 +22,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
     onTriggerOmniSearch: (callback) => ipcRenderer.on('trigger-omni-search', () => callback()),
     onShowAboutModal: (callback) => ipcRenderer.on('show-about-modal', () => callback()),
     onTriggerUpdateCheck: (callback) => ipcRenderer.on('trigger-update-check', () => callback()),
-
-    // Zoom Control
-    resetZoom: () => ipcRenderer.send('reset-zoom-level'),
+    onTriggerSoftwareTour: (callback) => ipcRenderer.on('trigger-software-tour', () => callback()),
 
     // Persistence Bridge
     getAllData: () => ipcRenderer.invoke('storage:get-all'),

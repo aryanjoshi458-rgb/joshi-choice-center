@@ -1,11 +1,11 @@
-/**
+﻿/**
  * AURA OMNI-SEARCH ENGINE
  * A professional, system-wide search system for Joshi Choice Center.
  * Features: Instant Search, Keyboard Navigation, Category Badges.
  */
 
 (function () {
-    let overlay, container, input, resultsArea;
+    let overlay, container, input, resultsArea, miniProfileOverlay;
     let selectedIndex = -1;
     let currentResults = [];
 
@@ -38,6 +38,51 @@
         input = document.getElementById('omniSearchInput');
         resultsArea = document.getElementById('omniResultsArea');
 
+        // Inject Mini Profile Modal HTML
+        miniProfileOverlay = document.createElement('div');
+        miniProfileOverlay.id = 'miniProfileOverlay';
+        miniProfileOverlay.className = 'mini-profile-overlay';
+        miniProfileOverlay.style.opacity = '0';
+        miniProfileOverlay.style.pointerEvents = 'none';
+        miniProfileOverlay.style.visibility = 'hidden';
+        
+        miniProfileOverlay.innerHTML = `
+            <div class="mini-profile-card">
+                <div class="mini-profile-avatar" id="miniProfileAvatar">C</div>
+                <div class="mini-profile-name" id="miniProfileName">Customer Name</div>
+                <div class="mini-profile-title">Mini Profile</div>
+                <div class="mini-profile-details">
+                    <div class="mini-profile-field">
+                        <span class="mini-profile-label">Mobile Number</span>
+                        <span class="mini-profile-value" id="miniProfileMobile">N/A</span>
+                    </div>
+                    <div class="mini-profile-field">
+                        <span class="mini-profile-label">Aadhar Number</span>
+                        <span class="mini-profile-value" id="miniProfileAadhar">N/A</span>
+                    </div>
+                    <div class="mini-profile-field">
+                        <span class="mini-profile-label">Bank Name</span>
+                        <span class="mini-profile-value" id="miniProfileBank">N/A</span>
+                    </div>
+                    <div class="mini-profile-field">
+                        <span class="mini-profile-label">SIM/Operator</span>
+                        <span class="mini-profile-value" id="miniProfileSIM">N/A</span>
+                    </div>
+                </div>
+                <div class="mini-profile-actions">
+                    <button type="button" class="mini-profile-btn close" id="miniProfileCloseBtn">Close</button>
+                    <button type="button" class="mini-profile-btn view" id="miniProfileViewBtn">View Profile</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(miniProfileOverlay);
+
+        // Bind Close Events for Mini Profile
+        document.getElementById('miniProfileCloseBtn').addEventListener('click', hideMiniProfile);
+        miniProfileOverlay.addEventListener('click', (e) => {
+            if (e.target === miniProfileOverlay) hideMiniProfile();
+        });
+
         // 2. Event Listeners
         window.addEventListener('keydown', handleGlobalKeydown);
         input.addEventListener('input', handleSearch);
@@ -56,14 +101,14 @@
 
     const handleGlobalKeydown = (e) => {
         // Toggle with Alt + F (Find) or Ctrl + K
-        if ((e.altKey && e.key.toLowerCase() === 'f') || (e.ctrlKey && e.key.toLowerCase() === 'k')) {
+        if ((e.altKey && e.key.toLowerCase() === 'f') || (e.ctrlKey && e.key.toLowerCase() === 'f')) {
             e.preventDefault();
             toggle();
         }
         if (e.key === 'Escape') hide();
     };
 
-    let searchCache = { transactions: [], customers: [] };
+    let searchCache = { transactions: [], customers: [], pending: [] };
     let searchTimeout = null;
 
     const toggle = () => {
@@ -75,9 +120,10 @@
         try {
             searchCache.transactions = JSON.parse(localStorage.getItem('transactions') || '[]');
             searchCache.customers = JSON.parse(localStorage.getItem('customers') || '[]');
+            searchCache.pending = JSON.parse(localStorage.getItem('pendingCustomers') || '[]');
         } catch (e) {
             console.error("Omni-Search: Data corruption detected.", e);
-            searchCache = { transactions: [], customers: [] };
+            searchCache = { transactions: [], customers: [], pending: [] };
         }
 
         overlay.style.opacity = '1';
@@ -98,7 +144,7 @@
         overlay.classList.remove('active');
         input.blur();
         currentResults = [];
-        searchCache = { transactions: [], customers: [] };
+        searchCache = { transactions: [], customers: [], pending: [] };
     };
 
     const handleSearch = () => {
@@ -141,10 +187,27 @@
                     results.push({
                         type: 'txn',
                         title: t.serviceName || t.serviceType || "Service",
-                        subtitle: `${txnId} | ${t.customerName || 'Walk-in'} | ₹${t.totalAmount || 0}`,
+                        subtitle: `${txnId} | ${t.customerName || 'Walk-in'} | \u20B9${t.totalAmount || 0}`,
                         icon: '📄',
                         id: txnId,
                         data: t
+                    });
+                }
+            });
+
+         // Search Cached Pending Payments (Multi-keyword AND)
+            searchCache.pending.forEach(p => {
+                const searchString = `${p.name || ""} ${p.mobile || ""} ${p.work || ""} ${p.status || ""}`.toLowerCase();
+                const isMatch = queryWords.every(word => searchString.includes(word));
+
+                if (isMatch) {
+                    results.push({
+                        type: 'pending',
+                        title: `${p.name || "Customer"} (Pending)`,
+                        subtitle: `${p.work || 'Work'} | \u20B9${p.charge || 0} | ${p.status || 'Pending'}`,
+                        icon: '⏳', // Pending ke liye hourglass icon
+                        id: p.id,
+                        data: p
                     });
                 }
             });
@@ -170,7 +233,7 @@
                         <div class="omni-result-title">${res.title}</div>
                         <div class="omni-result-subtitle">${res.subtitle}</div>
                     </div>
-                    <span class="omni-result-badge badge-${res.type}">${res.type === 'customer' ? 'Customer' : 'Transaction'}</span>
+                    <span class="omni-result-badge badge-${res.type}">${res.type === 'customer' ? 'Customer' : (res.type === 'pending' ? 'Pending' : 'Transaction')}</span>
                 </div>
             `).join('');
 
@@ -213,15 +276,136 @@
         }
     };
 
-    const executeResult = (res) => {
-        hide();
-        if (res.type === 'customer') {
-            // Navigate to high-fidelity customer profile
-            window.location.href = `customer-profile.html?cid=${encodeURIComponent(res.id)}`;
-        } else if (res.type === 'txn') {
-            // Navigate to reports with txn id highlight
-            window.location.href = `reports.html?txnId=${res.id}`;
+    const cleanMobile = (m) => (m || "").toString().replace(/^\+91\s?/, "").replace(/\D/g, "").slice(-10);
+
+    const getCustomerIntelligence = (customer) => {
+        const customerTxns = searchCache.transactions.filter(t => {
+            if (t.customerId && t.customerId === customer.id) return true;
+            const targetClean = cleanMobile(customer.mobile || customer.mobileNumber);
+            return targetClean !== "" && cleanMobile(t.mobileNumber || t.mobile) === targetClean;
+        });
+
+        const bankFreq = {};
+        const simFreq = {};
+        customerTxns.forEach(t => {
+            const sName = (t.serviceName || "").toString();
+            if (sName.includes("Banking")) {
+                const parts = sName.split(" - ");
+                if (parts.length >= 2) {
+                    const bank = parts[1].trim();
+                    bankFreq[bank] = (bankFreq[bank] || 0) + 1;
+                }
+            }
+            if (sName.includes("Recharge") || sName.includes("Mobile")) {
+                ["Jio", "Airtel", "Vi", "BSNL"].forEach(op => {
+                    if (sName.toLowerCase().includes(op.toLowerCase())) {
+                        simFreq[op] = (simFreq[op] || 0) + 1;
+                    }
+                });
+            }
+        });
+
+        const sortedBanks = Object.entries(bankFreq).sort((a, b) => b[1] - a[1]);
+        const bankName = sortedBanks.length > 0 ? sortedBanks[0][0] : "None Detected";
+
+        const sortedSIMs = Object.entries(simFreq).sort((a, b) => b[1] - a[1]);
+        const simName = sortedSIMs.length > 0 ? sortedSIMs[0][0] : "Unknown";
+
+        return { bankName, simName };
+    };
+
+    const showMiniProfile = (customer) => {
+        const intel = getCustomerIntelligence(customer);
+        
+        document.getElementById('miniProfileName').textContent = customer.name || "Walk-in Customer";
+        
+        // Circular name (e.g. Initials AJ or A)
+        const nameParts = (customer.name || "C").trim().split(/\s+/);
+        let initials = "";
+        if (nameParts.length >= 2) {
+            initials = nameParts[0].charAt(0).toUpperCase() + nameParts[nameParts.length - 1].charAt(0).toUpperCase();
+        } else if (nameParts.length === 1) {
+            initials = nameParts[0].charAt(0).toUpperCase();
         }
+        document.getElementById('miniProfileAvatar').textContent = initials || "C";
+        
+        document.getElementById('miniProfileMobile').textContent = customer.mobile || customer.mobileNumber || "N/A";
+        document.getElementById('miniProfileAadhar').textContent = customer.aadhar || customer.aadharNumber || "N/A";
+        document.getElementById('miniProfileBank').textContent = intel.bankName;
+        document.getElementById('miniProfileSIM').textContent = intel.simName;
+        
+        const viewBtn = document.getElementById('miniProfileViewBtn');
+        if (customer.id === "GUEST" || (customer.id && customer.id.includes("WALKIN"))) {
+            viewBtn.style.display = 'none';
+        } else {
+            viewBtn.style.display = 'block';
+            viewBtn.onclick = () => {
+                hideMiniProfile();
+                hide();
+                window.location.href = `customer-profile.html?cid=${encodeURIComponent(customer.id)}`;
+            };
+        }
+        
+        miniProfileOverlay.style.opacity = '1';
+        miniProfileOverlay.style.pointerEvents = 'all';
+        miniProfileOverlay.style.visibility = 'visible';
+        miniProfileOverlay.classList.add('active');
+        
+        window.removeEventListener('keydown', handleGlobalKeydown);
+        window.addEventListener('keydown', handleMiniProfileKeydown);
+    };
+
+    const hideMiniProfile = () => {
+        miniProfileOverlay.style.opacity = '0';
+        miniProfileOverlay.style.pointerEvents = 'none';
+        miniProfileOverlay.style.visibility = 'hidden';
+        miniProfileOverlay.classList.remove('active');
+        
+        window.removeEventListener('keydown', handleMiniProfileKeydown);
+        window.addEventListener('keydown', handleGlobalKeydown);
+    };
+
+    const handleMiniProfileKeydown = (e) => {
+        if (e.key === 'Escape') {
+            e.preventDefault();
+            hideMiniProfile();
+        }
+    };
+
+    const executeResult = (res) => {
+        let customerObj = null;
+        if (res.type === 'customer') {
+            customerObj = res.data;
+        } else if (res.type === 'txn') {
+            const cleanResMob = cleanMobile(res.data.mobileNumber || res.data.mobile);
+            customerObj = searchCache.customers.find(c => {
+                if (c.id && res.data.customerId && c.id === res.data.customerId) return true;
+                return cleanResMob !== "" && cleanMobile(c.mobile || c.mobileNumber) === cleanResMob;
+            });
+            if (!customerObj && res.data.customerName) {
+                customerObj = searchCache.customers.find(c => (c.name || "").trim().toLowerCase() === res.data.customerName.trim().toLowerCase());
+            }
+        } else if (res.type === 'pending') {
+            const cleanResMob = cleanMobile(res.data.mobile);
+            customerObj = searchCache.customers.find(c => {
+                return cleanResMob !== "" && cleanMobile(c.mobile || c.mobileNumber) === cleanResMob;
+            });
+            if (!customerObj && res.data.name) {
+                customerObj = searchCache.customers.find(c => (c.name || "").trim().toLowerCase() === res.data.name.trim().toLowerCase());
+            }
+        }
+
+        if (!customerObj) {
+            customerObj = {
+                id: (res.data && (res.data.customerId || res.data.id)) || "GUEST",
+                name: (res.data && (res.data.customerName || res.data.name)) || "Walk-in Customer",
+                mobile: (res.data && (res.data.mobileNumber || res.data.mobile)) || "N/A",
+                aadhar: (res.data && (res.data.aadhar || res.data.aadharNumber)) || "N/A",
+                address: (res.data && res.data.address) || "N/A"
+            };
+        }
+
+        showMiniProfile(customerObj);
     };
 
     // Auto-init

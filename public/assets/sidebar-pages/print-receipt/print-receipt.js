@@ -38,6 +38,18 @@ document.getElementById("search").oninput = function () {
   document.getElementById("list").innerHTML = html;
 };
 
+// Handle scanner keypress (captures TXN-xxxxx on Enter and loads it)
+document.getElementById("search").addEventListener("keydown", function (e) {
+  if (e.key === "Enter") {
+    let val = this.value.trim().toUpperCase();
+    let found = txns.find(t => (t.transactionId || "").toUpperCase() === val);
+    if (found) {
+      selectTxn(found.transactionId);
+      this.blur();
+    }
+  }
+});
+
 window.selectTxn = function (id) {
   selectedTxn = txns.find(x => x.transactionId == id);
   updatePreview();
@@ -52,6 +64,33 @@ window.updatePreview = function () {
   const preview = document.getElementById("preview");
   preview.innerHTML = content; // Changed to innerHTML to support new colorful designs
   preview.className = "receipt-preview size-" + size;
+
+  // Render premium glassmorphic UPI QR Payment card if status is pending/failed
+  const upiContainer = document.getElementById("upiPayCardContainer");
+  if (upiContainer) {
+    const status = (selectedTxn.status || "Paid").toUpperCase();
+    if (status === "PENDING" || status === "FAILED") {
+      const shop = JSON.parse(localStorage.getItem("shopProfile")) || { name: "JOSHI CHOICE CENTER" };
+      const upiId = shop.upiId || "aryanjoshi458@ybl";
+      const total = Number(selectedTxn.totalAmount || (Number(selectedTxn.amount || 0) + Number(selectedTxn.charge || 0))).toFixed(2);
+      const upiUrl = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(shop.name)}&am=${total}&cu=INR`;
+      upiContainer.innerHTML = `
+        <div class="upi-pay-card" style="margin-top: 20px; padding: 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); background: linear-gradient(135deg, rgba(79, 70, 229, 0.15), rgba(129, 140, 248, 0.15)); backdrop-filter: blur(10px); display: flex; align-items: center; gap: 20px; animation: fadeIn 0.5s ease-out; box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);">
+          <div style="background: white; padding: 8px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: flex; justify-content: center; align-items: center;">
+             <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(upiUrl)}" style="width: 100px; height: 100px; display: block;" />
+          </div>
+          <div style="flex: 1;">
+             <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.7; font-weight: 700; color: var(--aura-text-main, #333);">Scan to Pay</div>
+             <div style="font-size: 1.3rem; font-weight: 800; color: #4f46e5; margin: 4px 0;">\u20B9${total}</div>
+             <div style="font-size: 0.75rem; color: var(--text-muted, #666); font-family: monospace;">UPI ID: ${upiId}</div>
+             <div style="margin-top: 8px; font-size: 0.7rem; background: rgba(245, 158, 11, 0.15); color: #f59e0b; padding: 3px 8px; border-radius: 20px; width: fit-content; font-weight: bold; text-transform: uppercase;">Payment Pending</div>
+          </div>
+        </div>
+      `;
+    } else {
+      upiContainer.innerHTML = "";
+    }
+  }
 };
 
 function generateReceiptText(t, f) {
@@ -118,8 +157,22 @@ function generateReceiptText(t, f) {
         ${ps.terms}
       </div>` : "";
 
+    const upiId = shop.upiId || "aryanjoshi458@ybl";
+    const upiUrl = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(shop.name)}&am=${total}&cu=INR`;
+    const upiQrSection = (status === 'PENDING' || status === 'FAILED') ? `
+      <div style="margin-top: 15px; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; background: #faf5ff; display: flex; align-items: center; gap: 15px; justify-content: center;">
+        <div style="background: white; padding: 5px; border-radius: 6px; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center;">
+          <img src="https://api.qrserver.com/v1/create-qr-code/?size=70x70&data=${encodeURIComponent(upiUrl)}" style="width: 70px; height: 70px; display: block;">
+        </div>
+        <div style="text-align: left;">
+          <div style="font-size: 0.75em; font-weight: 800; color: #7c3aed; text-transform: uppercase; letter-spacing: 0.5px;">Scan to Pay</div>
+          <div style="font-size: 1.1em; font-weight: 800; color: #1e293b; margin: 2px 0;">\u20B9${total}</div>
+          <div style="font-size: 0.65em; color: #64748b; font-family: monospace;">UPI ID: ${upiId}</div>
+        </div>
+      </div>` : "";
+
     out = `
-<div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 5px; color: #1e293b; white-space: normal;">
+<div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 15px; background: #ffffff; color: #1e293b; white-space: normal; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
   <div style="text-align: center; margin-bottom: 15px;">
     ${logoImg}
     <div style="font-size: 1.3em; font-weight: 800; color: #1e293b; text-transform: uppercase; letter-spacing: 1px;">${shop.name}</div>
@@ -150,11 +203,11 @@ function generateReceiptText(t, f) {
   <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; margin-bottom: 15px;">
      <div style="display: flex; justify-content: space-between; font-size: 0.9em; margin-bottom: 5px; color: #475569;">
        <span>Base Amount:</span>
-       <span>₹${amount}</span>
+       <span>\u20B9${amount}</span>
      </div>
      <div style="display: flex; justify-content: space-between; font-size: 0.9em; margin-bottom: 5px; color: #475569;">
        <span>Service Charges:</span>
-       <span>₹${charge}</span>
+       <span>\u20B9${charge}</span>
      </div>
      ${paymentModeRow}
   </div>
@@ -162,12 +215,13 @@ function generateReceiptText(t, f) {
   <div style="background: #1e293b; color: white; padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center;">
     <div>
       <div style="font-size: 0.75em; opacity: 0.8; text-transform: uppercase;">Total Paid</div>
-      <div style="font-size: 1.4em; font-weight: 800;">₹${total}</div>
+      <div style="font-size: 1.4em; font-weight: 800;">\u20B9${total}</div>
     </div>
     <div style="background: ${status === 'SUCCESS' || status === 'PAID' ? '#10b981' : '#f59e0b'}; padding: 6px 12px; border-radius: 20px; font-size: 0.8em; font-weight: 800;">${status}</div>
   </div>
 
   ${termsSection}
+  ${upiQrSection}
 
   <div style="text-align: center; margin-top: 20px; font-size: 0.8em; color: #94a3b8; font-style: italic;">
     <div style="margin-bottom: 2px;">${ps.footer1 || "Thank You"}</div>
@@ -210,15 +264,15 @@ function generateReceiptText(t, f) {
       </tr>
       <tr>
         <td style="padding: 10px; color: #e2e8f0; font-weight: 600;">${service}</td>
-        <td style="padding: 10px; text-align: right; font-weight: 700; color: #f8fafc;">₹${total}</td>
+        <td style="padding: 10px; text-align: right; font-weight: 700; color: #f8fafc;">\u20B9${total}</td>
       </tr>
     </table>
   </div>
 
   <div style="text-align: right; font-size: 0.9em; margin-bottom: 20px; color: #94a3b8;">
-    <div style="margin-bottom: 4px;">Base Amount: <span style="color: #f8fafc;">₹${amount}</span></div>
-    <div style="margin-bottom: 4px;">Service Charges: <span style="color: #f8fafc;">₹${charge}</span></div>
-    <div style="font-size: 1.1em; font-weight: 800; color: #4f46e5; margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.1);">Amount Paid: ₹${total}</div>
+    <div style="margin-bottom: 4px;">Base Amount: <span style="color: #f8fafc;">\u20B9${amount}</span></div>
+    <div style="margin-bottom: 4px;">Service Charges: <span style="color: #f8fafc;">\u20B9${charge}</span></div>
+    <div style="font-size: 1.1em; font-weight: 800; color: #4f46e5; margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.1);">Amount Paid: \u20B9${total}</div>
   </div>
 
   <div style="background: rgba(245, 158, 11, 0.05); border: 1px dashed rgba(245, 158, 11, 0.3); padding: 8px; border-radius: 6px; font-size: 0.75em; color: #f59e0b; margin-bottom: 15px;">
@@ -245,6 +299,10 @@ function generateReceiptText(t, f) {
       extra += `</div>`;
       out += extra;
     }
+  }
+
+  if (f <= 5) {
+    out = `<div style="font-family: monospace; white-space: pre-wrap; font-size: 12px; line-height: 1.2; color: inherit;">${out}</div>`;
   }
 
   return out;
@@ -324,7 +382,7 @@ window.sendWhatsApp = async function () {
 *Customer:* ${t.customerName}
 *Service:* ${t.serviceName}
 ------------------------------
-*Total Amount:* ₹${t.totalAmount}
+*Total Amount:* \u20B9${t.totalAmount}
 *Payment Mode:* ${(t.paymentMode || "Cash").toUpperCase()}
 *Status:* ${t.status.toUpperCase()}
 ------------------------------

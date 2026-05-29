@@ -1,9 +1,25 @@
+﻿window.formatCurrencyInput = function (input) {
+  const selectionStart = input.selectionStart;
+  const selectionEnd = input.selectionEnd;
+  const originalLength = input.value.length;
+
+  let cleanVal = input.value.replace(/[^0-9]/g, '');
+  if (cleanVal) {
+    input.value = parseInt(cleanVal).toLocaleString('en-IN');
+  } else {
+    input.value = '';
+  }
+
+  const lengthDifference = input.value.length - originalLength;
+  input.setSelectionRange(selectionStart + lengthDifference, selectionEnd + lengthDifference);
+};
+
 window.updateTodayDashboard = function () {
   const txns = JSON.parse(localStorage.getItem("transactions")) || [];
   const expenses = JSON.parse(localStorage.getItem("expenses")) || [];
   const pending = JSON.parse(localStorage.getItem("pendingCustomers")) || [];
   const customers = JSON.parse(localStorage.getItem("customers")) || [];
-  const widgets = JSON.parse(localStorage.getItem("jc_dashboard_widgets") || '{"today":true,"earnings":false,"expenses":false,"pending":false,"clock":true,"actions":true,"stats":false,"recentTxns":true,"topServices":true,"profit":false,"notes":true}');
+  const widgets = JSON.parse(localStorage.getItem("jc_dashboard_widgets") || '{"today":true,"earnings":false,"expenses":false,"pending":true,"clock":false,"actions":true,"stats":false,"recentTxns":false,"topServices":false,"profit":false,"notes":false,"galla":true}');
 
   const today = new Date();
   const currentD = today.getDate();
@@ -35,6 +51,11 @@ window.updateTodayDashboard = function () {
   let totalOverallEarnings = 0;
   let totalOverallExpenses = 0;
   let totalPendingAmount = 0;
+  let todayCashInflow = 0;
+  let todayCashOutflow = 0;
+  let rawCashInflow = 0;
+  let rawCashOutflow = 0;
+  let cashCommissionInflow = 0;
 
   // Last 7 days analytics map
   const last7Days = Array.from({ length: 7 }, (_, i) => {
@@ -46,35 +67,112 @@ window.updateTodayDashboard = function () {
 
   txns.forEach(txn => {
     const tDate = parseSafeDate(txn.date);
-    totalOverallEarnings += parseAmt(txn.charge);
+    const status = (txn.status || "Success").toLowerCase();
+    const isSuccess = status === "success";
+
+    if (isSuccess) {
+      totalOverallEarnings += parseAmt(txn.charge);
+    }
 
     // Today's Stats
     const isToday = tDate.getDate() === currentD && tDate.getMonth() === currentM && tDate.getFullYear() === currentY;
     if (isToday) {
-      totalTransactions++;
-      totalCommission += parseAmt(txn.charge);
-      totalAmount += parseAmt(txn.amount);
+      totalTransactions++; // Increment for all statuses (Success, Pending, Failed)
+
+      if (isSuccess) {
+        totalCommission += parseAmt(txn.charge);
+        totalAmount += parseAmt(txn.amount);
+
+        const paymentMode = (txn.paymentMode || "Cash").toUpperCase();
+        if (paymentMode === "CASH") {
+          const sName = (txn.serviceName || "").toLowerCase();
+          const isBankingOrTransfer = sName.includes("banking") || sName.includes("money transfer");
+          
+          if (isBankingOrTransfer) {
+            const isWithdrawal = sName.includes("withdrawal") ||
+              sName.includes("withdraw") ||
+              sName.includes("payout") ||
+              sName.includes("qr pay");
+
+            if (isWithdrawal) {
+              // AePS / UPI Cash Outflow: Handing physical cash back to the customer
+              rawCashOutflow += parseAmt(txn.amount);
+            } else {
+              // Cash Inflow: Customer pays amount in physical cash (charge is separate)
+              rawCashInflow += parseAmt(txn.amount);
+              cashCommissionInflow += parseAmt(txn.charge);
+            }
+          }
+        }
+      }
     }
 
     // Last 7 Days Analytics
-    last7Days.forEach(day => {
-      if (tDate.getDate() === day.date.getDate() &&
-        tDate.getMonth() === day.date.getMonth() &&
-        tDate.getFullYear() === day.date.getFullYear()) {
-        day.commission += parseAmt(txn.charge);
-      }
-    });
+    if (isSuccess) {
+      last7Days.forEach(day => {
+        if (tDate.getDate() === day.date.getDate() &&
+          tDate.getMonth() === day.date.getMonth() &&
+          tDate.getFullYear() === day.date.getFullYear()) {
+          day.commission += parseAmt(txn.charge);
+        }
+      });
+    }
   });
 
   expenses.forEach(exp => {
     totalOverallExpenses += parseAmt(exp.amount);
+
+    const eDate = parseSafeDate(exp.date);
+    const isTodayExpense = eDate.getDate() === currentD && eDate.getMonth() === currentM && eDate.getFullYear() === currentY;
+    if (isTodayExpense) {
+      rawCashOutflow += parseAmt(exp.amount);
+    }
   });
+
+  // Calculate Net/Offset Cash Inflow and Outflow for Card Displays
+  if (rawCashInflow >= rawCashOutflow) {
+    todayCashInflow = rawCashInflow - rawCashOutflow;
+    todayCashOutflow = 0;
+  } else {
+    todayCashOutflow = rawCashOutflow - rawCashInflow;
+    todayCashInflow = 0;
+  }
+
+  // Dynamic Pending Calculations
+  const pendingMap = {};
+  let topAmountCustomer = "None";
+  let topAmountValue = 0;
+  let topCountCustomer = "None";
+  let topCountValue = 0;
 
   pending.forEach(p => {
     if (p.status === "Pending") {
-      totalPendingAmount += parseAmt(p.charge);
+      const pAmt = parseAmt(p.charge);
+      totalPendingAmount += pAmt;
+
+      const name = p.name || "Unknown";
+      if (!pendingMap[name]) pendingMap[name] = { amount: 0, count: 0 };
+      pendingMap[name].amount += pAmt;
+      pendingMap[name].count += 1;
     }
   });
+
+  // Find Top Customers
+  for (const name in pendingMap) {
+    if (pendingMap[name].amount > topAmountValue) {
+      topAmountValue = pendingMap[name].amount;
+      topAmountCustomer = name;
+    }
+    if (pendingMap[name].count > topCountValue) {
+      topCountValue = pendingMap[name].count;
+      topCountCustomer = name;
+    }
+  }
+
+  // Formatting long names
+  const truncate = (str, len) => str.length > len ? str.substring(0, len) + '..' : str;
+  const topAmtNameDisp = truncate(topAmountCustomer, 10);
+  const topCountNameDisp = truncate(topCountCustomer, 10);
 
   const container = document.getElementById("dashboardContainer");
   if (!container) return;
@@ -151,9 +249,15 @@ window.updateTodayDashboard = function () {
             </div>
             <div class="card-body">
                 <h1 class="privacy-sensitive" style="color: #fff;">${formatCurrency(totalPendingAmount)}</h1>
-                <div class="card-trend" style="background: rgba(255,255,255,0.2); color: #fff;">
-                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
-                    <span>Outstanding</span>
+                <div style="display: flex; flex-direction: column; gap: 4px; margin-top: 10px; font-size: 0.75rem; color: rgba(255,255,255,0.9); background: rgba(255,255,255,0.15); padding: 8px 10px; border-radius: 8px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="opacity: 0.8;">Highest:</span>
+                        <strong title="${topAmountCustomer}">${topAmtNameDisp} (\u20B9${topAmountValue})</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="opacity: 0.8;">Frequent:</span>
+                        <strong title="${topCountCustomer}">${topCountNameDisp} (${topCountValue}x)</strong>
+                    </div>
                 </div>
             </div>
           </div>
@@ -174,7 +278,7 @@ window.updateTodayDashboard = function () {
       const h = (d.commission / maxVal) * 100;
       return `
               <div style="flex: 1; background: ${i === 6 ? 'var(--primary-color)' : 'var(--hover-bg)'}; height: ${Math.max(5, h)}%; border-radius: 8px 8px 0 0; position: relative; transition: height 1s ease;">
-                <div style="position: absolute; top: -25px; left: 50%; transform: translateX(-50%); font-size: 10px; font-weight: 700; width: 100%; text-align: center;" class="privacy-sensitive">₹${d.commission}</div>
+                <div style="position: absolute; top: -25px; left: 50%; transform: translateX(-50%); font-size: 10px; font-weight: 700; width: 100%; text-align: center;" class="privacy-sensitive">\u20B9${d.commission}</div>
               </div>
               `;
     }).join('')}
@@ -189,6 +293,103 @@ window.updateTodayDashboard = function () {
 
   // 3. TWO COLUMN WIDGETS
   html += `<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-top: 25px;">`;
+
+  // DAILY CASH COUNTER (GALLA) REGISTER
+  if (widgets.galla) {
+    const todayStr = `${String(currentD).padStart(2, "0")}-${String(currentM + 1).padStart(2, "0")}-${currentY}`;
+    let gallaHistory = JSON.parse(localStorage.getItem("jc_galla_history") || "[]");
+    let todayTally = gallaHistory.find(h => h.date === todayStr) || {};
+
+    let opening = todayTally.openingBalance !== undefined ? todayTally.openingBalance : 0;
+    let notes = todayTally.denominations || { 500: 0, 200: 0, 100: 0, 50: 0, 20: 0, 10: 0, 5: 0, 2: 0, 1: 0 };
+
+    html += `
+      <div class="dashboard-card" style="background: var(--card-bg); border: 1px solid var(--border-color); grid-column: span 2; display: flex; flex-direction: column; gap: 15px;">
+        <h3 style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 5px;">
+          <span style="display: flex; align-items: center; gap: 8px;">
+            Cash Counter Tally (Galla) Register
+          </span>
+          <span style="font-size: 0.7em; background: rgba(99, 102, 241, 0.15); color: #818cf8; padding: 4px 10px; border-radius: 20px; border: 1px solid rgba(99, 102, 241, 0.3); font-weight: 700;">
+            ${todayStr}
+          </span>
+        </h3>
+        
+        <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; background: rgba(0,0,0,0.1); padding: 15px; border-radius: 12px; border: 1px solid var(--border-color);">
+          <div>
+            <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Opening Cash</div>
+            <input type="text" id="gallaOpening" value="${opening ? parseInt(opening).toLocaleString('en-IN') : 0}" style="margin: 5px 0 0 0; padding: 6px 10px; font-size: 1.1rem; font-weight: 700; width: 100%; border: 1px solid var(--border-color); border-radius: 8px; background: var(--hover-bg, rgba(0,0,0,0.15)); color: var(--text-main, #333);" oninput="window.formatCurrencyInput(this); window.calcGallaTally()" />
+          </div>
+          <div>
+            <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Cash In</div>
+            <div style="font-size: 1.3rem; font-weight: 800; color: #10b981; margin-top: 5px;">+${formatCurrency(todayCashInflow)}</div>
+          </div>
+          <div>
+            <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Cash Out</div>
+            <div style="font-size: 1.3rem; font-weight: 800; color: #ef4444; margin-top: 5px;">-${formatCurrency(todayCashOutflow)}</div>
+          </div>
+          <div>
+            <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Expected Galla Cash</div>
+            <div style="font-size: 1.3rem; font-weight: 800; color: #38bdf8; margin-top: 5px;" id="gallaExpected">\u20B90</div>
+          </div>
+          <div>
+            <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Commission</div>
+            <div style="font-size: 1.3rem; font-weight: 800; color: #a855f7; margin-top: 5px;">+${formatCurrency(totalCommission)}</div>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+          <!-- Left: Denomination inputs -->
+          <div style="background: rgba(255,255,255,0.02); padding: 15px; border-radius: 12px; border: 1px solid var(--border-color);">
+            <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 12px;">Notes & Coins Tally</div>
+            <div class="galla-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px 15px;">
+              ${[500, 200, 100, 50, 20, 10, 5, 2, 1].map(d => `
+                <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+                  <span style="font-weight: 600; width: 45px; color: var(--text-muted); font-size: 0.85rem;">${d >= 5 ? '\u20B9' + d : d + ' Coin'}</span>
+                  <div class="galla-note-input-container" style="position: relative; display: inline-flex; align-items: center; width: 72px; height: 28px; background: var(--hover-bg, rgba(0,0,0,0.15)); border: 1px solid var(--border-color); border-radius: 6px; overflow: hidden;">
+                    <input type="number" class="galla-note-input" data-val="${d}" value="${notes[d] || 0}" min="0" oninput="window.calcGallaTally()" style="margin: 0; padding: 0 18px 0 2px; width: 100%; height: 100%; text-align: center; border: none; background: transparent; color: var(--text-main, #333); font-weight: 700; outline: none;" />
+                    <div class="galla-note-arrows" style="position: absolute; right: 0; top: 0; bottom: 0; width: 18px; display: flex; flex-direction: column; border-left: 1px solid var(--border-color); background: rgba(0, 0, 0, 0.2);">
+                      <button type="button" class="galla-arrow-btn up" onclick="const inp = this.closest('.galla-note-input-container').querySelector('input'); inp.value = (parseInt(inp.value) || 0) + 1; window.calcGallaTally();" tabindex="-1" style="flex: 1; background: transparent; border: none; padding: 0; margin: 0; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-muted, #94a3b8); border-bottom: 0.5px solid var(--border-color); line-height: 1;">
+                        <svg viewBox="0 0 24 24" width="8" height="8" style="display: block;"><path d="M12 8l-6 6h12z" fill="currentColor"/></svg>
+                      </button>
+                      <button type="button" class="galla-arrow-btn down" onclick="const inp = this.closest('.galla-note-input-container').querySelector('input'); let val = (parseInt(inp.value) || 0); if (val > 0) { inp.value = val - 1; window.calcGallaTally(); }" tabindex="-1" style="flex: 1; background: transparent; border: none; padding: 0; margin: 0; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-muted, #94a3b8); line-height: 1;">
+                        <svg viewBox="0 0 24 24" width="8" height="8" style="display: block;"><path d="M12 16l-6-6h12z" fill="currentColor"/></svg>
+                      </button>
+                    </div>
+                  </div>
+                  <span style="font-weight: 700; width: 60px; text-align: right; font-size: 0.85rem;" id="subtotal_${d}">\u20B90</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+
+          <!-- Right: Summary status -->
+          <div style="display: flex; flex-direction: column; justify-content: space-between; background: rgba(255,255,255,0.02); padding: 15px; border-radius: 12px; border: 1px solid var(--border-color);">
+            <div>
+              <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 12px; font-weight: 600;">Actual Cash Summary</div>
+              
+              <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed var(--border-color); align-items: center;">
+                <span style="color: var(--text-muted); font-size: 0.85rem;">Counted Cash:</span>
+                <span style="font-size: 1.3rem; font-weight: 800; color: #f8fafc;" id="gallaActual">\u20B90</span>
+              </div>
+              
+              <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed var(--border-color); align-items: center;">
+                <span style="color: var(--text-muted); font-size: 0.85rem;">Difference:</span>
+                <span style="font-size: 1.3rem; font-weight: 800;" id="gallaDiff">\u20B90</span>
+              </div>
+
+              <div id="gallaStatusBadge" style="margin-top: 10px; padding: 8px; border-radius: 8px; font-weight: bold; text-align: center; text-transform: uppercase; font-size: 0.85rem;">
+                -
+              </div>
+            </div>
+
+            <button class="btn-print-final" id="gallaSaveBtn" onclick="window.saveGallaTally()">
+              Save Galla Tally Log
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+  }
 
   // RECENT EXPENSES
   if (widgets.expenses) {
@@ -206,7 +407,7 @@ window.updateTodayDashboard = function () {
                 <div style="font-weight: 600; font-size: 0.9em;">${e.reason || 'Expense'}</div>
                 <div style="font-size: 0.7em; color: var(--text-muted);">${e.date || ''}</div>
               </div>
-              <div style="font-weight: 700; color: #ef4444;" class="privacy-sensitive">₹${e.amount}</div>
+              <div style="font-weight: 700; color: #ef4444;" class="privacy-sensitive">\u20B9${e.amount}</div>
             </div>
           `).join('') : '<p style="color: var(--text-muted); font-size: 0.9em; text-align: center; padding: 20px;">No recent expenses found.</p>'}
         </div>
@@ -232,7 +433,7 @@ window.updateTodayDashboard = function () {
       <div style="font-weight: 600; font-size: 0.9em;">${p.name}</div>
       <div style="font-size: 0.7em; color: var(--text-muted);">${p.work || ''}</div>
       </div>
-      <div style="font-weight: 700; color: #f59e0b;" class="privacy-sensitive">₹${p.charge}</div>
+      <div style="font-weight: 700; color: #f59e0b;" class="privacy-sensitive">\u20B9${p.charge}</div>
       </div>
       `).join('') : '<p style="color: var(--text-muted); font-size: 0.9em; text-align: center; padding: 20px;">No pending payments! 🎉</p>'}
       </div>
@@ -315,7 +516,7 @@ window.updateTodayDashboard = function () {
                   <div class="txn-mini-name">${name}</div>
                   <div class="txn-mini-date">${t.date || ''} | ${service}</div>
                 </div>
-                <div class="txn-mini-amount">+₹${charge}</div>
+                <div class="txn-mini-amount">+\u20B9${charge}</div>
               </div>
             `;
     }).join('') : '<p style="color: var(--text-muted); font-size: 0.9em; text-align: center; padding: 20px;">No recent activity.</p>'}
@@ -334,13 +535,13 @@ window.updateTodayDashboard = function () {
           ${rates.length ? rates.map(r => `
             <div class="service-item">
               <div class="service-name">${r.name || 'Service'}</div>
-              <div class="service-rate">₹${r.price || r.rate || 0}</div>
+              <div class="service-rate">\u20B9${r.price || r.rate || 0}</div>
             </div>
           `).join('') : `
-            <div class="service-item"><div class="service-name">Aadhaar Print</div><div class="service-rate">₹50</div></div>
-            <div class="service-item"><div class="service-name">Pan Card</div><div class="service-rate">₹200</div></div>
-            <div class="service-item"><div class="service-name">Money Transfer</div><div class="service-rate">₹25</div></div>
-            <div class="service-item"><div class="service-name">Photo Studio</div><div class="service-rate">₹100</div></div>
+            <div class="service-item"><div class="service-name">Aadhaar Print</div><div class="service-rate">\u20B950</div></div>
+            <div class="service-item"><div class="service-name">Pan Card</div><div class="service-rate">\u20B9200</div></div>
+            <div class="service-item"><div class="service-name">Money Transfer</div><div class="service-rate">\u20B925</div></div>
+            <div class="service-item"><div class="service-name">Photo Studio</div><div class="service-rate">\u20B9100</div></div>
           `}
         </div>
       </div>
@@ -389,8 +590,137 @@ window.updateTodayDashboard = function () {
     `;
   }
 
+  // Define Galla Calculation & Save Logic (bound to closure to get cash inflow/outflow values)
+  if (widgets.galla) {
+    window.calcGallaTally = function () {
+      const openingEl = document.getElementById("gallaOpening");
+      if (!openingEl) return;
+
+      const opening = parseFloat(openingEl.value.replace(/,/g, "")) || 0;
+      const expected = opening + todayCashInflow - todayCashOutflow + cashCommissionInflow;
+
+      const expectedEl = document.getElementById("gallaExpected");
+      if (expectedEl) expectedEl.innerText = formatCurrency(expected);
+
+      let actual = 0;
+      const noteInputs = document.querySelectorAll(".galla-note-input");
+      noteInputs.forEach(input => {
+        const denom = parseInt(input.dataset.val);
+        const count = parseInt(input.value) || 0;
+        const subtotal = denom * count;
+        actual += subtotal;
+
+        const subtotalEl = document.getElementById(`subtotal_${denom}`);
+        if (subtotalEl) subtotalEl.innerText = `\u20B9${subtotal.toLocaleString('en-IN')}`;
+      });
+
+      const actualEl = document.getElementById("gallaActual");
+      if (actualEl) actualEl.innerText = formatCurrency(actual);
+
+      const diff = actual - expected;
+      const diffEl = document.getElementById("gallaDiff");
+      const statusEl = document.getElementById("gallaStatusBadge");
+
+      if (diffEl && statusEl) {
+        diffEl.innerText = (diff >= 0 ? "+" : "") + formatCurrency(diff);
+        if (diff === 0) {
+          diffEl.style.color = "#10b981";
+          statusEl.innerText = "Cash Matched Perfectly";
+          statusEl.style.background = "rgba(16, 185, 129, 0.15)";
+          statusEl.style.color = "#10b981";
+          statusEl.style.border = "1px solid rgba(16, 185, 129, 0.3)";
+        } else if (diff < 0) {
+          diffEl.style.color = "#ef4444";
+          statusEl.innerText = `Shortage: -${formatCurrency(Math.abs(diff))}`;
+          statusEl.style.background = "rgba(239, 68, 68, 0.15)";
+          statusEl.style.color = "#ef4444";
+          statusEl.style.border = "1px solid rgba(239, 68, 68, 0.3)";
+        } else {
+          diffEl.style.color = "#f59e0b";
+          statusEl.innerText = `Surplus: +${formatCurrency(diff)}`;
+          statusEl.style.background = "rgba(245, 158, 11, 0.15)";
+          statusEl.style.color = "#f59e0b";
+          statusEl.style.border = "1px solid rgba(245, 158, 11, 0.3)";
+        }
+      }
+    };
+
+    window.saveGallaTally = function () {
+      const openingEl = document.getElementById("gallaOpening");
+      if (!openingEl) return;
+
+      const todayStr = `${String(currentD).padStart(2, "0")}-${String(currentM + 1).padStart(2, "0")}-${currentY}`;
+      const opening = parseFloat(openingEl.value.replace(/,/g, "")) || 0;
+      const expected = opening + todayCashInflow - todayCashOutflow + cashCommissionInflow;
+
+      let actual = 0;
+      let denominations = {};
+      const noteInputs = document.querySelectorAll(".galla-note-input");
+      noteInputs.forEach(input => {
+        const denom = parseInt(input.dataset.val);
+        const count = parseInt(input.value) || 0;
+        denominations[denom] = count;
+        actual += denom * count;
+      });
+
+      const diff = actual - expected;
+
+      const record = {
+        date: todayStr,
+        openingBalance: opening,
+        cashInflow: todayCashInflow,
+        cashOutflow: todayCashOutflow,
+        expectedCash: expected,
+        actualCash: actual,
+        difference: diff,
+        commission: totalCommission,
+        denominations: denominations,
+        timestamp: new Date().toISOString()
+      };
+
+      let gallaHistory = JSON.parse(localStorage.getItem("jc_galla_history") || "[]");
+      gallaHistory = gallaHistory.filter(h => h.date !== todayStr);
+      gallaHistory.push(record);
+      localStorage.setItem("jc_galla_history", JSON.stringify(gallaHistory));
+
+      if (window.AuraDialog) {
+        window.AuraDialog.success("Galla Tally saved successfully! 🚀", "Galla Tally Log");
+      } else {
+        alert("Galla Tally saved successfully!");
+      }
+    };
+  }
+
   html += `</div></div>`; // Close grid and wrapper
   container.innerHTML = html;
+
+  // Bind focus/blur behavior for Galla inputs to automatically clear '0' and restore '0'
+  if (widgets.galla) {
+    const attachGallaInputListeners = () => {
+      const inputs = document.querySelectorAll("#gallaOpening, .galla-note-input");
+      inputs.forEach(input => {
+        // Clear 0 on focus
+        input.addEventListener("focus", function () {
+          if (this.value === "0" || this.value === "0.00") {
+            this.value = "";
+          }
+        });
+        // Restore 0 on blur if empty
+        input.addEventListener("blur", function () {
+          if (this.value.trim() === "") {
+            this.value = "0";
+            window.calcGallaTally();
+          }
+        });
+      });
+    };
+    attachGallaInputListeners();
+  }
+
+  // Trigger initial Galla calculation if Galla widget is enabled
+  if (widgets.galla) {
+    window.calcGallaTally();
+  }
 
   // Initialize Clock if widget exists
   if (widgets.clock) {

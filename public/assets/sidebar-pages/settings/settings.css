@@ -2066,15 +2066,10 @@ body.dark-mode .aura-sh-search-wrap input {
 }
 
 .aura-shortcut-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+    gap: 15px;
     margin: 25px 0 35px 0;
-    background: var(--hover-bg, rgba(0, 0, 0, 0.05));
-    border-radius: 16px;
-    border: 1px solid var(--aura-border);
-    overflow: hidden;
-    box-shadow: var(--aura-shadow, 0 10px 30px -5px rgba(0, 0, 0, 0.05));
 }
 
 /* Header for the shortcut list */
@@ -2092,27 +2087,29 @@ body.dark-mode .aura-sh-search-wrap input {
 }
 
 .aura-sh-row {
-    display: grid;
-    grid-template-columns: 1fr auto;
+    display: flex;
+    justify-content: space-between;
     align-items: center;
-    padding: 10px 20px;
-    background: transparent;
-    border-bottom: 1px solid var(--aura-border);
-    transition: all 0.2s ease;
-    border-radius: 0;
+    padding: 16px 20px;
+    background: var(--hover-bg, rgba(0, 0, 0, 0.02));
+    border: 1px solid var(--aura-border);
+    border-radius: 16px;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .aura-sh-row:last-child {
-    border-bottom: none;
+    border-bottom: 1px solid var(--aura-border);
 }
 
 body.dark-mode .aura-sh-row {
-    background: transparent;
+    background: rgba(255, 255, 255, 0.015);
 }
 
 .aura-sh-row:hover {
-    background: rgba(99, 102, 241, 0.05);
-    transform: none;
+    transform: translateY(-4px);
+    background: var(--aura-card-bg);
+    border-color: var(--aura-accent);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
 }
 
 .aura-sh-row label {

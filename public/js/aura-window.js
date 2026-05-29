@@ -6,7 +6,7 @@
 // --- GLOBAL DATE MANAGER (DD-MM-YYYY Standard) ---
 window.AuraDate = {
     // Standard format: DD-MM-YYYY
-    toDDMMYYYY: function(dateInput) {
+    toDDMMYYYY: function (dateInput) {
         if (!dateInput) return "";
         let d;
         if (dateInput instanceof Date) {
@@ -14,7 +14,7 @@ window.AuraDate = {
         } else if (typeof dateInput === "string") {
             const dateOnly = dateInput.split(" ")[0];
             const timePart = dateInput.includes(" ") ? " " + dateInput.split(" ")[1] : "";
-            
+
             if (dateOnly.match(/^\d{4}-\d{2}-\d{2}/)) { // YYYY-MM-DD
                 const parts = dateOnly.split("-");
                 return `${parts[2]}-${parts[1]}-${parts[0]}${timePart}`;
@@ -37,9 +37,9 @@ window.AuraDate = {
     },
 
     // Migration logic for existing data
-    migrate: function() {
+    migrate: function () {
         if (localStorage.getItem("aura_date_migrated_v1")) return;
-        
+
         const keys = ["transactions", "pendingCustomers", "expenses", "customers"];
         keys.forEach(key => {
             try {
@@ -56,7 +56,7 @@ window.AuraDate = {
                     });
                 });
                 if (changed) localStorage.setItem(key, JSON.stringify(data));
-            } catch(e) {}
+            } catch (e) { }
         });
         localStorage.setItem("aura_date_migrated_v1", "true");
         console.log("Aura Date: Migration to DD-MM-YYYY complete.");
@@ -189,7 +189,7 @@ window.AuraDate = {
         `;
 
         document.body.prepend(titleBar);
-        
+
         // 🔥 FIX: Add padding to body to prevent titlebar overlap
         document.body.style.paddingTop = "32px";
         document.body.style.position = "relative";
@@ -313,6 +313,38 @@ window.AuraDate = {
             });
         }
 
+        // Listen for Software Tour from Help menu
+        if (window.electronAPI && window.electronAPI.onTriggerSoftwareTour) {
+            window.electronAPI.onTriggerSoftwareTour(() => {
+                if (typeof window.resetDashboardTour === 'function') {
+                    window.resetDashboardTour();
+                } else {
+                    // Load onboarding CSS dynamically
+                    if (!document.querySelector('link[href*="onboarding.css"]')) {
+                        const link = document.createElement('link');
+                        link.rel = 'stylesheet';
+                        link.href = '../public/assets/features/onboarding/onboarding.css';
+                        document.head.appendChild(link);
+                    }
+                    // Load onboarding JS dynamically
+                    if (!document.querySelector('script[src*="onboarding.js"]')) {
+                        const script = document.createElement('script');
+                        script.src = '../public/assets/features/onboarding/onboarding.js';
+                        script.onload = () => {
+                            if (typeof window.resetDashboardTour === 'function') {
+                                window.resetDashboardTour();
+                            }
+                        };
+                        document.body.appendChild(script);
+                    } else {
+                        if (typeof window.resetDashboardTour === 'function') {
+                            window.resetDashboardTour();
+                        }
+                    }
+                }
+            });
+        }
+
         // Multiple syncs for safety
         setTimeout(syncThemeWithMain, 100);
         setTimeout(syncThemeWithMain, 500);
@@ -340,8 +372,8 @@ window.AuraDate = {
 
         // Method 2: Dimension Check (Fallback for Electron)
         // 🔥 MORE ROBUST: Check window size vs screen size with a small threshold for DPI scaling
-        const isDimensionFullScreen = (window.innerWidth >= screen.width - 10) && 
-                                     (window.innerHeight >= screen.height - 10);
+        const isDimensionFullScreen = (window.innerWidth >= screen.width - 10) &&
+            (window.innerHeight >= screen.height - 10);
 
         if (!document.body) return;
 
@@ -584,11 +616,12 @@ window.AuraDate = {
     }
 
     // --- UPDATE SYSTEM ---
+    let originalTitleCenterContent = '';
+
     async function checkForUpdates(showUpToDate = false) {
         if (!window.electronAPI || !window.electronAPI.checkForUpdate) return;
 
         try {
-            // Show a "Checking..." notification if using AuraDialog or similar
             if (showUpToDate && window.AuraDialog) {
                 window.AuraDialog.alert("Checking for updates...", "System Update", "info");
             }
@@ -617,18 +650,18 @@ window.AuraDate = {
 
             if (isNewer(currentVersion, updateInfo.version)) {
                 // New update available
-                if (window.AuraDialog) {
-                    window.AuraDialog.confirm(
-                        `A new version (${updateInfo.version}) is available. Would you like to view details and download?`,
-                        "Update Available",
-                        (confirmed) => {
-                            if (confirmed && updateInfo.downloadUrl) {
-                                window.electronAPI.downloadUpdate(updateInfo.downloadUrl);
-                            }
-                        },
-                        "Update Now",
-                        "Later"
-                    );
+                if (showUpToDate) {
+                    if (window.AuraDialog) {
+                        window.AuraDialog.alert(
+                            `A new version (${updateInfo.version}) was found! Downloading in the background...`,
+                            "Update Found",
+                            "info"
+                        );
+                    }
+                    window.electronAPI.downloadUpdate(updateInfo.downloadUrl);
+                } else {
+                    // Silent auto-download
+                    window.electronAPI.downloadUpdate(updateInfo.downloadUrl);
                 }
             } else {
                 if (showUpToDate && window.AuraDialog) {
@@ -639,5 +672,89 @@ window.AuraDate = {
             console.error("Update check failed:", error);
         }
     }
+
+    // --- DOWNLOAD LISTENERS & TITLEBAR UI ---
+    if (window.electronAPI && window.electronAPI.onDownloadProgress) {
+        window.electronAPI.onDownloadProgress((progress) => {
+            const centerEl = document.querySelector('.aura-titlebar-center');
+            if (centerEl) {
+                if (!originalTitleCenterContent) {
+                    originalTitleCenterContent = centerEl.innerHTML;
+                }
+
+                // Inject sleek pill-styled progress UI into title bar
+                centerEl.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 8px; background: rgba(59,130,246,0.15); border: 1px solid rgba(59,130,246,0.3); padding: 4px 12px; border-radius: 20px; box-shadow: 0 0 10px rgba(59,130,246,0.2);">
+                        <svg style="animation: auraSpin 1s linear infinite;" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="3" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>
+                        <span style="font-size: 9px; font-weight: 700; color: #93c5fd; letter-spacing: 1px;">DOWNLOADING UPDATE</span>
+                        <div style="font-size: 10px; font-weight: 800; color: #fff; background: linear-gradient(135deg, #3b82f6, #2563eb); padding: 2px 8px; border-radius: 12px; margin-left: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.3); min-width: 40px; text-align: center;">${progress}%</div>
+                    </div>
+                    <style>@keyframes auraSpin { 100% { transform: rotate(360deg); } }</style>
+                `;
+            }
+        });
+
+        window.electronAPI.onDownloadComplete((downloadPath) => {
+            const centerEl = document.querySelector('.aura-titlebar-center');
+            let installProgress = 0;
+            
+            // Simulate Install Progress in the Title bar right after download finishes
+            const installInterval = setInterval(() => {
+                installProgress += 5; // Fake install speed
+                if (installProgress > 100) installProgress = 100;
+                
+                if (centerEl) {
+                    centerEl.innerHTML = `
+                        <div style="display: flex; align-items: center; gap: 8px; background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.3); padding: 4px 12px; border-radius: 20px; box-shadow: 0 0 10px rgba(16,185,129,0.2);">
+                            <svg style="animation: auraSpin 1s linear infinite;" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="3" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>
+                            <span style="font-size: 9px; font-weight: 700; color: #6ee7b7; letter-spacing: 1px;">INSTALLING UPDATE</span>
+                            <div style="font-size: 10px; font-weight: 800; color: #fff; background: linear-gradient(135deg, #10b981, #059669); padding: 2px 8px; border-radius: 12px; margin-left: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.3); min-width: 40px; text-align: center;">${installProgress}%</div>
+                        </div>
+                        <style>@keyframes auraSpin { 100% { transform: rotate(360deg); } }</style>
+                    `;
+                }
+
+                if (installProgress === 100) {
+                    clearInterval(installInterval);
+                    
+                    // Restore original title bar
+                    if (centerEl && originalTitleCenterContent) {
+                        centerEl.innerHTML = originalTitleCenterContent;
+                        originalTitleCenterContent = '';
+                    }
+
+                    // Prompt user with choice to Restart Now or Restart Later
+                    if (window.AuraDialog) {
+                        window.AuraDialog.confirm(
+                            "Update installed successfully! Do you want to restart now to apply the new version?",
+                            "Install Complete",
+                            false,             // isDanger
+                            "Restart Now",     // confirmText
+                            "Restart Later",   // cancelText
+                            "⚙️"               // customIcon
+                        ).then((confirmed) => {
+                            if (confirmed) {
+                                window.electronAPI.restartApp(downloadPath);
+                            }
+                        });
+                    }
+                }
+            }, 100);
+        });
+
+        window.electronAPI.onDownloadError((error) => {
+            const centerEl = document.querySelector('.aura-titlebar-center');
+            if (centerEl && originalTitleCenterContent) {
+                centerEl.innerHTML = originalTitleCenterContent;
+                originalTitleCenterContent = '';
+            }
+            console.error("Update download error:", error);
+        });
+    }
+
+    // Auto-check for updates on startup (after 3 seconds)
+    setTimeout(() => {
+        checkForUpdates(false);
+    }, 3000);
 
 })();

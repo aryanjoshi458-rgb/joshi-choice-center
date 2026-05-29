@@ -79,7 +79,8 @@ const translations = {
         "tab-display": "Display",
         "display-zoom-settings": "Viewport Zoom",
         "display-zoom-desc": "Adjust the overall scale of the application UI",
-        "btn-reset-zoom": "Reset to Default"
+        "btn-reset-zoom": "Reset to Default",
+        "tab-payment-api": "Payment API"
     },
     hi: {
         "sidebar-dashboard": "डैशबोर्ड",
@@ -161,7 +162,8 @@ const translations = {
         "tab-display": "डिस्प्ले",
         "display-zoom-settings": "व्यूपोर्ट ज़ूम",
         "display-zoom-desc": "एप्लिकेशन UI के समग्र स्केल को एडजस्ट करें",
-        "btn-reset-zoom": "डिफ़ॉल्ट पर रीसेट करें"
+        "btn-reset-zoom": "डिफ़ॉल्ट पर रीसेट करें",
+        "tab-payment-api": "पेमेंट API"
     }
 };
 

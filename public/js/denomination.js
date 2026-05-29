@@ -1,4 +1,4 @@
-/**
+﻿/**
  * AURA CASH DENOMINATION CALCULATOR
  * Real-time calculation logic for payouts.
  */
@@ -22,23 +22,23 @@ document.addEventListener("DOMContentLoaded", () => {
             
             // Update individual row total label
             const rowTotalEl = document.getElementById(`total-${denom}`);
-            if (rowTotalEl) rowTotalEl.innerText = `₹${rowTotal.toLocaleString()}`;
+            if (rowTotalEl) rowTotalEl.innerText = `\u20B9${rowTotal.toLocaleString()}`;
             
             grandTotal += rowTotal;
         });
 
         // Update Grand Total
-        if (totalDenomEl) totalDenomEl.innerText = `₹${grandTotal.toLocaleString()}`;
+        if (totalDenomEl) totalDenomEl.innerText = `\u20B9${grandTotal.toLocaleString()}`;
 
         // Get Target (Cash to Customer) - Strip commas before parsing
         const targetRaw = cashToCustomerInput.value || "0";
         const target = parseFloat(targetRaw.replace(/,/g, "")) || 0;
-        if (targetAmountEl) targetAmountEl.innerText = `₹${target.toLocaleString()}`;
+        if (targetAmountEl) targetAmountEl.innerText = `\u20B9${target.toLocaleString()}`;
 
         // Calculate Difference
         const diff = grandTotal - target;
         if (diffAmountEl) {
-            diffAmountEl.innerText = `₹${diff.toLocaleString()}`;
+            diffAmountEl.innerText = `\u20B9${diff.toLocaleString()}`;
             
             // Visual feedback
             if (diff === 0 && target > 0) {

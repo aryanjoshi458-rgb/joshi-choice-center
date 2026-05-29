@@ -3,19 +3,23 @@
 
 <head>
     <script>
-        (function() {
+        (function () {
             const theme = localStorage.getItem('theme');
             if (theme === 'dark' || !theme) {
                 document.documentElement.classList.add('dark-mode');
-                
+
             }
         })();
     </script>
-    <meta charset="UTF-8"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self';">
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self';">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login | Joshi Choice Center</title>
     <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Dancing+Script:wght@700&display=swap"
+        rel="stylesheet">
     <!-- CSS -->
     <link rel="stylesheet" href="../public/css/login.css">
     <link rel="stylesheet" href="../public/css/loader.css">
@@ -99,10 +103,12 @@
                     <svg class="signature-svg" viewBox="0 0 280 80">
                         <defs>
                             <mask id="signatureMask">
-                                <path class="signature-mask-path" d="M0,40 L280,40" fill="none" stroke="white" stroke-width="100" />
+                                <path class="signature-mask-path" d="M0,40 L280,40" fill="none" stroke="white"
+                                    stroke-width="100" />
                             </mask>
                         </defs>
-                        <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" class="signature-text" mask="url(#signatureMask)">Welcome</text>
+                        <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" class="signature-text"
+                            mask="url(#signatureMask)">Welcome</text>
                     </svg>
                 </div>
                 <h1>Welcome Back</h1>
@@ -174,7 +180,8 @@
     <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="../public/js/auth.js"></script>
-    <script src="../public/js/aura-modals.js"></script><script src="../public/js/button-animations.js"></script>
+    <script src="../public/js/aura-modals.js"></script>
+    <script src="../public/js/button-animations.js"></script>
     <script src="../public/js/login.js"></script>
     <script src="../public/assets/sidebar-pages/global/global-background-animation.js"></script>
     <div id="scrollArrow">▲</div>
@@ -183,4 +190,3 @@
 </body>
 
 </html>
-

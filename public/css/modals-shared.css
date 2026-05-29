@@ -283,7 +283,7 @@ body.dark-mode .modal-preview-side {
 
 /* Updated Receipt Preview Positioning & Sizes */
 .receipt-preview {
-  margin: 0 !important;
+  margin: 0 auto !important;
   width: 100% !important;
   max-width: 380px;
   background: #fff;
@@ -445,4 +445,108 @@ body.dark-mode .search-list {
 
 body.dark-mode .search-item:hover {
   background: rgba(255, 255, 255, 0.05);
+}
+
+/* =========================================
+   REPORTS SEARCH PRINT MODAL (OMNI-SEARCH STYLE)
+   ========================================= */
+
+#searchPrintModal {
+  align-items: flex-start !important;
+  padding-top: 12vh;
+  background: rgba(10, 15, 25, 0.45) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+}
+
+#searchPrintModal .search-modal {
+  width: 90% !important;
+  max-width: 650px !important;
+  border-radius: 24px !important;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.25) !important;
+  border: 1px solid rgba(255, 255, 255, 0.4) !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  animation: searchModalSlideDown 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+  transition: all 0.3s ease;
+}
+
+body.dark-mode #searchPrintModal .search-modal {
+  background: rgba(30, 41, 59, 0.95) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5) !important;
+}
+
+#searchPrintModal .title-icon {
+  color: #3b82f6 !important; /* Banking Blue */
+}
+
+@keyframes searchModalSlideDown {
+  from {
+    transform: scale(0.95) translateY(-30px);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+/* INPUT OVERRIDES */
+#searchPrintModal #modalSearchInput {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  border-radius: 16px;
+  font-size: 1.1rem;
+  padding: 16px 20px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 2px solid rgba(0, 0, 0, 0.08);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+body.dark-mode #searchPrintModal #modalSearchInput {
+  background: rgba(15, 23, 42, 0.5) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  color: #f8fafc !important;
+}
+
+#searchPrintModal #modalSearchInput:focus {
+  border-color: #3b82f6 !important; /* Premium Banking Blue */
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15) !important;
+}
+
+/* SEARCH LIST & ITEMS */
+#searchPrintModal .search-list {
+  border-radius: 16px !important;
+  border: 1px solid rgba(0, 0, 0, 0.05) !important;
+  background: rgba(255, 255, 255, 0.8) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05) !important;
+}
+
+body.dark-mode #searchPrintModal .search-list {
+  background: rgba(15, 23, 42, 0.6) !important;
+  border-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+#searchPrintModal .search-item {
+  padding: 16px 20px !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  font-weight: 600 !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.03) !important;
+}
+
+body.dark-mode #searchPrintModal .search-item {
+  border-bottom-color: rgba(255, 255, 255, 0.03) !important;
+}
+
+#searchPrintModal .search-item:hover {
+  background: rgba(59, 130, 246, 0.1) !important; /* Premium Banking Blue */
+  color: #3b82f6 !important;
+  transform: translateX(6px);
+}
+
+#searchPrintModal .search-item span.txn {
+  color: #10b981 !important; /* Keep Txn green for successful status readability */
 }

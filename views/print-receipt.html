@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8" /><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self';">
+  <meta charset="UTF-8" /><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://api.qrserver.com; connect-src 'self';">
   <title>Print Receipt | Joshi Choice Center</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
@@ -288,6 +288,7 @@
         </h3>
 
         <div id="preview" class="receipt-preview size-80"></div>
+        <div id="upiPayCardContainer"></div>
 
         <div class="actions-flex" style="display: flex; gap: 15px; margin-top: 20px;">
           <button class="btn-print-final" onclick="printReceipt()" style="flex: 1; justify-content: center;">

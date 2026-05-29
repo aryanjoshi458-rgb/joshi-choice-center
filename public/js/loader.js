@@ -1,4 +1,20 @@
 (function () {
+    // Intercept JSON.parse to prevent uncaught syntax error crashes due to corrupted storage
+    const originalParse = JSON.parse;
+    JSON.parse = function(text, reviver) {
+        try {
+            return originalParse(text, reviver);
+        } catch (e) {
+            console.warn("JSON.parse error intercepted:", e, "for text:", text);
+            if (typeof text === 'string') {
+                const trimmed = text.trim();
+                if (trimmed.startsWith('[')) return [];
+                if (trimmed.startsWith('{')) return {};
+            }
+            return null;
+        }
+    };
+
     // Global AppLoader API - Quantum Phase Edition
     window.AppLoader = {
         show: function (message = "Initializing...") {
@@ -91,6 +107,11 @@
 
     // Initial load logic
     function init() {
+        const isFirstTimeTour = localStorage.getItem('jc_tour_seen') !== 'true' && localStorage.getItem('jc_tour_completed') !== 'true';
+        if (isFirstTimeTour) {
+            return; // Bypass automatic loading screen on first run
+        }
+
         const skipLoader = document.documentElement.hasAttribute('data-no-auto-loader') ||
             (document.body && document.body.hasAttribute('data-no-auto-loader'));
 

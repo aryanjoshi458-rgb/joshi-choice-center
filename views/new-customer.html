@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self';">
+    <meta charset="UTF-8"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://api.qrserver.com; connect-src 'self';">
     <title>New Customer | Joshi Choice Center</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../public/css/style.css">
@@ -445,18 +445,17 @@
                         </div>
                         <div class="form-group" id="receivedChargeGroup">
                             <label>Received Charge (₹)</label>
-                            <input id="receivedCharge" type="text" placeholder="0.00" class="comma-format" style="background: rgba(99, 102, 241, 0.05); border-color: #6366f1;">
+                            <input id="receivedCharge" type="text" placeholder="0.00" class="comma-format">
                         </div>
                         <div class="form-group" id="pendingChargeGroup">
                             <label>Pending Charge (₹)</label>
                             <input id="pendingCharge" type="text" placeholder="0.00" readonly
-                                class="readonly-input comma-format" style="background: rgba(239, 68, 68, 0.05); border-color: #ef4444; color: #ef4444; font-weight: bold;">
+                                class="readonly-input comma-format" style="color: #ef4444; font-weight: bold;">
                         </div>
                         <div class="form-group" id="netPayableGroup" style="display:none;">
                             <label>Cash to Customer (₹)</label>
                             <input id="netPayable" type="text" placeholder="0.00" readonly
-                                class="readonly-input comma-format"
-                                style="background: rgba(34, 197, 94, 0.1); border-color: #22c55e; color: #22c55e; font-weight: bold;">
+                                class="readonly-input comma-format" style="color: #22c55e; font-weight: bold;">
                         </div>
                         <div class="form-group" id="paymentModeGroup">
                             <label>Payment Mode</label>

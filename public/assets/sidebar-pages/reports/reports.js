@@ -15,6 +15,19 @@ document.addEventListener("DOMContentLoaded", () => {
   window.addEventListener('auraDataSynced', refreshReports);
   if (window.auraSyncComplete) refreshReports();
   handleUrlParams();
+
+  // Scanner Enter Key listener on full search print modal input
+  document.getElementById("modalSearchInput")?.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") {
+      let val = this.value.trim().toUpperCase();
+      const reports = JSON.parse(localStorage.getItem("transactions")) || [];
+      const found = reports.find(t => (t.transactionId || "").toUpperCase() === val);
+      if (found) {
+        selectFromSearchList(found.transactionId);
+        this.blur();
+      }
+    }
+  });
 });
 
 function handleUrlParams() {
@@ -268,6 +281,19 @@ function initSearchAndFilter() {
   filter?.addEventListener("change", applyFilter);
   document.getElementById("monthFilter")?.addEventListener("change", applyFilter);
 
+  // Scanner Enter Key listener on reports page search input
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      let val = input.value.trim().toUpperCase();
+      const reports = JSON.parse(localStorage.getItem("transactions")) || [];
+      const found = reports.find(t => (t.transactionId || "").toUpperCase() === val);
+      if (found) {
+        printReportRow(found.transactionId);
+        input.blur();
+      }
+    }
+  });
+
   // ✅ CATEGORY TABS (NEW)
   const tabs = document.querySelectorAll(".cat-tab");
   tabs.forEach(tab => {
@@ -421,12 +447,15 @@ function updateSummaryMetrics() {
 
   // Use the pre-filtered data array instead of scraping the DOM (10x faster)
   window.filteredReportsData.forEach(r => {
-    const amount = Number(r.amount) || 0;
-    const charge = Number(r.charge) || 0;
-    const total = Number(r.totalAmount) || (amount + charge);
+    const status = (r.status || "Success").toLowerCase();
+    if (status === "success") {
+      const amount = Number(r.amount) || 0;
+      const charge = Number(r.charge) || 0;
+      const total = Number(r.totalAmount) || (amount + charge);
 
-    totalCommission += charge;
-    totalBusiness += total;
+      totalCommission += charge;
+      totalBusiness += total;
+    }
     transactionCount++;
   });
 
@@ -445,12 +474,15 @@ function updateSummaryMetrics() {
   let otherTotal = 0;
 
   window.filteredReportsData.forEach(r => {
-    const s = (r.serviceName || r.serviceType || "").toLowerCase();
-    const t = Number(r.totalAmount) || (Number(r.amount) + Number(r.charge));
+    const status = (r.status || "Success").toLowerCase();
+    if (status === "success") {
+      const s = (r.serviceName || r.serviceType || "").toLowerCase();
+      const t = Number(r.totalAmount) || (Number(r.amount) + Number(r.charge));
 
-    if (s.includes("banking")) bankingTotal += t;
-    else if (s.includes("recharge") || s.includes("mobile")) rechargeTotal += t;
-    else otherTotal += t;
+      if (s.includes("banking")) bankingTotal += t;
+      else if (s.includes("recharge") || s.includes("mobile")) rechargeTotal += t;
+      else otherTotal += t;
+    }
   });
 
   if (document.getElementById("bankingTotal")) document.getElementById("bankingTotal").innerText = curFormat.format(bankingTotal);
@@ -546,11 +578,38 @@ window.updateModalPreview = function () {
   const shop = JSON.parse(localStorage.getItem("shopProfile")) || { name: "JOSHI CHOICE CENTER" };
   preview.innerHTML = `<div style="font-weight:bold; text-align:center; border-bottom:1px solid #ccc; margin-bottom:5px; padding-bottom:5px;">${shop.name}</div>` + content;
   preview.className = "receipt-preview size-" + size;
+
+  // Render premium glassmorphic UPI QR Payment card if status is pending/failed
+  const upiContainer = document.getElementById("modalUpiPayCardContainer");
+  if (upiContainer) {
+    const status = (currentModalTxn.status || "Paid").toUpperCase();
+    if (status === "PENDING" || status === "FAILED") {
+      const upiId = shop.upiId || "aryanjoshi458@ybl";
+      const total = Number(currentModalTxn.totalAmount || (Number(currentModalTxn.amount || 0) + Number(currentModalTxn.charge || 0))).toFixed(2);
+      const upiUrl = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(shop.name)}&am=${total}&cu=INR`;
+      upiContainer.innerHTML = `
+        <div class="upi-pay-card" style="margin-top: 15px; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: linear-gradient(135deg, rgba(79, 70, 229, 0.1), rgba(129, 140, 248, 0.1)); display: flex; align-items: center; gap: 15px; animation: fadeIn 0.4s ease-out; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+          <div style="background: white; padding: 5px; border-radius: 6px; display: flex; justify-content: center; align-items: center; border: 1px solid #eee;">
+             <img src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${encodeURIComponent(upiUrl)}" style="width: 80px; height: 80px; display: block;" />
+          </div>
+          <div style="flex: 1;">
+             <div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.7; font-weight: 700; color: var(--aura-text, #333);">Scan to Pay</div>
+             <div style="font-size: 1.15rem; font-weight: 800; color: #4f46e5; margin: 2px 0;">\u20B9${total}</div>
+             <div style="font-size: 0.7rem; color: var(--text-muted, #666); font-family: monospace;">UPI ID: ${upiId}</div>
+          </div>
+        </div>
+      `;
+    } else {
+      upiContainer.innerHTML = "";
+    }
+  }
 }
 
 window.printFromModal = function () {
-  const content = document.getElementById("modalPreview").innerText;
+  if (!currentModalTxn) return;
+  const format = document.getElementById("modalFormat").value;
   const size = document.getElementById("modalSize").value;
+  const content = generateReceiptText(currentModalTxn, format);
   openInternalPrintWindow(content, size);
 }
 
@@ -620,11 +679,38 @@ window.updateSearchModalPreview = function () {
   const shop = JSON.parse(localStorage.getItem("shopProfile")) || { name: "JOSHI CHOICE CENTER" };
   preview.innerHTML = `<div style="font-weight:bold; text-align:center; border-bottom:1px solid #ccc; margin-bottom:5px; padding-bottom:5px;">${shop.name}</div>` + content;
   preview.className = "receipt-preview size-" + size;
+
+  // Render premium glassmorphic UPI QR Payment card if status is pending/failed
+  const upiContainer = document.getElementById("searchModalUpiPayCardContainer");
+  if (upiContainer) {
+    const status = (searchModalSelectedTxn.status || "Paid").toUpperCase();
+    if (status === "PENDING" || status === "FAILED") {
+      const upiId = shop.upiId || "aryanjoshi458@ybl";
+      const total = Number(searchModalSelectedTxn.totalAmount || (Number(searchModalSelectedTxn.amount || 0) + Number(searchModalSelectedTxn.charge || 0))).toFixed(2);
+      const upiUrl = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(shop.name)}&am=${total}&cu=INR`;
+      upiContainer.innerHTML = `
+        <div class="upi-pay-card" style="margin-top: 15px; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: linear-gradient(135deg, rgba(79, 70, 229, 0.1), rgba(129, 140, 248, 0.1)); display: flex; align-items: center; gap: 15px; animation: fadeIn 0.4s ease-out; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+          <div style="background: white; padding: 5px; border-radius: 6px; display: flex; justify-content: center; align-items: center; border: 1px solid #eee;">
+             <img src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${encodeURIComponent(upiUrl)}" style="width: 80px; height: 80px; display: block;" />
+          </div>
+          <div style="flex: 1;">
+             <div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.7; font-weight: 700; color: var(--aura-text, #333);">Scan to Pay</div>
+             <div style="font-size: 1.15rem; font-weight: 800; color: #4f46e5; margin: 2px 0;">\u20B9${total}</div>
+             <div style="font-size: 0.7rem; color: var(--text-muted, #666); font-family: monospace;">UPI ID: ${upiId}</div>
+          </div>
+        </div>
+      `;
+    } else {
+      upiContainer.innerHTML = "";
+    }
+  }
 }
 
 window.printFromSearchModal = function () {
-  const content = document.getElementById("searchModalPreview").innerText;
+  if (!searchModalSelectedTxn) return;
+  const format = document.getElementById("searchModalFormat").value;
   const size = document.getElementById("searchModalSize").value;
+  const content = generateReceiptText(searchModalSelectedTxn, format);
   openInternalPrintWindow(content, size);
 }
 
@@ -785,11 +871,25 @@ Status : ${status}
         ${ps.terms}
       </div>` : "";
 
+    const upiId = shop.upiId || "aryanjoshi458@ybl";
+    const upiUrl = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(shop.name)}&am=${total}&cu=INR`;
+    const upiQrSection = (status === 'PENDING' || status === 'FAILED') ? `
+      <div style="margin-top: 15px; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; background: #faf5ff; display: flex; align-items: center; gap: 15px; justify-content: center;">
+        <div style="background: white; padding: 5px; border-radius: 6px; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center;">
+          <img src="https://api.qrserver.com/v1/create-qr-code/?size=70x70&data=${encodeURIComponent(upiUrl)}" style="width: 70px; height: 70px; display: block;">
+        </div>
+        <div style="text-align: left;">
+          <div style="font-size: 0.75em; font-weight: 800; color: #7c3aed; text-transform: uppercase; letter-spacing: 0.5px;">Scan to Pay</div>
+          <div style="font-size: 1.1em; font-weight: 800; color: #1e293b; margin: 2px 0;">\u20B9${total}</div>
+          <div style="font-size: 0.65em; color: #64748b; font-family: monospace;">UPI ID: ${upiId}</div>
+        </div>
+      </div>` : "";
+
     out = `
-<div style="font-family: 'Outfit', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 5px; color: #1e293b; white-space: normal;">
+<div style="font-family: 'Outfit', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 15px; background: #ffffff; color: #1e293b; white-space: normal; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
   <div style="text-align: center; margin-bottom: 15px;">
     ${logoImg}
-    <div style="font-size: 1.3em; font-weight: 800; color: #f8fafc; text-transform: uppercase; letter-spacing: 1px;">${shop.name}</div>
+    <div style="font-size: 1.3em; font-weight: 800; color: #1e293b; text-transform: uppercase; letter-spacing: 1px;">${shop.name}</div>
     ${showShopAddress}
   </div>
 
@@ -817,11 +917,11 @@ Status : ${status}
   <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; margin-bottom: 15px;">
      <div style="display: flex; justify-content: space-between; font-size: 0.9em; margin-bottom: 5px; color: #475569;">
        <span>Base Amount:</span>
-       <span>₹${amount}</span>
+       <span>\u20B9${amount}</span>
      </div>
      <div style="display: flex; justify-content: space-between; font-size: 0.9em; margin-bottom: 5px; color: #475569;">
        <span>Service Charges:</span>
-       <span>₹${charge}</span>
+       <span>\u20B9${charge}</span>
      </div>
      ${paymentModeRow}
   </div>
@@ -829,12 +929,13 @@ Status : ${status}
   <div style="background: #1e293b; color: white; padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center;">
     <div>
       <div style="font-size: 0.75em; opacity: 0.8; text-transform: uppercase;">Total Paid</div>
-      <div style="font-size: 1.4em; font-weight: 800;">₹${total}</div>
+      <div style="font-size: 1.4em; font-weight: 800;">\u20B9${total}</div>
     </div>
     <div style="background: ${status === 'SUCCESS' || status === 'PAID' ? '#10b981' : '#f59e0b'}; padding: 6px 12px; border-radius: 20px; font-size: 0.8em; font-weight: 800;">${status}</div>
   </div>
 
   ${termsSection}
+  ${upiQrSection}
 
   <div style="text-align: center; margin-top: 20px; font-size: 0.8em; color: #94a3b8; font-style: italic;">
     <div style="margin-bottom: 2px;">${ps.footer1 || "Thank You"}</div>
@@ -877,15 +978,15 @@ Status : ${status}
       </tr>
       <tr>
         <td style="padding: 10px; color: #e2e8f0; font-weight: 600;">${service}</td>
-        <td style="padding: 10px; text-align: right; font-weight: 700; color: #f8fafc;">₹${total}</td>
+        <td style="padding: 10px; text-align: right; font-weight: 700; color: #f8fafc;">\u20B9${total}</td>
       </tr>
     </table>
   </div>
 
   <div style="text-align: right; font-size: 0.9em; margin-bottom: 20px; color: #94a3b8;">
-    <div style="margin-bottom: 4px;">Base Amount: <span style="color: #f8fafc;">₹${amount}</span></div>
-    <div style="margin-bottom: 4px;">Service Charges: <span style="color: #f8fafc;">₹${charge}</span></div>
-    <div style="font-size: 1.1em; font-weight: 800; color: #4f46e5; margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.1);">Amount Paid: ₹${total}</div>
+    <div style="margin-bottom: 4px;">Base Amount: <span style="color: #f8fafc;">\u20B9${amount}</span></div>
+    <div style="margin-bottom: 4px;">Service Charges: <span style="color: #f8fafc;">\u20B9${charge}</span></div>
+    <div style="font-size: 1.1em; font-weight: 800; color: #4f46e5; margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.1);">Amount Paid: \u20B9${total}</div>
   </div>
 
   <div style="background: rgba(245, 158, 11, 0.05); border: 1px dashed rgba(245, 158, 11, 0.3); padding: 8px; border-radius: 6px; font-size: 0.75em; color: #f59e0b; margin-bottom: 15px;">
@@ -912,6 +1013,10 @@ Status : ${status}
       extra += `</div>`;
       out += extra;
     }
+  }
+
+  if (f <= 5) {
+    out = `<div style="font-family: monospace; white-space: pre-wrap; font-size: 12px; line-height: 1.2; color: inherit;">${out}</div>`;
   }
 
   return out;

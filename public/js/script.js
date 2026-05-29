@@ -1,4 +1,4 @@
-/**************************************************
+﻿/**************************************************
  * JOSHI CHOICE CENTER
  * UNIFIED TRANSACTION & CUSTOMER LOGIC
  * FINAL PROFESSIONAL VERSION WITH RECEIPT PRINTING
@@ -115,7 +115,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const valueEl = document.getElementById("pendingAmountValue");
 
     if (totalPending > 0) {
-      if (valueEl) valueEl.innerText = "₹" + totalPending.toLocaleString('en-IN');
+      if (valueEl) valueEl.innerText = "\u20B9" + totalPending.toLocaleString('en-IN');
+
       if (alertEl) {
         alertEl.style.display = "flex";
         if (window.gsap) {
@@ -470,6 +471,21 @@ document.addEventListener("DOMContentLoaded", () => {
     const fullServiceName = subService ? `${shortCat} - ${subService}` : shortCat;
 
     const currentTime = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    let finalAmount = unformat(document.getElementById("amount")?.value);
+    let finalCharge = unformat(document.getElementById("charge")?.value);
+    let finalTotal = unformat(document.getElementById("totalAmount")?.value);
+    let finalReceived = unformat(document.getElementById("receivedCharge")?.value);
+    let finalPending = unformat(document.getElementById("pendingCharge")?.value);
+
+    // 🔥 SMART PROFIT MAPPING FOR PRINTING SERVICES 🔥
+    // The user enters printing cost into "Amount", but we treat it entirely as "Commission/Charge"
+    if (category === "Printing & Document Services") {
+      finalCharge = finalAmount;
+      finalAmount = "0";
+      finalTotal = finalCharge;
+      // receivedCharge and pendingCharge are captured naturally from the visible UI fields
+    }
+
     const transaction = {
       customerId: customerDataForTxn.id, // Fixed Link
       date: `${window.AuraDate ? window.AuraDate.toDDMMYYYY(txnDate.value) : txnDate.value} ${currentTime}`,
@@ -478,14 +494,14 @@ document.addEventListener("DOMContentLoaded", () => {
       aadharNumber: customerDataForTxn.aadhar,
       address: customerDataForTxn.address,
       serviceName: fullServiceName,
-      amount: unformat(document.getElementById("amount")?.value),
-      charge: unformat(document.getElementById("charge")?.value),
-      totalAmount: unformat(document.getElementById("totalAmount")?.value),
+      amount: finalAmount,
+      charge: finalCharge,
+      totalAmount: finalTotal,
       netPayable: unformat(document.getElementById("netPayable")?.value),
       paymentMode: document.getElementById("paymentMode")?.value || "Cash",
       status: document.getElementById("status")?.value || "Success",
-      receivedCharge: unformat(document.getElementById("receivedCharge")?.value),
-      pendingCharge: unformat(document.getElementById("pendingCharge")?.value),
+      receivedCharge: finalReceived,
+      pendingCharge: finalPending,
       transactionId
     };
 
@@ -512,7 +528,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (existingIdx >= 0) {
         pendingCustomers[existingIdx] = pendingData;
       } else {
-        pendingCustomers.push(pendingData);
+        pendingCustomers.unshift(pendingData);
       }
       localStorage.setItem("pendingCustomers", JSON.stringify(pendingCustomers));
     }
@@ -521,7 +537,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (window.createAppNotification) {
       window.createAppNotification(
         "New Transaction Saved",
-        `Customer: ${transaction.customerName}, Service: ${transaction.serviceName}, Amount: ₹${transaction.totalAmount}`,
+        `Customer: ${transaction.customerName}, Service: ${transaction.serviceName}, Amount: \u20B9${transaction.totalAmount}`,
         "transaction"
       );
     }
@@ -630,7 +646,8 @@ document.addEventListener("DOMContentLoaded", () => {
           if (sName === "Mobile Recharge" && mobileStar) mobileStar.style.display = "inline";
         } else if (val === "Printing & Document Services") {
           blocks.print.style.display = "block";
-          if (blocks.chargeGroup) blocks.chargeGroup.style.display = "none"; // Hide Charge for Printing
+          if (blocks.chargeGroup) blocks.chargeGroup.style.display = "none";
+          if (blocks.totalGroup) blocks.totalGroup.style.display = "none";
         } else if (val === "Online Form & Government Services") {
           blocks.onlineGov.style.display = "block";
         }

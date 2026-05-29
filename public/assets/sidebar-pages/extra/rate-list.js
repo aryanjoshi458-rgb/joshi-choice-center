@@ -1,4 +1,4 @@
-/* RATE LIST LOGIC - PREMIUM REDESIGN v2 */
+﻿/* RATE LIST LOGIC - PREMIUM REDESIGN v2 */
 document.addEventListener("DOMContentLoaded", () => {
     const servicesGrid = document.getElementById("servicesGrid");
     const categoryTabs = document.getElementById("categoryTabs");
@@ -130,9 +130,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
             let chargeHtml = "";
             if (rate.chargeType === "range") {
-                chargeHtml = `<span class="charge-tag range" title="${rate.chargeRanges.map(r => `₹${r.min}-${r.max}: ₹${r.charge}`).join('\n')}">Dynamic 📊</span>`;
+                chargeHtml = `<span class="charge-tag range" title="${rate.chargeRanges.map(r => `\u20B9${r.min}-${r.max}: \u20B9${r.charge}`).join('\n')}">Dynamic 📊</span>`;
             } else {
-                chargeHtml = `₹${rate.charge || 0}`;
+                chargeHtml = `\u20B9${rate.charge || 0}`;
             }
 
             card.innerHTML = `
@@ -148,7 +148,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <div class="card-stats">
                     <div class="stat-box">
                         <span class="stat-label">Base Price</span>
-                        <span class="stat-value">₹${rate.price}</span>
+                        <span class="stat-value">\u20B9${rate.price}</span>
                     </div>
                     <div class="stat-box">
                         <span class="stat-label">Service Charge</span>
