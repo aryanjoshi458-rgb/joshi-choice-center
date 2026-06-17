@@ -1,4 +1,4 @@
-﻿window.formatCurrencyInput = function (input) {
+window.formatCurrencyInput = function (input) {
   const selectionStart = input.selectionStart;
   const selectionEnd = input.selectionEnd;
   const originalLength = input.value.length;
@@ -466,6 +466,14 @@ window.updateTodayDashboard = function () {
             <a href="customer-directory.html" class="quick-action-btn">
               <div class="btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
               Directory
+            </a>
+            <a href="pending-payments.html" class="quick-action-btn">
+              <div class="btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4"></path><path d="M4 6v12c0 1.1.9 2 2 2h14v-4"></path><path d="M18 12a2 2 0 0 0-2 2c0 1.1.9 2 2 2h4v-4h-4z"></path></svg></div>
+              Pending Payments
+            </a>
+            <a href="expenses.html" class="quick-action-btn">
+              <div class="btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 12V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-1" /><path d="M16 12h5" /></svg></div>
+              Expenses
             </a>
           </div>
         </div>

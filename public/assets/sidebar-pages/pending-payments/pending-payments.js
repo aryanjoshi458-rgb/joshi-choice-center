@@ -1,4 +1,4 @@
-﻿// ===== LOAD DATA =====
+// ===== LOAD DATA =====
 function loadCustomers() {
     let list = JSON.parse(localStorage.getItem("pendingCustomers") || "[]");
     
@@ -8,12 +8,43 @@ function loadCustomers() {
 
     let html = "";
 
+    // Helper function to calculate days diff
+    function getDaysDiff(dateString) {
+        if (!dateString) return 0;
+        let parts = dateString.split("-");
+        if(parts.length !== 3) return 0;
+        let recordDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+        let today = new Date();
+        const diffTime = today - recordDate;
+        return Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    }
+
     list.forEach((c, i) => {
         let statusClass = c.status == "Paid" ? "paid" : "pending";
+        let dateColor = "";
+        let ageIcon = "";
+        
+        if (c.status === "Pending") {
+            let daysDiff = getDaysDiff(c.date);
+            if (daysDiff >= 90) {
+                dateColor = "color: #ef4444; text-shadow: 0 0 8px rgba(239, 68, 68, 0.4); font-weight: 800;";
+                ageIcon = " 🚨";
+            } else if (daysDiff >= 60) {
+                dateColor = "color: #f87171; font-weight: 800;";
+                ageIcon = " 🔥";
+            } else if (daysDiff >= 30) {
+                dateColor = "color: #f97316; font-weight: 700;";
+                ageIcon = " ⏳";
+            } else if (daysDiff >= 15) {
+                dateColor = "color: #eab308; font-weight: 700;";
+                ageIcon = " ⚠️";
+            }
+        }
+
         html += `
         <tr data-id="${c.id}" class="aura-table-row">
             <td><span class="aura-index">${list.length - i}</span></td>
-            <td style="font-weight: 600; opacity: 0.9; white-space: nowrap;">${c.date}</td>
+            <td style="white-space: nowrap; ${dateColor ? dateColor : 'font-weight: 600; opacity: 0.9;'}">${c.date}${ageIcon}</td>
             <td style="font-weight: 700;">${c.name}</td>
             <td style="white-space: nowrap;"><span class="aura-mobile-tag">${c.mobile}</span></td>
             <td>${c.work}</td>
@@ -81,7 +112,7 @@ function addCustomer() {
 
         let digits = mobileRaw.replace(/\D/g, '');
 
-        if (digits.startsWith("91")) {
+        if (digits.length > 10 && digits.startsWith("91")) {
             digits = digits.slice(2);
         }
 
@@ -129,7 +160,11 @@ function addCustomer() {
             );
         }
 
-        if (typeof showToast === "function") showToast("Record Added! 📝");
+        if (window.parent && typeof window.parent.showToast === "function") {
+            window.parent.showToast("Record Added! 📝");
+        } else if (typeof showToast === "function") {
+            showToast("Record Added! 📝");
+        }
     }, 600);
 }
 
@@ -167,7 +202,11 @@ function markPaid(i) {
             );
         }
 
-        if (typeof showToast === "function") showToast("Status: PAID! ✅");
+        if (window.parent && typeof window.parent.showToast === "function") {
+            window.parent.showToast("Status: PAID! ✅");
+        } else if (typeof showToast === "function") {
+            showToast("Status: PAID! ✅");
+        }
     }, 500);
 }
 
@@ -191,7 +230,11 @@ function markPending(i) {
         localStorage.setItem("pendingCustomers", JSON.stringify(list));
         loadCustomers();
         if (window.AppLoader) window.AppLoader.hide();
-        if (typeof showToast === "function") showToast("Status: PENDING! ⏳");
+        if (window.parent && typeof window.parent.showToast === "function") {
+            window.parent.showToast("Status: PENDING! ⏳");
+        } else if (typeof showToast === "function") {
+            showToast("Status: PENDING! ⏳");
+        }
     }, 500);
 }
 
@@ -209,7 +252,11 @@ async function deleteCustomer(i) {
         localStorage.setItem("pendingCustomers", JSON.stringify(list));
         loadCustomers();
         if (window.AppLoader) window.AppLoader.hide();
-        if (typeof showToast === "function") showToast("Record Deleted! 🗑️");
+        if (window.parent && typeof window.parent.showToast === "function") {
+            window.parent.showToast("Record Deleted! 🗑️");
+        } else if (typeof showToast === "function") {
+            showToast("Record Deleted! 🗑️");
+        }
     }, 500);
 }
 
@@ -219,64 +266,73 @@ async function deleteCustomer(i) {
 document.addEventListener("DOMContentLoaded", function () {
 
     // NAME CAPITAL
-    let nameField = document.getElementById("name");
-
-    if (nameField) {
-        nameField.addEventListener("input", function () {
-
-            let words = this.value.toLowerCase().split(" ");
-
-            this.value = words.map(w =>
-                w ? w.charAt(0).toUpperCase() + w.slice(1) : ""
-            ).join(" ");
-
-        });
-    }
+    let nameFields = [document.getElementById("name"), document.getElementById("editName")];
+    nameFields.forEach(nameField => {
+        if (nameField) {
+            nameField.addEventListener("input", function () {
+                let words = this.value.toLowerCase().split(" ");
+                this.value = words.map(w =>
+                    w ? w.charAt(0).toUpperCase() + w.slice(1) : ""
+                ).join(" ");
+            });
+        }
+    });
 
 
     // MOBILE +91 FIX (SMART FOCUS)
-    let mobileField = document.getElementById("mobile");
-
-    if (mobileField) {
-        // Reset initial value to empty
-        mobileField.value = "";
-
-        mobileField.addEventListener("focus", function () {
-            if (this.value.trim() === "" || this.value === "+91") {
-                this.value = "+91 ";
-                this.dispatchEvent(new Event("input"));
-            }
-        });
-
-        mobileField.addEventListener("blur", function () {
-            if (this.value.trim() === "+91") {
-                this.value = "";
-                this.dispatchEvent(new Event("input"));
-            }
-        });
-
-        mobileField.addEventListener("input", function () {
-            let digits = this.value.replace(/\D/g, '');
-
-            // If no digits and not focused, keep it empty
-            if (digits.length === 0 && document.activeElement !== this) {
-                this.value = "";
-                return;
+    let mobileFields = [document.getElementById("mobile"), document.getElementById("editMobile")];
+    mobileFields.forEach(mobileField => {
+        if (mobileField) {
+            if (mobileField.id === "mobile") {
+                mobileField.value = "";
             }
 
-            if (digits.startsWith("91")) {
-                digits = digits.slice(2);
-            }
-            digits = digits.slice(0, 10);
-            this.value = "+91 " + digits;
-        });
+            mobileField.addEventListener("focus", function () {
+                let val = this.value.trim();
+                if (val === "" || val === "+91") {
+                    this.value = "+91 ";
+                    this.dispatchEvent(new Event("input"));
+                } else if (!val.startsWith("+91")) {
+                    this.value = "+91 " + val;
+                }
+            });
 
-        mobileField.addEventListener("keydown", function (e) {
-            if (this.selectionStart <= 4 && (e.key === "Backspace" || e.key === "Delete")) {
-                e.preventDefault();
-            }
-        });
-    }
+            mobileField.addEventListener("blur", function () {
+                let val = this.value.trim();
+                if (val === "+91" || val === "") {
+                    this.value = "";
+                    this.dispatchEvent(new Event("input"));
+                } else if (val.startsWith("+91 ")) {
+                    this.value = val.substring(4);
+                } else if (val.startsWith("+91")) {
+                    this.value = val.substring(3);
+                }
+            });
+
+            mobileField.addEventListener("input", function () {
+                let val = this.value;
+                if (!val.startsWith("+91 ") && document.activeElement === this) {
+                    let digits = val.replace(/\D/g, '');
+                    if (digits.length > 10 && digits.startsWith("91")) {
+                        digits = digits.slice(2);
+                    }
+                    digits = digits.slice(0, 10);
+                    this.value = "+91 " + digits;
+                } else if (document.activeElement === this) {
+                    let rest = val.substring(4);
+                    let digits = rest.replace(/\D/g, '');
+                    digits = digits.slice(0, 10);
+                    this.value = "+91 " + digits;
+                }
+            });
+
+            mobileField.addEventListener("keydown", function (e) {
+                if (this.selectionStart <= 4 && this.selectionEnd === this.selectionStart && (e.key === "Backspace" || e.key === "Delete")) {
+                    e.preventDefault();
+                }
+            });
+        }
+    });
 
 });
 
@@ -323,16 +379,34 @@ clearBtn.addEventListener("click", () => {
 const statusFilter = document.getElementById("onlyStatusFilter");
 const searchInput = document.getElementById("searchInput");
 
+window.currentCategoryFilter = "all";
+const catTabs = document.querySelectorAll("#pendingCategoryTabs .cat-tab");
+if (catTabs) {
+    catTabs.forEach(tab => {
+        tab.addEventListener("click", () => {
+            catTabs.forEach(t => t.classList.remove("active"));
+            tab.classList.add("active");
+            window.currentCategoryFilter = tab.dataset.category;
+            filterTable();
+        });
+    });
+}
+
 function filterTable() {
     const searchEl = document.getElementById("searchInput");
     const statusEl = document.getElementById("onlyStatusFilter");
     const searchValue = searchEl ? searchEl.value.toLowerCase() : "";
     const statusValue = statusEl ? statusEl.value.toLowerCase() : "all";
+    const catValue = window.currentCategoryFilter || "all";
 
     const rows = document.querySelectorAll("#customerTable tr");
 
     rows.forEach(row => {
         const text = row.innerText.toLowerCase();
+        
+        const workCell = row.querySelector("td:nth-child(5)");
+        const workText = workCell ? workCell.innerText.toLowerCase() : "";
+        
         const statusCell = row.querySelector("td:nth-child(7)");
         const statusText = statusCell ? statusCell.innerText.toLowerCase() : "";
 
@@ -341,7 +415,16 @@ function filterTable() {
                            (statusValue === "paid" && statusText.includes("paid")) ||
                            (statusValue === "pending" && statusText.includes("pending"));
 
-        const isVisible = matchSearch && matchStatus;
+        let matchCat = false;
+        if (catValue === "all") {
+            matchCat = true;
+        } else if (catValue === "Banking" && workText.includes("banking")) {
+            matchCat = true;
+        } else if (catValue === "Mobile/Util" && (workText.includes("recharge") || workText.includes("mobile"))) {
+            matchCat = true;
+        }
+
+        const isVisible = matchSearch && matchStatus && matchCat;
         row.style.display = isVisible ? "" : "none";
         row.setAttribute("data-filtered", isVisible ? "false" : "true");
     });
@@ -444,7 +527,7 @@ function saveCustomerEdit() {
 
     // Format mobile
     let digits = mobileRaw.replace(/\D/g, '');
-    if (digits.startsWith("91")) {
+    if (digits.length > 10 && digits.startsWith("91")) {
         digits = digits.slice(2);
     }
     digits = digits.slice(0, 10);
@@ -488,6 +571,10 @@ function saveCustomerEdit() {
     closeEditModal();
     loadCustomers();
 
-    if (typeof showToast === "function") showToast("Record Updated! 📝");
+    if (window.parent && typeof window.parent.showToast === "function") {
+        window.parent.showToast("Record Updated! 📝");
+    } else if (typeof showToast === "function") {
+        showToast("Record Updated! 📝");
+    }
 }
 

@@ -7,7 +7,8 @@
   top: 0;
   left: -280px;
   width: 280px;
-  height: 200vh; /* Overfill to prevent gaps on zoom out */
+  height: 200vh;
+  /* Overfill to prevent gaps on zoom out */
   /* Theme-aware glass background */
   background: color-mix(in srgb, var(--sidebar-bg), transparent 15%);
   backdrop-filter: blur(16px) saturate(180%);
@@ -241,7 +242,8 @@ body.dark-mode #proSidebar {
   display: flex !important;
   align-items: center !important;
   gap: 10px !important;
-  padding: 50px 20px 15px 20px !important; /* Increased top padding */
+  padding: 50px 20px 15px 20px !important;
+  /* Increased top padding */
   border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
   margin-bottom: 10px !important;
   white-space: nowrap !important;
@@ -250,7 +252,8 @@ body.dark-mode #proSidebar {
 .sidebar-logo {
   width: 35px !important;
   height: 35px !important;
-  background: linear-gradient(135deg, #6366f1, #a855f7) !important; /* Original Purple */
+  background: linear-gradient(135deg, #6366f1, #a855f7) !important;
+  /* Original Purple */
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -425,7 +428,8 @@ body.dark-mode .sidebar-menu a:hover {
    =============================== */
 #sidebarToggle {
   position: fixed;
-  top: 105px; /* Stacks nicely below Speak button */
+  top: 105px;
+  /* Stacks nicely below Speak button */
   left: 23px;
   display: flex;
   align-items: center;
